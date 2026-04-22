@@ -5,7 +5,7 @@ export default function Login() {
   return (
     <div className="container">
       <div className="card">
-        
+
         <div className="logo">
           <div className="icon">🏠</div>
           <h1>AgroManager</h1>
@@ -13,8 +13,8 @@ export default function Login() {
         </div>
 
         <form>
-          <label>Enviar e-mail ou usuário</label>
-          <input type="text" placeholder="Digite seu e-mail" />
+          <label>Email ou Usuário</label>
+          <input type="text" placeholder="Digite seu email" />
 
           <label>Senha</label>
           <input type="password" placeholder="Digite sua senha" />

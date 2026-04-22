@@ -22,27 +22,27 @@ body {
 }
 
 .logo .icon {
-  background: green;
+  background: #0a9c3c;
   color: white;
-  width: 65px;
-  height: 65px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 10px;
-  font-size: 26px;
+  font-size: 28px;
 }
 
 h1 {
-  color: green;
-  font-size: 24px;
+  color: #0a9c3c;
+  font-size: 26px;
   margin: 8px 0;
 }
 
 .logo p {
   font-size: 15px;
-  color: #555;
+  color: #666;
   margin-bottom: 25px;
 }
 
@@ -62,22 +62,21 @@ input {
   border-radius: 12px;
   border: 1px solid #ccc;
   font-size: 16px;
-  background: #ffffff; /* branco */
+  background: #ffffff;
   box-sizing: border-box;
 }
 
-/* Link */
 .forgot {
-  color: green;
+  color: #0a9c3c;
   font-size: 14px;
   text-decoration: none;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .btn-primary {
   width: 100%;
-  background: green;
+  background: #0a9c3c;
   color: white;
   border: none;
   padding: 18px;
@@ -86,23 +85,34 @@ input {
   font-size: 17px;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-/* Texto */
+.btn-primary:hover {
+  background: #087a2f;
+}
+
 .no-account {
   margin: 25px 0 12px;
   font-size: 15px;
-  color: #555;
+  color: #666;
 }
+
 .btn-outline {
   width: 100%;
   padding: 16px;
   margin-top: 12px;
   border-radius: 12px;
-  border: 2px solid green;
-  background: white;
-  color: green;
+  border: 2px solid #0a9c3c;
+  background: transparent;
+  color: #0a9c3c;
   font-size: 15px;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-outline:hover {
+  background: #0a9c3c;
+  color: white;
 }
