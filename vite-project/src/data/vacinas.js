@@ -1,0 +1,32 @@
+export const VACINAS = {
+  bovino: [
+    'Febre Aftosa',
+    'Brucelose',
+    'Raiva',
+    'Clostridioses',
+    'Leptospirose',
+    'IBR/BVD',
+    'Mastite',
+    'Outra',
+  ],
+  suino: [
+    'Circovirose Suína (PCV2)',
+    'Micoplasmose',
+    'Peste Suína Clássica',
+    'Parvovirose Suína',
+    'Leptospirose',
+    'Erisipela Suína',
+    'Clostridioses',
+    'Outra',
+  ],
+  aves: [
+    'Doença de Newcastle',
+    'Gumboro',
+    'Bronquite Infecciosa Aviária',
+    'Marek',
+    'Bouba Aviária',
+    'Coriza Infecciosa',
+    'Salmonelose',
+    'Outra',
+  ],
+}
