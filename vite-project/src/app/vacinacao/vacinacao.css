@@ -1,0 +1,137 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
+    }
+    
+    .pagina{
+    background:#f5f5f5;
+    min-height:100vh;
+    }
+    
+    .topo{
+    background:#07a52a;
+    color:white;
+    padding:20px;
+    display:flex;
+    gap:20px;
+    align-items:center;
+    }
+    
+    .voltar{
+    font-size:28px;
+    cursor:pointer;
+    }
+    
+    .abas{
+    display:flex;
+    background:white;
+    }
+    
+    .abas button{
+    width:50%;
+    padding:18px;
+    border:none;
+    background:white;
+    font-size:22px;
+    cursor:pointer;
+    }
+    
+    .ativa{
+    color:#07a52a;
+    border-bottom:3px solid #07a52a;
+    }
+    
+    .formulario{
+    padding:25px;
+    }
+    
+    label{
+    display:block;
+    margin-top:18px;
+    margin-bottom:8px;
+    font-weight:bold;
+    }
+    
+    select,
+    input,
+    textarea{
+    width:100%;
+    padding:14px;
+    border:none;
+    background:#ececec;
+    border-radius:8px;
+    }
+    
+    textarea{
+    height:90px;
+    resize:none;
+    }
+    
+    .datas{
+    display:flex;
+    gap:20px;
+    }
+    
+    .datas div{
+    flex:1;
+    }
+    
+    .botao{
+    margin-top:30px;
+    width:100%;
+    padding:16px;
+    border:none;
+    background:#07a52a;
+    color:white;
+    border-radius:10px;
+    font-size:20px;
+    }
+    
+    .card{
+    background:white;
+    margin:18px;
+    padding:25px;
+    border-radius:15px;
+    position:relative;
+    border:1px solid #ddd;
+    }
+    
+    .urgente{
+    border:1px solid orange;
+    }
+    
+    .card h3{
+    margin-bottom:10px;
+    }
+    
+    .card p{
+    margin-top:12px;
+    }
+    
+    .alerta{
+    color:#ff6b00;
+    font-weight:bold;
+    }
+    
+    .tag{
+    position:absolute;
+    top:20px;
+    right:20px;
+    background:#ff6b00;
+    color:white;
+    padding:8px 12px;
+    border-radius:8px;
+    }
+    
+    .menu{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:white;
+    display:flex;
+    justify-content:space-around;
+    padding:18px;
+    border-top:1px solid #ccc;
+    }
