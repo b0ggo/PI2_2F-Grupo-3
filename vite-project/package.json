@@ -2,10 +2,12 @@
   "name": "agrogestor",
   "private": true,
   "version": "0.1.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint ."
   },
   "dependencies": {
     "html5-qrcode": "^2.3.8",
@@ -14,7 +16,12 @@
     "react-router-dom": "^7.15.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
     "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
     "vite": "^5.4.21"
   }
 }

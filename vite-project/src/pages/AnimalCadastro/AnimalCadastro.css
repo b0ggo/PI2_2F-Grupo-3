@@ -29,6 +29,8 @@ body {
 
 .back {
   font-size: 22px;
+  color: inherit;
+  text-decoration: none;
 }
 
 /* 🔥 CONTEÚDO AGORA É FULL WIDTH */

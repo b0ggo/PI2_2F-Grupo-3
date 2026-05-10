@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import "./Login.css";
 
 export default function Login() {
@@ -12,7 +12,7 @@ export default function Login() {
           <p>Gestão Rural Simplificada</p>
         </div>
 
-        <form>
+        <form onSubmit={(e) => e.preventDefault()}>
           <label>Email ou Usuário</label>
           <input type="text" placeholder="Digite seu email" />
 
@@ -21,13 +21,15 @@ export default function Login() {
 
           <a href="#" className="forgot">Esqueci minha senha</a>
 
-          <button type="submit" className="btn-primary">Entrar</button>
+          <Link to="/cadastro-animal" className="btn-primary">
+            Entrar
+          </Link>
         </form>
 
         <p className="no-account">Não tem conta?</p>
 
-        <button className="btn-outline">Cadastro de Produtor</button>
-        <button className="btn-outline">Cadastro de Empresa/Cooperativa</button>
+        <button type="button" className="btn-outline">Cadastro de Produtor</button>
+        <button type="button" className="btn-outline">Cadastro de Empresa/Cooperativa</button>
 
       </div>
     </div>
