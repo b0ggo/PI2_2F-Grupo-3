@@ -1,4 +1,3 @@
-```jsx
 import React from 'react';
 import './Perfil.css';
 import {
@@ -163,5 +162,6 @@ const Perfil = () => {
 };
 
 export default Perfil;
-```
+
+
 
