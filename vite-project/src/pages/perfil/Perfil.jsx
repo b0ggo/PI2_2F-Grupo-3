@@ -36,7 +36,7 @@ export default function Perfil() {
         </div>
 
         <h2>João Silva</h2>
-        <p>joao.silva@email.com</p>
+        <p>joao.silva@gmail.com</p>
       </div>
 
       <div className="tipo-conta">
