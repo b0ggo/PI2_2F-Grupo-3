@@ -1,17 +1,15 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial;
-    }
-
-    .pagina{
-    background:#f5f5f5;
+.pagina{
+    background:#f4f7f5;
     min-height:100vh;
+    max-width:390px;
+    margin:0 auto;
+    padding-bottom:88px;
+    font-family:"Nunito",system-ui,sans-serif;
+    box-sizing:border-box;
     }
 
     .topo{
-    background:#07a52a;
+    background:linear-gradient(95deg,#15803d 0%,#16a34a 100%);
     color:white;
     padding:20px;
     display:flex;
@@ -47,8 +45,8 @@
     }
 
     .ativa{
-    color:#07a52a;
-    border-bottom:3px solid #07a52a;
+    color:#16a34a;
+    border-bottom:3px solid #16a34a;
     }
 
     .formulario{
@@ -91,7 +89,7 @@
     width:100%;
     padding:16px;
     border:none;
-    background:#07a52a;
+    background:#16a34a;
     color:white;
     border-radius:10px;
     font-size:20px;
@@ -133,13 +131,3 @@
     border-radius:8px;
     }
 
-    .menu{
-    position:fixed;
-    bottom:0;
-    width:100%;
-    background:white;
-    display:flex;
-    justify-content:space-around;
-    padding:18px;
-    border-top:1px solid #ccc;
-    }

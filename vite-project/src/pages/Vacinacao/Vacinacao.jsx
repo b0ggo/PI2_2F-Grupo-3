@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import BottomNav from "../../components/BottomNav/BottomNav.jsx";
+import { ROUTES } from "../../constants/routes.js";
 import "./Vacinacao.css";
 
 export default function Vacinacao() {
@@ -9,7 +11,9 @@ export default function Vacinacao() {
     <div className="pagina">
 
       <header className="topo">
-        <Link to="/login" className="voltar">←</Link>
+        <Link to={ROUTES.HOME} className="voltar" aria-label="Voltar ao início">
+          ←
+        </Link>
         <h2>Vacinação</h2>
       </header>
 
@@ -148,14 +152,7 @@ export default function Vacinacao() {
 
       )}
 
-      <footer className="menu">
-        <span>Início</span>
-        <span>Buscar</span>
-        <span>Alertas</span>
-        <span>Chat</span>
-        <span>Perfil</span>
-      </footer>
-
+      <BottomNav />
     </div>
   );
 }

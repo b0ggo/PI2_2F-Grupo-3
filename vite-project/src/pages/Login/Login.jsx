@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
+import { ROUTES } from "../../constants/routes.js";
 import "./Login.css";
 
 export default function Login() {
   return (
+    <div className="login-root">
     <div className="container">
       <div className="card">
 
@@ -21,7 +23,7 @@ export default function Login() {
 
           <a href="#" className="forgot">Esqueci minha senha</a>
 
-          <Link to="/cadastro-animal" className="btn-primary">
+          <Link to={ROUTES.HOME} className="btn-primary">
             Entrar
           </Link>
         </form>
@@ -32,6 +34,7 @@ export default function Login() {
         <button type="button" className="btn-outline">Cadastro de Empresa/Cooperativa</button>
 
       </div>
+    </div>
     </div>
   );
 }

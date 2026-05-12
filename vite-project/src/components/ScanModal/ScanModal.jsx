@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import styles from './ScanModal.module.css'
 
 function BtnFechar({ onClick }) {
@@ -18,6 +18,24 @@ function BtnFechar({ onClick }) {
 
 export function QRModal({ aberto, onFechar, onLeitura }) {
   const scannerRef = useRef(null)
+  const onLeituraRef = useRef(onLeitura)
+  const onFecharRef = useRef(onFechar)
+
+  useEffect(() => {
+    onLeituraRef.current = onLeitura
+  }, [onLeitura])
+
+  useEffect(() => {
+    onFecharRef.current = onFechar
+  }, [onFechar])
+
+  const fechar = useCallback(() => {
+    if (scannerRef.current) {
+      scannerRef.current.stop().catch(() => {})
+      scannerRef.current = null
+    }
+    onFecharRef.current()
+  }, [])
 
   useEffect(() => {
     if (!aberto) return
@@ -27,6 +45,9 @@ export function QRModal({ aberto, onFechar, onLeitura }) {
     const timer = setTimeout(async () => {
       if (cancelled) return
       try {
+        const mountEl = document.getElementById('ag-qr-container')
+        if (mountEl) mountEl.innerHTML = ''
+
         const { Html5Qrcode } = await import('html5-qrcode')
         const scanner = new Html5Qrcode('ag-qr-container')
         scannerRef.current = scanner
@@ -35,7 +56,7 @@ export function QRModal({ aberto, onFechar, onLeitura }) {
           { facingMode: 'environment' },
           { fps: 10, qrbox: { width: 220, height: 220 } },
           (decoded) => {
-            onLeitura(decoded.trim().substring(0, 20))
+            onLeituraRef.current(decoded.trim().substring(0, 20))
             fechar()
           },
           () => {}
@@ -56,15 +77,7 @@ export function QRModal({ aberto, onFechar, onLeitura }) {
         scannerRef.current = null
       }
     }
-  }, [aberto])
-
-  function fechar() {
-    if (scannerRef.current) {
-      scannerRef.current.stop().catch(() => {})
-      scannerRef.current = null
-    }
-    onFechar()
-  }
+  }, [aberto, fechar])
 
   if (!aberto) return null
 

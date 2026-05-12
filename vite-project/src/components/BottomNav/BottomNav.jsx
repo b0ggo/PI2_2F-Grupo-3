@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { ROUTES } from "../constants/routes.js";
+import { ROUTES } from "../../constants/routes.js";
 import "./BottomNav.css";
 
 function Icon({ d, size = 22, color = "currentColor", strokeWidth = 2 }) {

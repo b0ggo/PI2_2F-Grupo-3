@@ -1,24 +1,14 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-  }
-  
-  body {
-    background-color: #f5f5f5;
-  }
-  
-  .perfil-container {
-    max-width: 400px;
+.perfil-container {
+    max-width: 390px;
     margin: 0 auto;
     min-height: 100vh;
     background-color: #fff;
-    padding-bottom: 90px;
+    padding-bottom: 88px;
+    font-family: "Nunito", system-ui, sans-serif;
   }
   
   .perfil-header {
-    background-color: #09b12d;
+    background: linear-gradient(160deg, #16a34a 0%, #15803d 100%);
     color: white;
     text-align: center;
     padding: 30px 20px;
@@ -33,7 +23,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #09b12d;
+    color: #16a34a;
     font-size: 35px;
   }
   
@@ -55,8 +45,8 @@
   }
   
   .badge {
-    background-color: #dff7df;
-    color: #159215;
+    background-color: #dcfce7;
+    color: #15803d;
     padding: 5px 12px;
     border-radius: 15px;
     font-size: 12px;
@@ -86,7 +76,8 @@
   }
   
   .icon {
-    color: #09b12d;
+    color: #16a34a;
+    flex-shrink: 0;
     font-size: 18px;
   }
   
@@ -111,7 +102,7 @@
   }
   
   .info-item input:focus {
-    border-color: #09b12d;
+    border-color: #16a34a;
   }
   
   .linha {
@@ -123,9 +114,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     padding: 18px 0;
+    border: none;
     border-bottom: 1px solid #eee;
+    background: none;
     cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    text-align: left;
   }
   
   .menu-item:last-child {
@@ -165,9 +163,9 @@
   }
   
   .verde {
-    background-color: #eef9ee;
-    border-color: #90d890;
-    color: #159215;
+    background-color: #f0fdf4;
+    border-color: #86efac;
+    color: #15803d;
   }
   
   .azul {
@@ -186,9 +184,9 @@
     width: calc(100% - 20px);
     margin: 15px 10px;
     padding: 14px;
-    border: 1px solid red;
+    border: 1px solid #dc2626;
     background: white;
-    color: red;
+    color: #dc2626;
     border-radius: 10px;
     font-size: 16px;
     display: flex;
@@ -196,36 +194,9 @@
     justify-content: center;
     gap: 10px;
     cursor: pointer;
+    font-family: inherit;
   }
-  
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    max-width: 400px;
-    background-color: white;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    border-top: 1px solid #ddd;
+
+  .btn-sair svg {
+    flex-shrink: 0;
   }
-  
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 12px;
-    color: #666;
-    gap: 4px;
-  }
-  
-  .nav-item svg {
-    font-size: 18px;
-  }
-  
-  .nav-item.active {
-    color: #09b12d;
-  }
-  
-  
-  

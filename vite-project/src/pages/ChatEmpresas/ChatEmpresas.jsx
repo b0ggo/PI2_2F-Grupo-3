@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import BottomNav from "../../components/BottomNav.jsx";
+import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import "./ChatEmpresas.css";
 
 function Icon({ d, size = 22, color = "currentColor", strokeWidth = 2 }) {

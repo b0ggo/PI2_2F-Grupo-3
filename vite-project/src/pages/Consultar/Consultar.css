@@ -1,0 +1,73 @@
+.consultar-page {
+  max-width: 390px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f4f7f5;
+  padding-bottom: 88px;
+  font-family: "Nunito", system-ui, sans-serif;
+}
+
+.consultar-header {
+  background: linear-gradient(160deg, #16a34a 0%, #15803d 100%);
+  color: #fff;
+  padding: 22px 18px 26px;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.25);
+}
+
+.consultar-title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.consultar-sub {
+  margin: 0 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #bbf7d0;
+  line-height: 1.4;
+}
+
+.consultar-search-label {
+  display: block;
+}
+
+.consultar-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.consultar-search-icon {
+  flex-shrink: 0;
+  color: #9ca3af;
+}
+
+.consultar-search-wrap input {
+  flex: 1;
+  border: none;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  min-width: 0;
+  color: #111827;
+}
+
+.consultar-body {
+  padding: 18px 16px;
+}
+
+.consultar-placeholder {
+  margin: 0;
+  padding: 16px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e8eeea;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.45;
+}

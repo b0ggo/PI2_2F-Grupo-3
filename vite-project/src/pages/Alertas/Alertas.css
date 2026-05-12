@@ -1,0 +1,81 @@
+.alertas-page {
+  max-width: 390px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f4f7f5;
+  padding-bottom: 88px;
+  font-family: "Nunito", system-ui, sans-serif;
+}
+
+.alertas-header {
+  background: linear-gradient(160deg, #16a34a 0%, #15803d 100%);
+  color: #fff;
+  padding: 22px 18px 24px;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.25);
+}
+
+.alertas-title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.alertas-sub {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #bbf7d0;
+  line-height: 1.4;
+}
+
+.alertas-list {
+  list-style: none;
+  margin: 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alertas-card {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 14px;
+  border: 1px solid #e8eeea;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.alertas-card--urgente {
+  border-color: #fdba74;
+  background: #fffbeb;
+}
+
+.alertas-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #ea580c;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.alertas-card-title {
+  margin: 0 0 8px;
+  padding-right: 72px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.alertas-card-detail {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 600;
+}

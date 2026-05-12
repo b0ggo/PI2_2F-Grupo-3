@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import BottomNav from "../../components/BottomNav.jsx";
+import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import "./PaginaInicial.css";
 
