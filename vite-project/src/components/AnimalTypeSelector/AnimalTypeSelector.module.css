@@ -1,0 +1,47 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid #d0d0d0;
+  background: var(--color-input-bg);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  font-family: var(--font-body);
+}
+
+.card:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.selecionado {
+  border-color: var(--color-primary) !important;
+  background: var(--color-primary-light) !important;
+}
+
+.icone {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.nome {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.selecionado .nome {
+  color: var(--color-primary);
+  font-weight: 600;
+}
