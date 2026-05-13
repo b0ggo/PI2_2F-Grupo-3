@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import "./CadastrarLotes.css";
 
@@ -20,7 +21,6 @@ function Icon({ d, size = 22, color = "currentColor", strokeWidth = 2 }) {
   );
 }
 
-const ICON_BACK = "M19 12H5 M12 5l-7 7 7 7";
 const ICON_CHECK = "M20 6L9 17l-5-5";
 const ICON_LEAF =
   "M2 22c1.25-1.67 3-4 8-4s6.75 2.33 8 4 M12 13c2-2 4-5 4-9a4 4 0 0 0-8 0c0 4 2 7 4 9z";
@@ -179,19 +179,10 @@ export default function CadastrarLotes() {
 
   return (
     <div className="cadastro-page">
-      <header className="cadastro-header">
-        <button
-          type="button"
-          className="cadastro-header__back"
-          onClick={goHome}
-          aria-label="Voltar"
-        >
-          <Icon d={ICON_BACK} size={20} color="#fff" />
-        </button>
-        <h1 className="cadastro-header__title">Cadastrar Lote</h1>
-      </header>
+      <div className="cadastro-card">
+        <Header titulo="Cadastrar Lote" voltarPara={ROUTES.HOME} />
 
-      <form className="cadastro-body" onSubmit={handleSubmit} noValidate>
+        <form className="cadastro-body" onSubmit={handleSubmit} noValidate>
         <div className="field-group">
           <label className="field-label">
             Tipo de Lote <span>*</span>
@@ -311,7 +302,8 @@ export default function CadastrarLotes() {
             )}
           </button>
         </div>
-      </form>
+        </form>
+      </div>
 
       {feedback && (
         <div

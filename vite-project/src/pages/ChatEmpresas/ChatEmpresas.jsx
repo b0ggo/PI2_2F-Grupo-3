@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
+import Header from "../../components/Header/Header.jsx";
+import headerUi from "../../components/Header/Header.module.css";
 import "./ChatEmpresas.css";
 
 function Icon({ d, size = 22, color = "currentColor", strokeWidth = 2 }) {
@@ -22,7 +24,6 @@ function Icon({ d, size = 22, color = "currentColor", strokeWidth = 2 }) {
 const ICONS = {
   search: "M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z",
   chat: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
-  back: "M19 12H5 M12 5l-7 7 7 7",
   send: "M22 2L11 13 M22 2L15 22l-4-9-9-4z",
   connect: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
 };
@@ -192,23 +193,21 @@ function ConversationView({ conversation, onBack, onUpdate }) {
 
   return (
     <div className="conv-page">
-      <header className="conv-header">
-        <button
-          type="button"
-          className="conv-header__back"
-          onClick={onBack}
-          aria-label="Voltar"
-        >
-          <Icon d={ICONS.back} size={18} color="#fff" />
-        </button>
-        <div className="conv-header__avatar">
-          <Icon d={ICONS.chat} size={18} color="#fff" />
-        </div>
-        <div className="conv-header__info">
-          <div className="conv-header__name">{conversation.name}</div>
-          <div className="conv-header__type">{conversation.type}</div>
-        </div>
-      </header>
+      <Header
+        sticky
+        onVoltar={onBack}
+        navMiddle={
+          <>
+            <div className={headerUi.convAvatar}>
+              <Icon d={ICONS.chat} size={18} color="#fff" />
+            </div>
+            <div className={headerUi.convMeta}>
+              <div className={headerUi.convName}>{conversation.name}</div>
+              <div className={headerUi.convType}>{conversation.type}</div>
+            </div>
+          </>
+        }
+      />
 
       <div className="conv-messages">
         {messages.map((msg) => (
@@ -320,20 +319,20 @@ export default function ChatEmpresas() {
 
   return (
     <div className="chat-page">
-      <header className="chat-header">
-        <h1 className="chat-header__title">Chat</h1>
-        <div className="chat-search">
-          <Icon d={ICONS.search} size={16} color="#9ca3af" />
-          <input
-            placeholder="Buscar empresas..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            aria-label="Buscar conversa"
-          />
-        </div>
-      </header>
+      <div className="chat-shell">
+        <Header layout="stack" titulo="Chat">
+          <div className="app-header-search">
+            <Icon d={ICONS.search} size={16} color="#9ca3af" />
+            <input
+              placeholder="Buscar empresas..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label="Buscar conversa"
+            />
+          </div>
+        </Header>
 
-      <div className="chat-list">
+        <div className="chat-list">
         {filtered.map((conv) => (
           <button
             key={conv.id}
@@ -363,7 +362,7 @@ export default function ChatEmpresas() {
 
         <div className="chat-cta">
           <div className="chat-cta__heading">
-            <Icon d={ICONS.connect} size={16} color="#3b82f6" />
+            <Icon d={ICONS.connect} size={16} color="#16a34a" />
             <span className="chat-cta__title">Conecte-se com Empresas</span>
           </div>
           <p className="chat-cta__text">
@@ -371,6 +370,7 @@ export default function ChatEmpresas() {
             diretamente pelo chat.
           </p>
         </div>
+      </div>
       </div>
 
       <BottomNav />
