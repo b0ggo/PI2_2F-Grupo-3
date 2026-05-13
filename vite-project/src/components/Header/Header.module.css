@@ -1,9 +1,19 @@
-.header {
-  background: linear-gradient(95deg, #15803d 0%, #16a34a 100%);
+.headerBase {
+  background: var(--header-gradient);
   padding: 18px 20px 16px;
+  box-sizing: border-box;
+}
+
+.row {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.rowSticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .btnVoltar {
@@ -18,6 +28,9 @@
   justify-content: center;
   flex-shrink: 0;
   transition: background 0.15s;
+  color: inherit;
+  text-decoration: none;
+  padding: 0;
 }
 
 .btnVoltar:hover {
@@ -30,6 +43,8 @@
   font-weight: 700;
   color: #fff;
   flex: 1;
+  margin: 0;
+  line-height: 1.25;
 }
 
 .badge {
@@ -40,4 +55,94 @@
   color: rgba(255, 255, 255, 0.95);
   font-weight: 500;
   white-space: nowrap;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.stackTitulo {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.stackSub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.45;
+}
+
+.stackSlot {
+  margin-top: 12px;
+}
+
+.hero {
+  text-align: center;
+}
+
+.heroTitulo {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.heroSub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.45;
+}
+
+.heroSlot {
+  margin-bottom: 12px;
+}
+
+.navMiddle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.convAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.convMeta {
+  min-width: 0;
+}
+
+.convName {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.convType {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 2px;
 }

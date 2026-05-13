@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap");
-
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -8,11 +6,12 @@
   width: 100%;
   max-width: 390px;
   background: #ffffff;
-  border-top: 1px solid #e8eeea;
+  border-top: 0.5px solid var(--surface-divider);
   display: flex;
   justify-content: space-around;
-  padding: 8px 0 14px;
+  padding: 8px 0 calc(14px + env(safe-area-inset-bottom, 0));
   z-index: 100;
+  box-sizing: border-box;
 }
 
 .nav-tab {
@@ -24,14 +23,15 @@
   border: none;
   cursor: pointer;
   font-size: 11px;
-  font-family: "Nunito", sans-serif;
-  font-weight: 600;
-  color: #9ca3af;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--color-text-hint);
   transition: color 0.15s;
   padding: 2px 6px;
   text-decoration: none;
 }
 
 .nav-tab.active {
-  color: #16a34a;
+  color: var(--color-primary);
+  font-weight: 600;
 }
