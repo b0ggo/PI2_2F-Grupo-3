@@ -11,6 +11,7 @@
 .modal {
   background: #fff;
   border-radius: var(--radius-xl);
+  border: 0.5px solid var(--surface-border);
   padding: 20px;
   width: 90%;
   max-width: 380px;
@@ -29,7 +30,7 @@
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 .btnFechar {
@@ -37,17 +38,17 @@
   height: 28px;
   border-radius: var(--radius-sm);
   border: none;
-  background: #f0f0f0;
+  background: #f4f4f5;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
+  color: var(--color-text-muted);
   transition: background 0.15s;
 }
 
 .btnFechar:hover {
-  background: #e0e0e0;
+  background: #e5e7eb;
 }
 
 .qrContainer {
@@ -68,7 +69,7 @@
 
 .hint {
   font-size: 12px;
-  color: #666;
+  color: var(--color-text-hint);
   text-align: center;
 }
 

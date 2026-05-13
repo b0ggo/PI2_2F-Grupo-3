@@ -11,8 +11,8 @@
   align-items: center;
   gap: 6px;
   padding: 14px 8px;
-  border-radius: var(--radius-lg);
-  border: 1.5px solid #d0d0d0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-input-border);
   background: var(--color-input-bg);
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;

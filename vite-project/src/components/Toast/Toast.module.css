@@ -20,16 +20,16 @@
 }
 
 .success {
-  background: #1a7a3c;
+  background: var(--color-primary-dark);
   color: #fff;
 }
 
 .offline {
-  background: #c88000;
+  background: #a16207;
   color: #fff;
 }
 
 .error {
-  background: #c0392b;
+  background: #b91c1c;
   color: #fff;
 }
