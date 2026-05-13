@@ -1,133 +1,179 @@
-.pagina{
-    background:#f4f7f5;
-    min-height:100vh;
-    max-width:390px;
-    margin:0 auto;
-    padding-bottom:88px;
-    font-family:"Nunito",system-ui,sans-serif;
-    box-sizing:border-box;
-    }
+.vacina-page {
+  max-width: 390px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 12px 12px 88px;
+  box-sizing: border-box;
+  background: var(--color-bg);
+  font-family: var(--font-body);
+}
 
-    .topo{
-    background:linear-gradient(95deg,#15803d 0%,#16a34a 100%);
-    color:white;
-    padding:20px;
-    display:flex;
-    gap:20px;
-    align-items:center;
-    }
+.vacina-card {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  border: 0.5px solid var(--surface-border);
+  overflow: hidden;
+}
 
-    .topo h2{
-    margin:0;
-    font-size:1.25rem;
-    font-weight:600;
-    }
+.vacina-abas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 0.5px solid var(--surface-divider);
+  background: #fff;
+}
 
-    .voltar{
-    font-size:28px;
-    cursor:pointer;
-    color:inherit;
-    text-decoration:none;
-    }
+.vacina-aba {
+  padding: 12px 8px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -0.5px;
+  transition: color 0.15s;
+}
 
-    .abas{
-    display:flex;
-    background:white;
-    }
+.vacina-aba--ativa {
+  color: var(--color-primary);
+  font-weight: 600;
+  border-bottom-color: var(--color-primary);
+}
 
-    .abas button{
-    width:50%;
-    padding:18px;
-    border:none;
-    background:white;
-    font-size:22px;
-    cursor:pointer;
-    }
+.vacina-corpo {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
 
-    .ativa{
-    color:#16a34a;
-    border-bottom:3px solid #16a34a;
-    }
+.vacina-corpo--lista {
+  gap: 12px;
+  padding-top: 16px;
+  padding-bottom: 20px;
+}
 
-    .formulario{
-    padding:25px;
-    }
+.vacina-corpo label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
 
-    label{
-    display:block;
-    margin-top:18px;
-    margin-bottom:8px;
-    font-weight:bold;
-    }
+.vacina-corpo label:first-child {
+  margin-top: 0;
+}
 
-    select,
-    input,
-    textarea{
-    width:100%;
-    padding:14px;
-    border:none;
-    background:#ececec;
-    border-radius:8px;
-    }
+.vacina-corpo select,
+.vacina-corpo input,
+.vacina-corpo textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-input-border);
+  background: #fff;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
 
-    textarea{
-    height:90px;
-    resize:none;
-    }
+.vacina-corpo select:focus,
+.vacina-corpo input:focus,
+.vacina-corpo textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-focus);
+}
 
-    .datas{
-    display:flex;
-    gap:20px;
-    }
+.vacina-corpo textarea {
+  min-height: 88px;
+  resize: none;
+  line-height: 1.5;
+}
 
-    .datas div{
-    flex:1;
-    }
+.datas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 
-    .botao{
-    margin-top:30px;
-    width:100%;
-    padding:16px;
-    border:none;
-    background:#16a34a;
-    color:white;
-    border-radius:10px;
-    font-size:20px;
-    }
+.datas label {
+  margin-top: 0;
+}
 
-    .card{
-    background:white;
-    margin:18px;
-    padding:25px;
-    border-radius:15px;
-    position:relative;
-    border:1px solid #ddd;
-    }
+.vacina-btn-primario {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
 
-    .urgente{
-    border:1px solid orange;
-    }
+.vacina-btn-primario:hover {
+  background: var(--color-primary-dark);
+}
 
-    .card h3{
-    margin-bottom:10px;
-    }
+.vacina-btn-primario:active {
+  transform: scale(0.99);
+}
 
-    .card p{
-    margin-top:12px;
-    }
+.vacina-hist-card {
+  position: relative;
+  background: #fff;
+  padding: 16px 14px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--surface-border);
+}
 
-    .alerta{
-    color:#ff6b00;
-    font-weight:bold;
-    }
+.vacina-hist-card--alerta {
+  border-left: 3px solid var(--color-primary);
+  background: var(--color-primary-soft);
+}
 
-    .tag{
-    position:absolute;
-    top:20px;
-    right:20px;
-    background:#ff6b00;
-    color:white;
-    padding:8px 12px;
-    border-radius:8px;
-    }
+.vacina-hist-card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  padding-right: 72px;
+}
 
+.vacina-hist-card p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.vacina-hist-alerta {
+  color: var(--color-primary-dark) !important;
+  font-weight: 600 !important;
+}
+
+.vacina-tag {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}

@@ -4,14 +4,32 @@
   --color-primary: #16a34a;
   --color-primary-dark: #15803d;
   --color-primary-soft: #dcfce7;
+  --color-primary-light: #ecfdf5;
   --color-text: #111827;
+  --color-text-main: #111827;
   --color-text-muted: #6b7280;
   --color-text-hint: #9ca3af;
   --color-bg: #f4f7f5;
+  --color-input-bg: #fff;
+  --color-input-border: #e5e7eb;
+  --color-primary-focus: rgba(22, 163, 74, 0.14);
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-danger-text: #991b1b;
+  --color-treatment-bg: #fffbeb;
+  --color-treatment-border: #fde68a;
+  --color-treatment-text: #92400e;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fcd34d;
+  --color-warning-text: #78350f;
+  --surface-border: #ddd;
+  --surface-divider: #e0e0e0;
+  --header-gradient: linear-gradient(95deg, #15803d 0%, #16a34a 100%);
   --font-body: "Nunito", system-ui, sans-serif;
   --font-display: "Nunito", system-ui, sans-serif;
   --radius-sm: 8px;
   --radius-md: 12px;
+  --radius-lg: 14px;
   --radius-xl: 18px;
   --radius-full: 999px;
 }
@@ -31,4 +49,36 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+/* Search field inside green stack headers (Chat, Buscar) */
+.app-header-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border: 0.5px solid rgba(255, 255, 255, 0.35);
+}
+
+.app-header-search-icon {
+  flex-shrink: 0;
+  color: var(--color-text-hint);
+}
+
+.app-header-search input {
+  flex: 1;
+  border: none;
+  font-size: 14px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  outline: none;
+  min-width: 0;
+  color: var(--color-text);
+  background: transparent;
+}
+
+.app-header-search input::placeholder {
+  color: var(--color-text-hint);
 }

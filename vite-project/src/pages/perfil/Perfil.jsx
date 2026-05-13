@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
+import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import "./Perfil.css";
 
@@ -27,21 +28,26 @@ export default function Perfil() {
 
   return (
     <div className="perfil-container">
-      <div className="perfil-header">
-        <div className="perfil-avatar">
-          <Icon size={36}>
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </Icon>
-        </div>
-
-        <h2>João Silva</h2>
-        <p>joao.silva@gmail.com</p>
+      <div className="perfil-hero-wrap">
+        <Header
+          layout="hero"
+          titulo="João Silva"
+          subtitulo="joao.silva@gmail.com"
+        >
+          <div className="perfil-avatar">
+            <Icon size={36}>
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </Icon>
+          </div>
+        </Header>
       </div>
 
-      <div className="tipo-conta">
-        <span>Tipo de Conta:</span>
-        <div className="badge">Produtor Rural</div>
+      <div className="perfil-sheet">
+        <div className="tipo-conta">
+          <span>Tipo de Conta:</span>
+          <div className="badge">Produtor Rural</div>
+        </div>
       </div>
 
       <div className="card-info">
@@ -141,17 +147,17 @@ export default function Perfil() {
         <h3>Estatísticas</h3>
 
         <div className="stats-grid">
-          <div className="stat-card verde">
+          <div className="stat-card">
             <h2>245</h2>
             <p>Animais</p>
           </div>
 
-          <div className="stat-card azul">
+          <div className="stat-card">
             <h2>12</h2>
             <p>Lotes</p>
           </div>
 
-          <div className="stat-card roxo">
+          <div className="stat-card">
             <h2>156</h2>
             <p>Vacinas</p>
           </div>

@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
+import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import "./PaginaInicial.css";
 
@@ -11,16 +12,17 @@ function Svg({ children, size = 22, stroke = "currentColor" }) {
   );
 }
 
+const ICON_BG = "var(--color-primary-soft)";
+const ICON_STROKE = "var(--color-primary)";
+
 const MENU = [
   {
     to: ROUTES.CADASTRO_ANIMAL,
     title: "Cadastrar Animal",
     desc: "Registrar novos animais",
     badge: null,
-    bg: "#dcfce7",
-    stroke: "#16a34a",
     icon: (
-      <Svg stroke="#16a34a">
+      <Svg stroke={ICON_STROKE}>
         <circle cx="12" cy="12" r="10" />
         <path d="M12 8v8M8 12h8" />
       </Svg>
@@ -31,10 +33,8 @@ const MENU = [
     title: "Cadastrar Lote",
     desc: "Criar e gerenciar lotes",
     badge: null,
-    bg: "#dbeafe",
-    stroke: "#2563eb",
     icon: (
-      <Svg stroke="#2563eb">
+      <Svg stroke={ICON_STROKE}>
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
         <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
       </Svg>
@@ -45,10 +45,8 @@ const MENU = [
     title: "Vacinação",
     desc: "Registrar vacinas aplicadas",
     badge: null,
-    bg: "#f3e8ff",
-    stroke: "#9333ea",
     icon: (
-      <Svg stroke="#9333ea">
+      <Svg stroke={ICON_STROKE}>
         <path d="m18 2 4 4" />
         <path d="m17 7 3-3" />
         <path d="M19 9 8 20l-4 1 1-4L16 5" />
@@ -61,10 +59,8 @@ const MENU = [
     title: "Notificações",
     desc: "Ver alertas e lembretes",
     badge: 3,
-    bg: "#ffedd5",
-    stroke: "#ea580c",
     icon: (
-      <Svg stroke="#ea580c">
+      <Svg stroke={ICON_STROKE}>
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
       </Svg>
@@ -75,10 +71,8 @@ const MENU = [
     title: "Chat",
     desc: "Conversar com empresas",
     badge: 2,
-    bg: "#ccfbf1",
-    stroke: "#0d9488",
     icon: (
-      <Svg stroke="#0d9488">
+      <Svg stroke={ICON_STROKE}>
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </Svg>
     ),
@@ -88,10 +82,8 @@ const MENU = [
     title: "Meu Perfil",
     desc: "Dados da conta",
     badge: null,
-    bg: "#f3f4f6",
-    stroke: "#4b5563",
     icon: (
-      <Svg stroke="#4b5563">
+      <Svg stroke={ICON_STROKE}>
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </Svg>
@@ -104,14 +96,13 @@ export default function PaginaInicial() {
 
   return (
     <div className="home-app">
-      <header className="home-app__hero">
-        <h1 className="home-app__hello">Bem-vindo!</h1>
-        <p className="home-app__role">Produtor Rural</p>
-      </header>
+      <div className="home-app__hero">
+        <Header layout="hero" titulo="Bem-vindo!" subtitulo="Produtor Rural" />
+      </div>
 
       <div className="home-app__alert">
         <span className="home-app__alert-icon" aria-hidden>
-          <Svg size={20} stroke="#ca8a04">
+          <Svg size={20} stroke="currentColor">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </Svg>
@@ -131,7 +122,10 @@ export default function PaginaInicial() {
       <nav className="home-app__menu" aria-label="Atalhos do produtor">
         {MENU.map((item) => (
           <Link key={item.to} to={item.to} className="home-menu-card">
-            <div className="home-menu-card__icon" style={{ background: item.bg }}>
+            <div
+              className="home-menu-card__icon"
+              style={{ background: ICON_BG }}
+            >
               {item.icon}
             </div>
             <div className="home-menu-card__content">

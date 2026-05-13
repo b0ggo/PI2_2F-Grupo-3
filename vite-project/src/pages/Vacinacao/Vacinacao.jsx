@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
+import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import "./Vacinacao.css";
 
@@ -8,38 +8,34 @@ export default function Vacinacao() {
   const [aba, setAba] = useState("registrar");
 
   return (
-    <div className="pagina">
+    <div className="vacina-page">
+      <div className="vacina-card">
+        <Header titulo="Vacinação" voltarPara={ROUTES.HOME} />
 
-      <header className="topo">
-        <Link to={ROUTES.HOME} className="voltar" aria-label="Voltar ao início">
-          ←
-        </Link>
-        <h2>Vacinação</h2>
-      </header>
-
-      <div className="abas">
-
-        <button
-          type="button"
-          className={aba === "registrar" ? "ativa" : ""}
-          onClick={() => setAba("registrar")}
-        >
-          Registrar
-        </button>
-
-        <button
-          type="button"
-          className={aba === "historico" ? "ativa" : ""}
-          onClick={() => setAba("historico")}
-        >
-          Histórico
-        </button>
-
-      </div>
+        <div className="vacina-abas" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={aba === "registrar"}
+            className={aba === "registrar" ? "vacina-aba vacina-aba--ativa" : "vacina-aba"}
+            onClick={() => setAba("registrar")}
+          >
+            Registrar
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={aba === "historico"}
+            className={aba === "historico" ? "vacina-aba vacina-aba--ativa" : "vacina-aba"}
+            onClick={() => setAba("historico")}
+          >
+            Histórico
+          </button>
+        </div>
 
       {aba === "registrar" && (
 
-        <section className="formulario">
+        <section className="vacina-corpo">
 
           <label>Animal/Lote *</label>
 
@@ -78,7 +74,7 @@ export default function Vacinacao() {
             placeholder="Informações adicionais sobre a vacinação..."
           />
 
-          <button type="button" className="botao">
+          <button type="button" className="vacina-btn-primario">
             Registrar Vacina
           </button>
 
@@ -88,11 +84,11 @@ export default function Vacinacao() {
 
       {aba === "historico" && (
 
-        <section>
+        <section className="vacina-corpo vacina-corpo--lista">
 
-          <div className="card urgente">
+          <div className="vacina-hist-card vacina-hist-card--alerta">
 
-            <span className="tag">
+            <span className="vacina-tag">
               Urgente
             </span>
 
@@ -104,14 +100,14 @@ export default function Vacinacao() {
               Aplicada em: 14/10/2025
             </p>
 
-            <p className="alerta">
+            <p className="vacina-hist-alerta">
               Próxima dose: 14/04/2026
               (em -11 dias)
             </p>
 
           </div>
 
-          <div className="card">
+          <div className="vacina-hist-card">
 
             <h3>Brucelose</h3>
 
@@ -127,9 +123,9 @@ export default function Vacinacao() {
 
           </div>
 
-          <div className="card urgente">
+          <div className="vacina-hist-card vacina-hist-card--alerta">
 
-            <span className="tag">
+            <span className="vacina-tag">
               Urgente
             </span>
 
@@ -141,7 +137,7 @@ export default function Vacinacao() {
               Aplicada em: 09/11/2025
             </p>
 
-            <p className="alerta">
+            <p className="vacina-hist-alerta">
               Próxima dose: 09/02/2026
               (em -75 dias)
             </p>
@@ -151,6 +147,7 @@ export default function Vacinacao() {
         </section>
 
       )}
+      </div>
 
       <BottomNav />
     </div>
