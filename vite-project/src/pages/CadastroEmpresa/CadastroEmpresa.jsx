@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import "../CadastroAnimal/CadastroAnimal.css";
+import styles from "./CadastroEmpresa.module.css";
 
 const TIPOS = ["Selecione o tipo", "Cooperativa", "Fornecedor", "Veterinária", "Indústria"];
 
@@ -50,30 +50,30 @@ export default function CadastroEmpresa() {
       show("As senhas não coincidem.", true);
       return;
     }
-    show("Cadastro da empresa enviado! (integração Flask)", false);
+    show("Cadastro da empresa enviado!", false);
   };
 
   return (
-    <div className="agro-form-page">
-      <header className="agro-form-page__header">
-        <button type="button" className="agro-form-page__back" aria-label="Voltar" onClick={() => navigate(ROUTES.LOGIN)}>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <button type="button" className={styles.back} aria-label="Voltar" onClick={() => navigate(ROUTES.LOGIN)}>
           <IconBack />
         </button>
-        <h1 className="agro-form-page__title">Cadastro de Empresa</h1>
+        <h1 className={styles.title}>Cadastro de Empresa</h1>
       </header>
 
-      <form className="agro-form-page__body" onSubmit={submit} noValidate>
-        <div className="field-block">
+      <form className={styles.body} onSubmit={submit} noValidate>
+        <div className={styles.fieldBlock}>
           <label htmlFor="nome">
-            Nome da Empresa <span className="req">*</span>
+            Nome da Empresa <span className={styles.req}>*</span>
           </label>
-          <input id="nome" className="agro-input" placeholder="Digite o nome da empresa" value={form.nome} onChange={(e) => set("nome", e.target.value)} />
+          <input id="nome" className={styles.input} placeholder="Digite o nome da empresa" value={form.nome} onChange={(e) => set("nome", e.target.value)} />
         </div>
-        <div className="field-block">
+        <div className={styles.fieldBlock}>
           <label htmlFor="tipo">
-            Tipo de Empresa <span className="req">*</span>
+            Tipo de Empresa <span className={styles.req}>*</span>
           </label>
-          <select id="tipo" className="agro-select" value={form.tipo} onChange={(e) => set("tipo", e.target.value)}>
+          <select id="tipo" className={styles.select} value={form.tipo} onChange={(e) => set("tipo", e.target.value)}>
             {TIPOS.map((x) => (
               <option key={x} value={x}>
                 {x}
@@ -81,54 +81,56 @@ export default function CadastroEmpresa() {
             ))}
           </select>
         </div>
-        <div className="field-block">
+        <div className={styles.fieldBlock}>
           <label htmlFor="cnpj">
-            CNPJ <span className="req">*</span>
+            CNPJ <span className={styles.req}>*</span>
           </label>
-          <input id="cnpj" className="agro-input" placeholder="00.000.000/0000-00" value={form.cnpj} onChange={(e) => set("cnpj", e.target.value)} />
+          <input id="cnpj" className={styles.input} placeholder="00.000.000/0000-00" value={form.cnpj} onChange={(e) => set("cnpj", e.target.value)} />
         </div>
-        <div className="field-block">
+        <div className={styles.fieldBlock}>
           <label htmlFor="email">
-            Email <span className="req">*</span>
+            Email <span className={styles.req}>*</span>
           </label>
-          <input id="email" type="email" className="agro-input" placeholder="empresa@email.com" value={form.email} onChange={(e) => set("email", e.target.value)} />
+          <input id="email" type="email" className={styles.input} placeholder="empresa@email.com" value={form.email} onChange={(e) => set("email", e.target.value)} />
         </div>
-        <div className="field-block">
+        <div className={styles.fieldBlock}>
           <label htmlFor="tel">
-            Telefone <span className="req">*</span>
+            Telefone <span className={styles.req}>*</span>
           </label>
-          <input id="tel" className="agro-input" placeholder="(00) 0000-0000" value={form.telefone} onChange={(e) => set("telefone", e.target.value)} />
+          <input id="tel" className={styles.input} placeholder="(00) 0000-0000" value={form.telefone} onChange={(e) => set("telefone", e.target.value)} />
         </div>
-        <div className="field-block">
+        <div className={styles.fieldBlock}>
           <label htmlFor="loc">
-            Localização <span className="req">*</span>
+            Localização <span className={styles.req}>*</span>
           </label>
-          <input id="loc" className="agro-input" placeholder="Cidade, Estado" value={form.local} onChange={(e) => set("local", e.target.value)} />
+          <input id="loc" className={styles.input} placeholder="Cidade, Estado" value={form.local} onChange={(e) => set("local", e.target.value)} />
         </div>
-        <div className="field-block">
+        <div className={styles.fieldBlock}>
           <label htmlFor="senha">
-            Senha <span className="req">*</span>
+            Senha <span className={styles.req}>*</span>
           </label>
-          <input id="senha" type="password" className="agro-input" placeholder="Mínimo 6 caracteres" value={form.senha} onChange={(e) => set("senha", e.target.value)} autoComplete="new-password" />
+          <input id="senha" type="password" className={styles.input} placeholder="Mínimo 6 caracteres" value={form.senha} onChange={(e) => set("senha", e.target.value)} autoComplete="new-password" />
         </div>
-        <div className="field-block">
+        <div className={styles.fieldBlock}>
           <label htmlFor="conf">
-            Confirmar Senha <span className="req">*</span>
+            Confirmar Senha <span className={styles.req}>*</span>
           </label>
-          <input id="conf" type="password" className="agro-input" placeholder="Digite a senha novamente" value={form.conf} onChange={(e) => set("conf", e.target.value)} autoComplete="new-password" />
+          <input id="conf" type="password" className={styles.input} placeholder="Digite a senha novamente" value={form.conf} onChange={(e) => set("conf", e.target.value)} autoComplete="new-password" />
         </div>
 
-        <div className="form-actions" style={{ marginTop: 16 }}>
-          <button type="button" className="btn-outline-gray" onClick={() => navigate(ROUTES.LOGIN)}>
+        <div className={styles.formActions} style={{ marginTop: 16 }}>
+          <button type="button" className={styles.btnOutlineGray} onClick={() => navigate(ROUTES.LOGIN)}>
             Cancelar
           </button>
-          <button type="submit" className="btn-green">
+          <button type="submit" className={styles.btnGreen}>
             Cadastrar
           </button>
         </div>
       </form>
 
-      {toast && <div className={`toast-mini${toast.err ? " err" : ""}`}>{toast.msg}</div>}
+      {toast && (
+        <div className={`${styles.toast}${toast.err ? ` ${styles.toastError}` : ""}`}>{toast.msg}</div>
+      )}
     </div>
   );
 }

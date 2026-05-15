@@ -1,5 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login/Login";
+import CadastroProdutor from "./pages/CadastroProdutor/CadastroProdutor";
+import CadastroEmpresa from "./pages/CadastroEmpresa/CadastroEmpresa";
 import PaginaInicial from "./pages/PaginaInicial/PaginaInicial";
 import CadastrarAnimal from "./pages/CadastrarAnimal/CadastrarAnimal";
 import CadastrarLotes from "./pages/CadastroLotes/CadastrarLotes";
@@ -16,6 +18,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to={ROUTES.LOGIN} replace />} />
         <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.CADASTRO_PRODUTOR} element={<CadastroProdutor />} />
+        <Route path={ROUTES.CADASTRO_EMPRESA} element={<CadastroEmpresa />} />
         <Route path={ROUTES.HOME} element={<PaginaInicial />} />
         <Route path={ROUTES.CADASTRO_ANIMAL} element={<CadastrarAnimal />} />
         <Route path={ROUTES.CADASTRO_LOTES} element={<CadastrarLotes />} />

@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import "../CadastroAnimal/CadastroAnimal.css";
+import styles from "./CadastroProdutor.module.css";
 
 function IconBack() {
   return (
@@ -48,19 +48,19 @@ export default function CadastroProdutor() {
       show("As senhas não coincidem.", true);
       return;
     }
-    show("Cadastro enviado! (conecte ao Flask para persistir)", false);
+    show("Cadastro enviado!", false);
   };
 
   return (
-    <div className="agro-form-page">
-      <header className="agro-form-page__header">
-        <button type="button" className="agro-form-page__back" aria-label="Voltar" onClick={() => navigate(ROUTES.LOGIN)}>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <button type="button" className={styles.back} aria-label="Voltar" onClick={() => navigate(ROUTES.LOGIN)}>
           <IconBack />
         </button>
-        <h1 className="agro-form-page__title">Cadastro de Produtor</h1>
+        <h1 className={styles.title}>Cadastro de Produtor</h1>
       </header>
 
-      <form className="agro-form-page__body" onSubmit={submit} noValidate>
+      <form className={styles.body} onSubmit={submit} noValidate>
         {[
           ["nome", "Nome Completo", "text", "Digite seu nome", true],
           ["email", "Email", "email", "seu@email.com", true],
@@ -70,13 +70,13 @@ export default function CadastroProdutor() {
           ["senha", "Senha", "password", "Mínimo 6 caracteres", true],
           ["conf", "Confirmar Senha", "password", "Digite a senha novamente", true],
         ].map(([key, label, type, ph, req]) => (
-          <div className="field-block" key={key}>
+          <div className={styles.fieldBlock} key={key}>
             <label htmlFor={key}>
-              {label} {req && <span className="req">*</span>}
+              {label} {req && <span className={styles.req}>*</span>}
             </label>
             <input
               id={key}
-              className="agro-input"
+              className={styles.input}
               type={type}
               placeholder={ph}
               value={form[key]}
@@ -86,17 +86,19 @@ export default function CadastroProdutor() {
           </div>
         ))}
 
-        <div className="form-actions" style={{ marginTop: 16 }}>
-          <button type="button" className="btn-outline-gray" onClick={() => navigate(ROUTES.LOGIN)}>
+        <div className={styles.formActions} style={{ marginTop: 16 }}>
+          <button type="button" className={styles.btnOutlineGray} onClick={() => navigate(ROUTES.LOGIN)}>
             Cancelar
           </button>
-          <button type="submit" className="btn-green">
+          <button type="submit" className={styles.btnGreen}>
             Cadastrar
           </button>
         </div>
       </form>
 
-      {toast && <div className={`toast-mini${toast.err ? " err" : ""}`}>{toast.msg}</div>}
+      {toast && (
+        <div className={`${styles.toast}${toast.err ? ` ${styles.toastError}` : ""}`}>{toast.msg}</div>
+      )}
     </div>
   );
 }

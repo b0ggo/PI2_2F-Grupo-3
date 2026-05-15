@@ -9,8 +9,8 @@ export default function Login() {
       <div className="card">
 
         <div className="logo">
-          <div className="icon">🏠</div>
-          <h1>AgroManager</h1>
+          
+          <h1>AgroGestor</h1>
           <p>Gestão Rural Simplificada</p>
         </div>
 
@@ -30,8 +30,12 @@ export default function Login() {
 
         <p className="no-account">Não tem conta?</p>
 
-        <button type="button" className="btn-outline">Cadastro de Produtor</button>
-        <button type="button" className="btn-outline">Cadastro de Empresa/Cooperativa</button>
+        <Link to={ROUTES.CADASTRO_PRODUTOR} className="btn-outline">
+          Cadastro de Produtor
+        </Link>
+        <Link to={ROUTES.CADASTRO_EMPRESA} className="btn-outline">
+          Cadastro de Empresa/Cooperativa
+        </Link>
 
       </div>
     </div>

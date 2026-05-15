@@ -2,6 +2,8 @@
 export const ROUTES = {
   HOME: "/inicio",
   LOGIN: "/login",
+  CADASTRO_PRODUTOR: "/cadastro-produtor",
+  CADASTRO_EMPRESA: "/cadastro-empresa",
   CADASTRO_ANIMAL: "/cadastro-animal",
   CADASTRO_LOTES: "/cadastro-lotes",
   VACINACAO: "/vacinacao",
