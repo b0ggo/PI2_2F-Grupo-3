@@ -97,23 +97,11 @@
   color: var(--color-primary);
 }
 
-.info-item input {
-  margin-top: 6px;
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--color-input-border);
-  border-radius: var(--radius-md);
+.info-item p {
+  margin: 6px 0 0;
   font-size: 14px;
-  font-family: var(--font-body);
-  outline: none;
+  font-weight: 500;
   color: var(--color-text);
-  box-sizing: border-box;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.info-item input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-focus);
 }
 
 .linha {

@@ -60,7 +60,7 @@ export default function Perfil() {
           </Icon>
           <div>
             <span>Email</span>
-            <input type="email" placeholder="Digite seu email" />
+            <p>joao.silva@gmail.com</p>
           </div>
         </div>
 
@@ -72,7 +72,7 @@ export default function Perfil() {
           </Icon>
           <div>
             <span>Telefone</span>
-            <input type="text" placeholder="Digite seu telefone" />
+            <p>(11) 98765-4321</p>
           </div>
         </div>
 
@@ -85,7 +85,7 @@ export default function Perfil() {
           </Icon>
           <div>
             <span>Localização</span>
-            <input type="text" placeholder="Digite sua localização" />
+            <p>São Paulo, SP</p>
           </div>
         </div>
 
@@ -98,7 +98,7 @@ export default function Perfil() {
           </Icon>
           <div>
             <span>CPF/CNPJ</span>
-            <input type="text" placeholder="Digite seu CPF ou CNPJ" />
+            <p>123.456.789-00</p>
           </div>
         </div>
       </div>
