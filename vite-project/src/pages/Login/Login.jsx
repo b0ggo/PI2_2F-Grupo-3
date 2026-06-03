@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import logo from "../../imagens/logo.png";
 import "./Login.css";
 
 export default function Login() {
@@ -10,16 +9,7 @@ export default function Login() {
         <div className="card">
 
           <div className="logo">
-
-        
-
-            <img
-              src={logo}
-              alt="Logo AgroGestor"
-              className="logo-img"
-            />
-            
-
+            <div className="logo-placeholder"></div>
             <p>Gestão Rural Simplificada</p>
           </div>
 
