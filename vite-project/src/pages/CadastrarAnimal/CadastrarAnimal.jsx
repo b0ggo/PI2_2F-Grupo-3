@@ -154,7 +154,6 @@ export default function CadastrarAnimal({ onVoltar }) {
 
           <hr className={styles.divider} />
 
-          <p className={styles.sectionLabel}>Identificação</p>
           <IdentificacaoForm
             tipo={form.tipo}
             valores={form}
