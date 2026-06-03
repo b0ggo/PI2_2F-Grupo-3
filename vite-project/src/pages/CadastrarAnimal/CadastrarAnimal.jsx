@@ -8,6 +8,7 @@ import AnimalTypeSelector  from '../../components/AnimalTypeSelector/AnimalTypeS
 import IdentificacaoForm   from '../../components/IdentificacaoForm/IdentificacaoForm'
 import SaudeForm           from '../../components/SaudeForm/SaudeForm'
 import { QRModal, CodigoModal } from '../../components/ScanModal/ScanModal'
+import BarcodeModal          from '../../components/BarcodeModal/BarcodeModal'
 import Toast               from '../../components/Toast/Toast'
 
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
@@ -41,8 +42,9 @@ export default function CadastrarAnimal({ onVoltar }) {
   const [form,      setForm]      = useState(FORM_INICIAL)
   const [erros,     setErros]     = useState({})
   const [toast,     setToast]     = useState({ visivel: false, mensagem: '', tipo: 'success' })
-  const [modalQR,   setModalQR]   = useState(false)
-  const [modalCod,  setModalCod]  = useState(false)
+  const [modalQR,       setModalQR]       = useState(false)
+  const [modalBarcode,  setModalBarcode]  = useState(false)
+  const [modalCod,      setModalCod]      = useState(false)
 
   useEffect(() => {
     if (!online || !pronto) return
@@ -116,7 +118,7 @@ export default function CadastrarAnimal({ onVoltar }) {
     }
   }
 
-  function onQRLeitura(decoded) {
+  function onScanLeitura(decoded) {
     handleChange('identificacao', decoded)
     exibirToast('Código lido com sucesso!', 'success')
   }
@@ -136,8 +138,9 @@ export default function CadastrarAnimal({ onVoltar }) {
           <OfflineBanner visivel={!online} />
 
           <ScanButtons
-            onQR={()     => setModalQR(true)}
-            onCodigo={()  => setModalCod(true)}
+            onQR={()        => setModalQR(true)}
+            onBarcode={()   => setModalBarcode(true)}
+            onCodigo={()    => setModalCod(true)}
           />
 
           <p className={styles.sectionLabel}>Tipo de Animal</p>
@@ -200,7 +203,12 @@ export default function CadastrarAnimal({ onVoltar }) {
       <QRModal
         aberto={modalQR}
         onFechar={() => setModalQR(false)}
-        onLeitura={onQRLeitura}
+        onLeitura={onScanLeitura}
+      />
+      <BarcodeModal
+        aberto={modalBarcode}
+        onFechar={() => setModalBarcode(false)}
+        onLeitura={onScanLeitura}
       />
       <CodigoModal
         aberto={modalCod}
