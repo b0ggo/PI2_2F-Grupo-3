@@ -10,5 +10,6 @@ export const ROUTES = {
   NOTIFICACAO: "/alertas",
   CHAT: "/chat",
   PERFIL: "/perfil",
+  EDITAR_PERFIL: "/editar-perfil",
   CONSULTAR: "/consultar",
-}
+};
