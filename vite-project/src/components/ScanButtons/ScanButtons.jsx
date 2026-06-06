@@ -1,6 +1,6 @@
 import styles from './ScanButtons.module.css'
 
-export default function ScanButtons({ onQR, onCodigo }) {
+export default function ScanButtons({ onQR, onBarcode, onCodigo }) {
   return (
     <div className={styles.row}>
       <button type="button" className={styles.btn} onClick={onQR}>
@@ -12,6 +12,14 @@ export default function ScanButtons({ onQR, onCodigo }) {
                 stroke="#1a7a3c" strokeWidth="2" strokeLinecap="round" />
         </svg>
         QR Code
+      </button>
+
+      <button type="button" className={styles.btn} onClick={onBarcode}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h1v12H4V6zm3 0h1v12H7V6zm2 0h2v12H9V6zm3 0h1v12h-1V6zm3 0h3v12h-3V6z"
+                fill="#1a7a3c" />
+        </svg>
+        Barras
       </button>
 
       <button type="button" className={styles.btn} onClick={onCodigo}>
