@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
+import { postLote } from "../../services/api.js";
 import "./CadastrarLotes.css";
 
 function Icon({ d, size = 22, color = "currentColor", strokeWidth = 2 }) {
@@ -67,23 +68,6 @@ function parsePositiveInt(raw, label) {
     return { ok: false, error: `${label} deve ser pelo menos 1.` };
   }
   return { ok: true, value: n };
-}
-
-function salvarLoteNoServidor(payload) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const obs = (payload.observacoes || "").toLowerCase();
-      if (obs.includes("simular erro")) {
-        reject(
-          new Error(
-            "Não foi possível salvar o lote no servidor. Verifique sua conexão e tente novamente.",
-          ),
-        );
-        return;
-      }
-      resolve({ id: Date.now(), ...payload });
-    }, 700);
-  });
 }
 
 export default function CadastrarLotes() {
@@ -161,7 +145,7 @@ export default function CadastrarLotes() {
 
     setSubmitting(true);
     try {
-      await salvarLoteNoServidor(payload);
+      await postLote(payload);
       setForm(INITIAL);
       showToast("Lote salvo com sucesso", "success");
     } catch (error) {
