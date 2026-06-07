@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import { savePerfil, saveCredenciais } from "../../services/perfil.js";
+import { registrar } from "../../services/perfil.js";
 import styles from "./CadastroEmpresa.module.css";
 
 const TIPOS = ["Selecione o tipo", "Cooperativa", "Fornecedor", "Veterinária", "Indústria"];
@@ -52,18 +52,21 @@ export default function CadastroEmpresa() {
       return;
     }
 
-    await savePerfil({
-      nome: form.nome.trim(),
-      email: form.email.trim(),
-      telefone: form.telefone.trim(),
-      localizacao: form.local.trim(),
-      cpfCnpj: form.cnpj.trim(),
-      tipoConta: form.tipo,
-    });
-    await saveCredenciais(form.email, form.senha);
-
-    show("Cadastro da empresa realizado!", false);
-    setTimeout(() => navigate(ROUTES.HOME), 1500);
+    try {
+      await registrar({
+        nome: form.nome.trim(),
+        email: form.email.trim(),
+        telefone: form.telefone.trim(),
+        localizacao: form.local.trim(),
+        cpfCnpj: form.cnpj.trim(),
+        tipoConta: form.tipo,
+        senha: form.senha,
+      });
+      show("Cadastro da empresa realizado!", false);
+      setTimeout(() => navigate(ROUTES.HOME), 1500);
+    } catch (err) {
+      show(err.message || "Erro ao cadastrar.", true);
+    }
   };
 
   return (

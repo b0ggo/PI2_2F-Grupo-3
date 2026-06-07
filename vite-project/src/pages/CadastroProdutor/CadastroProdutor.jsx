@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import { savePerfil, saveCredenciais } from "../../services/perfil.js";
+import { registrar } from "../../services/perfil.js";
 import styles from "./CadastroProdutor.module.css";
 
 function IconBack() {
@@ -50,18 +50,21 @@ export default function CadastroProdutor() {
       return;
     }
 
-    await savePerfil({
-      nome: nome.trim(),
-      email: email.trim(),
-      telefone: telefone.trim(),
-      localizacao: local.trim(),
-      cpfCnpj: cpf.trim(),
-      tipoConta: "Produtor",
-    });
-    await saveCredenciais(email, senha);
-
-    show("Cadastro realizado com sucesso!", false);
-    setTimeout(() => navigate(ROUTES.HOME), 1500);
+    try {
+      await registrar({
+        nome: nome.trim(),
+        email: email.trim(),
+        telefone: telefone.trim(),
+        localizacao: local.trim(),
+        cpfCnpj: cpf.trim(),
+        tipoConta: "Produtor",
+        senha,
+      });
+      show("Cadastro realizado com sucesso!", false);
+      setTimeout(() => navigate(ROUTES.HOME), 1500);
+    } catch (err) {
+      show(err.message || "Erro ao cadastrar.", true);
+    }
   };
 
   return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import { verificarLogin } from "../../services/perfil.js";
+import { login } from "../../services/perfil.js";
 import "./Login.css";
 
 export default function Login() {
@@ -9,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,13 +20,15 @@ export default function Login() {
       return;
     }
 
-    const valido = await verificarLogin(email, senha);
-    if (!valido) {
-      setErro("Email ou senha incorretos. Cadastre-se primeiro.");
-      return;
+    setCarregando(true);
+    try {
+      await login(email, senha);
+      navigate(ROUTES.HOME);
+    } catch (err) {
+      setErro(err.message || "Email ou senha incorretos.");
+    } finally {
+      setCarregando(false);
     }
-
-    navigate(ROUTES.HOME);
   }
 
   return (
@@ -63,8 +66,8 @@ export default function Login() {
 
             <a href="#" className="forgot">Esqueci minha senha</a>
 
-            <button type="submit" className="btn-primary">
-              Entrar
+            <button type="submit" className="btn-primary" disabled={carregando}>
+              {carregando ? "Entrando..." : "Entrar"}
             </button>
           </form>
 
