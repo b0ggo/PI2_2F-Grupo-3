@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import headerUi from "../../components/Header/Header.module.css";
+import { enviarMensagem, getConversas } from "../../services/api.js";
 import "./ChatEmpresas.css";
 
 function Icon({ d, size = 22, color = "currentColor", strokeWidth = 2 }) {
@@ -34,77 +35,6 @@ const STATUS_LABEL = {
   delivered: "Entregue",
   read: "Lida",
 };
-
-const SEED_CONVERSATIONS = [
-  {
-    id: 1,
-    name: "Cooperativa AgroBrasil",
-    type: "Cooperativa",
-    lastMsg: "Olá, temos uma oferta especial para você",
-    time: "10:30",
-    unread: 2,
-    messages: [
-      {
-        id: 1,
-        from: "them",
-        text: "Olá! Temos uma oferta especial para você esta semana.",
-        time: "10:28",
-      },
-      {
-        id: 2,
-        from: "them",
-        text: "Desconto de 15% em insumos agrícolas selecionados!",
-        time: "10:30",
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "VetCare Clínica",
-    type: "Veterinária",
-    lastMsg: "Obrigado pelo contato!",
-    time: "Ontem",
-    unread: 0,
-    messages: [
-      {
-        id: 1,
-        from: "me",
-        text: "Boa tarde! Gostaria de agendar uma visita técnica.",
-        time: "14:00",
-        status: "read",
-      },
-      {
-        id: 2,
-        from: "them",
-        text: "Obrigado pelo contato! Podemos agendar para quinta-feira às 9h.",
-        time: "14:05",
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "Rações Premium",
-    type: "Fornecedor",
-    lastMsg: "Seu pedido foi processado",
-    time: "15/03",
-    unread: 1,
-    messages: [
-      {
-        id: 1,
-        from: "me",
-        text: "Quero fazer um pedido de 500kg de ração.",
-        time: "09:00",
-        status: "read",
-      },
-      {
-        id: 2,
-        from: "them",
-        text: "Seu pedido foi processado! Entrega prevista em 3 dias úteis.",
-        time: "09:45",
-      },
-    ],
-  },
-];
 
 function nowTime() {
   const d = new Date();
@@ -149,7 +79,7 @@ function ConversationView({ conversation, onBack, onUpdate }) {
     });
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const text = input.trim();
     if (!text) return;
 
@@ -166,22 +96,14 @@ function ConversationView({ conversation, onBack, onUpdate }) {
     setInput("");
     setRemoteTyping(false);
 
-    schedule(() => {
+    try {
+      const salva = await enviarMensagem(conversation.id, text);
+      pushMessages((prev) =>
+        prev.map((m) => (m.id === msgId ? { ...salva, status: "sent" } : m)),
+      );
+    } catch {
       pushMessages((prev) => patchMessageStatus(prev, msgId, "sent"));
-    }, 400);
-
-    schedule(() => {
-      pushMessages((prev) => patchMessageStatus(prev, msgId, "delivered"));
-    }, 400 + 650);
-
-    schedule(
-      () => {
-        pushMessages((prev) => patchMessageStatus(prev, msgId, "read"));
-        setRemoteTyping(true);
-        schedule(() => setRemoteTyping(false), 2800);
-      },
-      400 + 650 + 750,
-    );
+    }
   };
 
   const handleKey = (e) => {
@@ -276,9 +198,17 @@ function ConversationView({ conversation, onBack, onUpdate }) {
 }
 
 export default function ChatEmpresas() {
-  const [conversations, setConversations] = useState(SEED_CONVERSATIONS);
+  const [conversations, setConversations] = useState([]);
   const [search, setSearch] = useState("");
   const [openConv, setOpenConv] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    getConversas()
+      .then(setConversations)
+      .catch(() => setConversations([]))
+      .finally(() => setCarregando(false));
+  }, []);
 
   const filtered = conversations.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()),
@@ -333,6 +263,12 @@ export default function ChatEmpresas() {
         </Header>
 
         <div className="chat-list">
+        {carregando && (
+          <p style={{ padding: "16px", color: "#6b7280", fontSize: 14 }}>Carregando conversas…</p>
+        )}
+        {!carregando && filtered.length === 0 && (
+          <p style={{ padding: "16px", color: "#6b7280", fontSize: 14 }}>Nenhuma conversa encontrada.</p>
+        )}
         {filtered.map((conv) => (
           <button
             key={conv.id}
