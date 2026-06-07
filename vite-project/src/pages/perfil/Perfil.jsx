@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
+import { getStats } from "../../services/api.js";
 import { getPerfil, PERFIL_VAZIO, fazerLogout } from "../../services/perfil.js";
 import "./Perfil.css";
 
@@ -29,9 +30,11 @@ export default function Perfil() {
   const navigate = useNavigate();
   const location = useLocation();
   const [dados, setDados] = useState(PERFIL_VAZIO);
+  const [stats, setStats] = useState({ animais: 0, lotes: 0, vacinas: 0 });
 
   useEffect(() => {
     getPerfil().then(setDados);
+    getStats().then(setStats).catch(() => {});
   }, [location.key]);
 
   function exibir(valor) {
@@ -155,17 +158,17 @@ export default function Perfil() {
 
         <div className="stats-grid">
           <div className="stat-card">
-            <h2>245</h2>
+            <h2>{stats.animais}</h2>
             <p>Animais</p>
           </div>
 
           <div className="stat-card">
-            <h2>12</h2>
+            <h2>{stats.lotes}</h2>
             <p>Lotes</p>
           </div>
 
           <div className="stat-card">
-            <h2>156</h2>
+            <h2>{stats.vacinas}</h2>
             <p>Vacinas</p>
           </div>
         </div>
@@ -174,8 +177,8 @@ export default function Perfil() {
       <button
         type="button"
         className="btn-sair"
-        onClick={() => {
-          fazerLogout();
+        onClick={async () => {
+          await fazerLogout();
           navigate(ROUTES.LOGIN);
         }}
       >
