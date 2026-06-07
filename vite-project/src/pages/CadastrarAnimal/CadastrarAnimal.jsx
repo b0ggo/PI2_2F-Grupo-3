@@ -15,6 +15,8 @@ import MensagemAnimalCancelado  from '../../components/MensagemAnimalCancelado/M
 
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 import { useIndexedDB }    from '../../hooks/useIndexedDB'
+import { postAnimal } from '../../services/api'
+import { marcarComoSincronizado } from '../../services/db'
 import { sincronizarPendentes } from '../../services/sync'
 
 import { ROUTES } from '../../constants/routes.js'
@@ -127,13 +129,24 @@ export default function CadastrarAnimal({ onVoltar }) {
       status:        form.status,
       vacinas:       form.vacinas,
       historico:     form.historico.trim(),
-      sincronizado:  online,
+      sincronizado:  false,
       timestamp:     new Date().toISOString(),
     }
 
     try {
-      await salvar(animal)
-      exibirFeedback('salvo', { variante: online ? 'success' : 'offline' })
+      const id = await salvar(animal)
+      if (online) {
+        try {
+          await postAnimal(animal)
+          await marcarComoSincronizado(id)
+          await atualizarContagem()
+          exibirFeedback('salvo', { variante: 'success' })
+        } catch {
+          exibirFeedback('salvo', { variante: 'offline' })
+        }
+      } else {
+        exibirFeedback('salvo', { variante: 'offline' })
+      }
       setForm(FORM_INICIAL)
     } catch {
       exibirFeedback('salvo', { variante: 'error' })

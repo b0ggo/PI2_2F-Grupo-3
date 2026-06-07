@@ -25,8 +25,9 @@ export function useIndexedDB() {
 
   const salvar = useCallback(
     async (animal) => {
-      await salvarAnimal(animal)
+      const id = await salvarAnimal(animal)
       await atualizarContagem()
+      return id
     },
     [atualizarContagem]
   )
