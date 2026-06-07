@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
+import { savePerfil, saveCredenciais } from "../../services/perfil.js";
 import styles from "./CadastroProdutor.module.css";
 
 function IconBack() {
@@ -33,7 +34,7 @@ export default function CadastroProdutor() {
     t.current = window.setTimeout(() => setToast(null), 2800);
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     const { nome, email, telefone, cpf, local, senha, conf } = form;
     if (!nome.trim() || !email.trim() || !telefone.trim() || !cpf.trim() || !local.trim()) {
@@ -48,7 +49,19 @@ export default function CadastroProdutor() {
       show("As senhas não coincidem.", true);
       return;
     }
-    show("Cadastro enviado!", false);
+
+    await savePerfil({
+      nome: nome.trim(),
+      email: email.trim(),
+      telefone: telefone.trim(),
+      localizacao: local.trim(),
+      cpfCnpj: cpf.trim(),
+      tipoConta: "Produtor",
+    });
+    await saveCredenciais(email, senha);
+
+    show("Cadastro realizado com sucesso!", false);
+    setTimeout(() => navigate(ROUTES.HOME), 1500);
   };
 
   return (

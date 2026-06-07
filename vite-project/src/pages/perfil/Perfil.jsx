@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
-import { getPerfil, PERFIL_VAZIO } from "../../services/perfil.js";
+import { getPerfil, PERFIL_VAZIO, fazerLogout } from "../../services/perfil.js";
 import "./Perfil.css";
 
 function Icon({ children, size = 18, className = "" }) {
@@ -174,7 +174,10 @@ export default function Perfil() {
       <button
         type="button"
         className="btn-sair"
-        onClick={() => navigate(ROUTES.LOGIN)}
+        onClick={() => {
+          fazerLogout();
+          navigate(ROUTES.LOGIN);
+        }}
       >
         <Icon size={18}>
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

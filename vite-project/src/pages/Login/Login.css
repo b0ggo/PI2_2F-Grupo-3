@@ -89,6 +89,13 @@
   box-shadow: 0 0 0 3px var(--color-primary-focus);
 }
 
+.login-erro {
+  color: #b91c1c;
+  font-size: 13px;
+  margin: -8px 0 12px;
+  font-weight: 500;
+}
+
 .forgot {
   color: var(--color-primary);
   font-size: 13px;

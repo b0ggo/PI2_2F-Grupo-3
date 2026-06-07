@@ -1,4 +1,5 @@
 const STORAGE_KEY = "perfil";
+const AUTH_KEY = "auth";
 
 /** @typedef {{ nome: string, email: string, telefone: string, localizacao: string, cpfCnpj: string, tipoConta: string }} Perfil */
 
@@ -76,4 +77,39 @@ export async function savePerfil(dados) {
   salvarCacheLocal(perfil);
 
   return perfil;
+}
+
+/**
+ * Salva credenciais de login localmente (sem backend).
+ * @param {string} email
+ * @param {string} senha
+ */
+export async function saveCredenciais(email, senha) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify({ email: email.trim(), senha }));
+}
+
+/**
+ * Verifica email e senha contra o cadastro salvo.
+ * @param {string} email
+ * @param {string} senha
+ */
+export async function verificarLogin(email, senha) {
+  try {
+    const salvo = localStorage.getItem(AUTH_KEY);
+    if (!salvo) return false;
+    const auth = JSON.parse(salvo);
+    return auth.email === email.trim() && auth.senha === senha;
+  } catch {
+    return false;
+  }
+}
+
+/** Remove a sessão local (mantém dados do perfil para novo login). */
+export function fazerLogout() {
+  localStorage.removeItem(AUTH_KEY);
+}
+
+/** Indica se há credenciais salvas (usuário logado). */
+export function estaLogado() {
+  return !!localStorage.getItem(AUTH_KEY);
 }

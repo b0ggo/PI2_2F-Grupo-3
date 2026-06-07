@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Header              from '../../components/Header/Header'
@@ -9,7 +9,9 @@ import IdentificacaoForm   from '../../components/IdentificacaoForm/Identificaca
 import SaudeForm           from '../../components/SaudeForm/SaudeForm'
 import { QRModal, CodigoModal } from '../../components/ScanModal/ScanModal'
 import BarcodeModal          from '../../components/BarcodeModal/BarcodeModal'
-import Toast               from '../../components/Toast/Toast'
+import Toast                    from '../../components/Toast/Toast'
+import MensagemAnimalSalvo      from '../../components/MensagemAnimalSalvo/MensagemAnimalSalvo'
+import MensagemAnimalCancelado  from '../../components/MensagemAnimalCancelado/MensagemAnimalCancelado'
 
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 import { useIndexedDB }    from '../../hooks/useIndexedDB'
@@ -41,7 +43,8 @@ export default function CadastrarAnimal({ onVoltar }) {
 
   const [form,      setForm]      = useState(FORM_INICIAL)
   const [erros,     setErros]     = useState({})
-  const [toast,     setToast]     = useState({ visivel: false, mensagem: '', tipo: 'success' })
+  const [feedback, setFeedback] = useState({ visivel: false, modo: null, variante: 'success', mensagem: '' })
+  const feedbackTimer = useRef(null)
   const [modalQR,       setModalQR]       = useState(false)
   const [modalBarcode,  setModalBarcode]  = useState(false)
   const [modalCod,      setModalCod]      = useState(false)
@@ -52,7 +55,10 @@ export default function CadastrarAnimal({ onVoltar }) {
       .then((n) => {
         if (n > 0) {
           atualizarContagem()
-          exibirToast(`${n} registro${n > 1 ? 's' : ''} sincronizado${n > 1 ? 's' : ''}!`, 'success')
+          exibirFeedback('scan', {
+            mensagem: `${n} registro${n > 1 ? 's' : ''} sincronizado${n > 1 ? 's' : ''}!`,
+            variante: 'success',
+          })
         }
       })
       .catch(() => {})
@@ -67,9 +73,29 @@ export default function CadastrarAnimal({ onVoltar }) {
     setForm((prev) => ({ ...prev, tipo: novoTipo, raca: '', outraRaca: '', vacinas: [] }))
   }
 
-  function exibirToast(mensagem, tipo = 'success') {
-    setToast({ visivel: true, mensagem, tipo })
-    setTimeout(() => setToast((t) => ({ ...t, visivel: false })), 3200)
+  function exibirFeedback(modo, opcoes = {}) {
+    if (feedbackTimer.current) clearTimeout(feedbackTimer.current)
+
+    setFeedback({ visivel: false, modo: null, variante: 'success', mensagem: '' })
+
+    requestAnimationFrame(() => {
+      setFeedback({
+        visivel: true,
+        modo,
+        variante: opcoes.variante ?? 'success',
+        mensagem: opcoes.mensagem ?? '',
+      })
+    })
+
+    feedbackTimer.current = setTimeout(() => {
+      setFeedback((f) => ({ ...f, visivel: false }))
+    }, 3200)
+  }
+
+  function handleCancelar() {
+    setForm(FORM_INICIAL)
+    setErros({})
+    exibirFeedback('cancelado')
   }
 
   function validar() {
@@ -107,25 +133,21 @@ export default function CadastrarAnimal({ onVoltar }) {
 
     try {
       await salvar(animal)
-      if (online) {
-        exibirToast('Animal cadastrado com sucesso!', 'success')
-      } else {
-        exibirToast('Salvo offline — sincronizará ao reconectar.', 'offline')
-      }
+      exibirFeedback('salvo', { variante: online ? 'success' : 'offline' })
       setForm(FORM_INICIAL)
     } catch {
-      exibirToast('Erro ao salvar. Tente novamente.', 'error')
+      exibirFeedback('salvo', { variante: 'error' })
     }
   }
 
   function onScanLeitura(decoded) {
     handleChange('identificacao', decoded)
-    exibirToast('Código lido com sucesso!', 'success')
+    exibirFeedback('scan', { mensagem: 'Código lido com sucesso!', variante: 'success' })
   }
 
   function onCodigoAplicado(codigo) {
     handleChange('identificacao', codigo)
-    exibirToast('Código aplicado!', 'success')
+    exibirFeedback('scan', { mensagem: 'Código aplicado!', variante: 'success' })
   }
 
   return (
@@ -174,7 +196,7 @@ export default function CadastrarAnimal({ onVoltar }) {
             <button
               type="button"
               className={styles.btnCancelar}
-              onClick={() => setForm(FORM_INICIAL)}
+              onClick={handleCancelar}
             >
               Cancelar
             </button>
@@ -214,11 +236,19 @@ export default function CadastrarAnimal({ onVoltar }) {
         onFechar={() => setModalCod(false)}
         onAplicar={onCodigoAplicado}
       />
-      <Toast
-        mensagem={toast.mensagem}
-        tipo={toast.tipo}
-        visivel={toast.visivel}
-      />
+      {feedback.modo === 'salvo' && (
+        <MensagemAnimalSalvo visivel={feedback.visivel} variante={feedback.variante} />
+      )}
+      {feedback.modo === 'cancelado' && (
+        <MensagemAnimalCancelado visivel={feedback.visivel} />
+      )}
+      {feedback.modo === 'scan' && (
+        <Toast
+          mensagem={feedback.mensagem}
+          tipo={feedback.variante}
+          visivel={feedback.visivel}
+        />
+      )}
     </>
   )
 }

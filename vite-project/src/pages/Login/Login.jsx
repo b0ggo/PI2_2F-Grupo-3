@@ -1,8 +1,33 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
+import { verificarLogin } from "../../services/perfil.js";
 import "./Login.css";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setErro("");
+
+    if (!email.trim() || !senha) {
+      setErro("Preencha email e senha.");
+      return;
+    }
+
+    const valido = await verificarLogin(email, senha);
+    if (!valido) {
+      setErro("Email ou senha incorretos. Cadastre-se primeiro.");
+      return;
+    }
+
+    navigate(ROUTES.HOME);
+  }
+
   return (
     <div className="login-root">
       <div className="container">
@@ -13,18 +38,34 @@ export default function Login() {
             <p>Gestão Rural Simplificada</p>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()}>
-            <label>Email ou Usuário</label>
-            <input type="text" placeholder="Digite seu email" />
+          <form onSubmit={handleSubmit} noValidate>
+            <label htmlFor="email">Email ou Usuário</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Digite seu email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+            />
 
-            <label>Senha</label>
-            <input type="password" placeholder="Digite sua senha" />
+            <label htmlFor="senha">Senha</label>
+            <input
+              id="senha"
+              type="password"
+              placeholder="Digite sua senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              autoComplete="current-password"
+            />
+
+            {erro && <p className="login-erro">{erro}</p>}
 
             <a href="#" className="forgot">Esqueci minha senha</a>
 
-            <Link to={ROUTES.HOME} className="btn-primary">
+            <button type="submit" className="btn-primary">
               Entrar
-            </Link>
+            </button>
           </form>
 
           <p className="no-account">Não tem conta?</p>

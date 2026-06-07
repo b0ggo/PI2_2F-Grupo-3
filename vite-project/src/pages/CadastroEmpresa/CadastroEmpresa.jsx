@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
+import { savePerfil, saveCredenciais } from "../../services/perfil.js";
 import styles from "./CadastroEmpresa.module.css";
 
 const TIPOS = ["Selecione o tipo", "Cooperativa", "Fornecedor", "Veterinária", "Indústria"];
@@ -36,7 +37,7 @@ export default function CadastroEmpresa() {
     timer.current = window.setTimeout(() => setToast(null), 2800);
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!form.nome.trim() || form.tipo === TIPOS[0] || !form.cnpj.trim() || !form.email.trim()) {
       show("Preencha nome, tipo, CNPJ e email.", true);
@@ -50,7 +51,19 @@ export default function CadastroEmpresa() {
       show("As senhas não coincidem.", true);
       return;
     }
-    show("Cadastro da empresa enviado!", false);
+
+    await savePerfil({
+      nome: form.nome.trim(),
+      email: form.email.trim(),
+      telefone: form.telefone.trim(),
+      localizacao: form.local.trim(),
+      cpfCnpj: form.cnpj.trim(),
+      tipoConta: form.tipo,
+    });
+    await saveCredenciais(form.email, form.senha);
+
+    show("Cadastro da empresa realizado!", false);
+    setTimeout(() => navigate(ROUTES.HOME), 1500);
   };
 
   return (
