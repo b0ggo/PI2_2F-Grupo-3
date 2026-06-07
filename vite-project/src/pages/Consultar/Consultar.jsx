@@ -1,10 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
+import { buscarGlobal } from "../../services/api.js";
 import "./Consultar.css";
 
 export default function Consultar() {
   const [q, setQ] = useState("");
+  const [resultados, setResultados] = useState([]);
+  const [buscando, setBuscando] = useState(false);
+
+  useEffect(() => {
+    const termo = q.trim();
+    if (!termo) {
+      setResultados([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setBuscando(true);
+      try {
+        const dados = await buscarGlobal(termo);
+        setResultados(dados);
+      } catch {
+        setResultados([]);
+      } finally {
+        setBuscando(false);
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [q]);
 
   return (
     <div className="consultar-page">
@@ -42,17 +67,26 @@ export default function Consultar() {
         </Header>
 
         <section className="consultar-body" aria-live="polite">
-          {q.trim() ? (
+          {!q.trim() && (
             <p className="consultar-placeholder">
-              Nenhum resultado local para “{q.trim()}”. Conecte a API quando
-              disponível.
-            </p>
-          ) : (
-            <p className="consultar-placeholder">
-              Digite acima para simular uma busca. Esta tela está preparada para
-              integração com o backend.
+              Digite acima para buscar animais e lotes cadastrados.
             </p>
           )}
+          {q.trim() && buscando && (
+            <p className="consultar-placeholder">Buscando…</p>
+          )}
+          {q.trim() && !buscando && resultados.length === 0 && (
+            <p className="consultar-placeholder">
+              Nenhum resultado para “{q.trim()}”.
+            </p>
+          )}
+          {resultados.map((item) => (
+            <div key={`${item.tipo}-${item.id}`} className="consultar-resultado">
+              <span className="consultar-resultado-tipo">{item.tipo}</span>
+              <strong>{item.titulo}</strong>
+              <p>{item.subtitulo}</p>
+            </div>
+          ))}
         </section>
       </div>
 

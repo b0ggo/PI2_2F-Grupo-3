@@ -34,3 +34,33 @@
   color: var(--color-text-muted);
   line-height: 1.5;
 }
+
+.consultar-resultado {
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: #fafafa;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--surface-divider);
+}
+
+.consultar-resultado-tipo {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+
+.consultar-resultado strong {
+  display: block;
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.consultar-resultado p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
