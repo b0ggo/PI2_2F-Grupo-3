@@ -5,6 +5,33 @@ import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import "./Perfil.css";
 
+const DADOS_INICIAIS = {
+  nome: "",
+  email: "",
+  telefone: "",
+  localizacao: "",
+  cpfCnpj: "",
+  tipoConta: "",
+};
+
+function carregarPerfil() {
+  try {
+    const perfil = JSON.parse(localStorage.getItem("perfil") || "{}");
+    const perfilUsuario = JSON.parse(localStorage.getItem("perfilUsuario") || "{}");
+
+    return {
+      nome: String(perfil.nome ?? perfilUsuario.nome ?? ""),
+      email: String(perfil.email ?? perfilUsuario.email ?? ""),
+      telefone: String(perfil.telefone ?? perfilUsuario.telefone ?? ""),
+      localizacao: String(perfil.localizacao ?? perfilUsuario.localizacao ?? ""),
+      cpfCnpj: String(perfil.cpfCnpj ?? perfilUsuario.cpf ?? perfilUsuario.cpfCnpj ?? ""),
+      tipoConta: String(perfil.tipoConta ?? ""),
+    };
+  } catch {
+    return { ...DADOS_INICIAIS };
+  }
+}
+
 function Icon({ children, size = 18, className = "" }) {
   return (
     <svg
@@ -27,22 +54,22 @@ function Icon({ children, size = 18, className = "" }) {
 export default function Perfil() {
   const navigate = useNavigate();
 
-  const [dados, setDados] = useState({
-    nome: "",
-    email: "",
-    telefone: "",
-    localizacao: "",
-    cpfCnpj: "",
-    tipoConta: "",
-  });
+  const [dados, setDados] = useState(DADOS_INICIAIS);
+  const [pronto, setPronto] = useState(false);
 
   useEffect(() => {
-    const dadosSalvos = localStorage.getItem("perfil");
-
-    if (dadosSalvos) {
-      setDados(JSON.parse(dadosSalvos));
-    }
+    setDados(carregarPerfil());
+    setPronto(true);
   }, []);
+
+  useEffect(() => {
+    if (!pronto) return;
+    localStorage.setItem("perfil", JSON.stringify(dados));
+  }, [dados, pronto]);
+
+  function atualizarCampo(campo, valor) {
+    setDados((prev) => ({ ...prev, [campo]: valor }));
+  }
 
   return (
     <div className="perfil-container">
@@ -65,7 +92,13 @@ export default function Perfil() {
         <div className="tipo-conta">
           <span>Tipo de Conta:</span>
           <div className="badge">
-            {dados.tipoConta || "Não informado"}
+            <input
+              type="text"
+              className="perfil-input perfil-input--badge"
+              value={dados.tipoConta}
+              onChange={(e) => atualizarCampo("tipoConta", e.target.value)}
+              placeholder="Ex: Produtor"
+            />
           </div>
         </div>
       </div>
@@ -75,12 +108,37 @@ export default function Perfil() {
 
         <div className="info-item">
           <Icon className="icon">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </Icon>
+          <div className="info-item-content">
+            <span>Nome</span>
+            <input
+              type="text"
+              className="perfil-input"
+              value={dados.nome}
+              onChange={(e) => atualizarCampo("nome", e.target.value)}
+              placeholder="Digite seu nome"
+            />
+          </div>
+        </div>
+
+        <div className="linha" />
+
+        <div className="info-item">
+          <Icon className="icon">
             <rect x="2" y="4" width="20" height="16" rx="2" />
             <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
           </Icon>
-          <div>
+          <div className="info-item-content">
             <span>Email</span>
-            <p>{dados.email || "Não informado"}</p>
+            <input
+              type="email"
+              className="perfil-input"
+              value={dados.email}
+              onChange={(e) => atualizarCampo("email", e.target.value)}
+              placeholder="Digite seu email"
+            />
           </div>
         </div>
 
@@ -90,9 +148,15 @@ export default function Perfil() {
           <Icon className="icon">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
           </Icon>
-          <div>
+          <div className="info-item-content">
             <span>Telefone</span>
-            <p>{dados.telefone || "Não informado"}</p>
+            <input
+              type="tel"
+              className="perfil-input"
+              value={dados.telefone}
+              onChange={(e) => atualizarCampo("telefone", e.target.value)}
+              placeholder="Digite seu telefone"
+            />
           </div>
         </div>
 
@@ -103,9 +167,15 @@ export default function Perfil() {
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
             <circle cx="12" cy="10" r="3" />
           </Icon>
-          <div>
+          <div className="info-item-content">
             <span>Localização</span>
-            <p>{dados.localizacao || "Não informado"}</p>
+            <input
+              type="text"
+              className="perfil-input"
+              value={dados.localizacao}
+              onChange={(e) => atualizarCampo("localizacao", e.target.value)}
+              placeholder="Cidade / Estado"
+            />
           </div>
         </div>
 
@@ -116,35 +186,42 @@ export default function Perfil() {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </Icon>
-          <div>
+          <div className="info-item-content">
             <span>CPF/CNPJ</span>
-            <p>{dados.cpfCnpj || "Não informado"}</p>
+            <input
+              type="text"
+              className="perfil-input"
+              value={dados.cpfCnpj}
+              onChange={(e) => atualizarCampo("cpfCnpj", e.target.value)}
+              placeholder="Digite seu CPF ou CNPJ"
+            />
           </div>
         </div>
+
       </div>
 
       <div className="menu-card">
-  <button
-    type="button"
-    className="menu-item"
-    onClick={() => navigate(ROUTES.EDITAR_PERFIL)}
-  >
-    <div className="menu-left">
-      <Icon size={20}>
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </Icon>
+        <button
+          type="button"
+          className="menu-item"
+          onClick={() => navigate(ROUTES.EDITAR_PERFIL)}
+        >
+          <div className="menu-left">
+            <Icon size={20}>
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </Icon>
 
-      <span>Editar Perfil</span>
-    </div>
+            <span>Editar Perfil</span>
+          </div>
 
-    <Icon size={18}>
-      <polyline points="9 18 15 12 9 6" />
-    </Icon>
-    </button>
-</div>
+          <Icon size={18}>
+            <polyline points="9 18 15 12 9 6" />
+          </Icon>
+        </button>
+      </div>
 
-<div className="estatisticas">
+      <div className="estatisticas">
         <h3>Estatísticas</h3>
 
         <div className="stats-grid">
