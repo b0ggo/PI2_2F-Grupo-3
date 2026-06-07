@@ -1,36 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
+import { getPerfil, PERFIL_VAZIO } from "../../services/perfil.js";
 import "./Perfil.css";
-
-const DADOS_INICIAIS = {
-  nome: "",
-  email: "",
-  telefone: "",
-  localizacao: "",
-  cpfCnpj: "",
-  tipoConta: "",
-};
-
-function carregarPerfil() {
-  try {
-    const perfil = JSON.parse(localStorage.getItem("perfil") || "{}");
-    const perfilUsuario = JSON.parse(localStorage.getItem("perfilUsuario") || "{}");
-
-    return {
-      nome: String(perfil.nome ?? perfilUsuario.nome ?? ""),
-      email: String(perfil.email ?? perfilUsuario.email ?? ""),
-      telefone: String(perfil.telefone ?? perfilUsuario.telefone ?? ""),
-      localizacao: String(perfil.localizacao ?? perfilUsuario.localizacao ?? ""),
-      cpfCnpj: String(perfil.cpfCnpj ?? perfilUsuario.cpf ?? perfilUsuario.cpfCnpj ?? ""),
-      tipoConta: String(perfil.tipoConta ?? ""),
-    };
-  } catch {
-    return { ...DADOS_INICIAIS };
-  }
-}
 
 function Icon({ children, size = 18, className = "" }) {
   return (
@@ -53,22 +27,15 @@ function Icon({ children, size = 18, className = "" }) {
 
 export default function Perfil() {
   const navigate = useNavigate();
-
-  const [dados, setDados] = useState(DADOS_INICIAIS);
-  const [pronto, setPronto] = useState(false);
-
-  useEffect(() => {
-    setDados(carregarPerfil());
-    setPronto(true);
-  }, []);
+  const location = useLocation();
+  const [dados, setDados] = useState(PERFIL_VAZIO);
 
   useEffect(() => {
-    if (!pronto) return;
-    localStorage.setItem("perfil", JSON.stringify(dados));
-  }, [dados, pronto]);
+    getPerfil().then(setDados);
+  }, [location.key]);
 
-  function atualizarCampo(campo, valor) {
-    setDados((prev) => ({ ...prev, [campo]: valor }));
+  function exibir(valor) {
+    return valor || "Não informado";
   }
 
   return (
@@ -91,15 +58,7 @@ export default function Perfil() {
       <div className="perfil-sheet">
         <div className="tipo-conta">
           <span>Tipo de Conta:</span>
-          <div className="badge">
-            <input
-              type="text"
-              className="perfil-input perfil-input--badge"
-              value={dados.tipoConta}
-              onChange={(e) => atualizarCampo("tipoConta", e.target.value)}
-              placeholder="Ex: Produtor"
-            />
-          </div>
+          <div className="badge">{exibir(dados.tipoConta)}</div>
         </div>
       </div>
 
@@ -113,13 +72,7 @@ export default function Perfil() {
           </Icon>
           <div className="info-item-content">
             <span>Nome</span>
-            <input
-              type="text"
-              className="perfil-input"
-              value={dados.nome}
-              onChange={(e) => atualizarCampo("nome", e.target.value)}
-              placeholder="Digite seu nome"
-            />
+            <p>{exibir(dados.nome)}</p>
           </div>
         </div>
 
@@ -132,13 +85,7 @@ export default function Perfil() {
           </Icon>
           <div className="info-item-content">
             <span>Email</span>
-            <input
-              type="email"
-              className="perfil-input"
-              value={dados.email}
-              onChange={(e) => atualizarCampo("email", e.target.value)}
-              placeholder="Digite seu email"
-            />
+            <p>{exibir(dados.email)}</p>
           </div>
         </div>
 
@@ -150,13 +97,7 @@ export default function Perfil() {
           </Icon>
           <div className="info-item-content">
             <span>Telefone</span>
-            <input
-              type="tel"
-              className="perfil-input"
-              value={dados.telefone}
-              onChange={(e) => atualizarCampo("telefone", e.target.value)}
-              placeholder="Digite seu telefone"
-            />
+            <p>{exibir(dados.telefone)}</p>
           </div>
         </div>
 
@@ -169,13 +110,7 @@ export default function Perfil() {
           </Icon>
           <div className="info-item-content">
             <span>Localização</span>
-            <input
-              type="text"
-              className="perfil-input"
-              value={dados.localizacao}
-              onChange={(e) => atualizarCampo("localizacao", e.target.value)}
-              placeholder="Cidade / Estado"
-            />
+            <p>{exibir(dados.localizacao)}</p>
           </div>
         </div>
 
@@ -188,13 +123,7 @@ export default function Perfil() {
           </Icon>
           <div className="info-item-content">
             <span>CPF/CNPJ</span>
-            <input
-              type="text"
-              className="perfil-input"
-              value={dados.cpfCnpj}
-              onChange={(e) => atualizarCampo("cpfCnpj", e.target.value)}
-              placeholder="Digite seu CPF ou CNPJ"
-            />
+            <p>{exibir(dados.cpfCnpj)}</p>
           </div>
         </div>
 

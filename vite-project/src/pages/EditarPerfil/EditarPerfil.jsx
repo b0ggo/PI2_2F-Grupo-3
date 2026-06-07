@@ -1,32 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header.jsx";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import { ROUTES } from "../../constants/routes.js";
+import { getPerfil, savePerfil, PERFIL_VAZIO } from "../../services/perfil.js";
 import "./EditarPerfil.css";
 
 export default function EditarPerfil() {
   const navigate = useNavigate();
+  const [dados, setDados] = useState(PERFIL_VAZIO);
+  const [salvando, setSalvando] = useState(false);
 
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [localizacao, setLocalizacao] = useState("");
-  const [cpf, setCpf] = useState("");
+  useEffect(() => {
+    getPerfil().then(setDados);
+  }, []);
 
-  function salvarPerfil() {
-    localStorage.setItem(
-      "perfilUsuario",
-      JSON.stringify({
-        nome,
-        email,
-        telefone,
-        localizacao,
-        cpf,
-      })
-    );
+  function atualizarCampo(campo, valor) {
+    setDados((prev) => ({ ...prev, [campo]: valor }));
+  }
 
-    navigate(ROUTES.PERFIL);
+  async function salvarPerfil() {
+    setSalvando(true);
+    try {
+      await savePerfil(dados);
+      navigate(ROUTES.PERFIL);
+    } finally {
+      setSalvando(false);
+    }
   }
 
   return (
@@ -42,40 +42,40 @@ export default function EditarPerfil() {
           <label>Nome Completo</label>
           <input
             type="text"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
+            value={dados.nome}
+            onChange={(e) => atualizarCampo("nome", e.target.value)}
             placeholder="Digite seu nome"
           />
 
           <label>Email</label>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={dados.email}
+            onChange={(e) => atualizarCampo("email", e.target.value)}
             placeholder="Digite seu email"
           />
 
           <label>Telefone</label>
           <input
             type="tel"
-            value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
+            value={dados.telefone}
+            onChange={(e) => atualizarCampo("telefone", e.target.value)}
             placeholder="Digite seu telefone"
           />
 
           <label>Localização</label>
           <input
             type="text"
-            value={localizacao}
-            onChange={(e) => setLocalizacao(e.target.value)}
+            value={dados.localizacao}
+            onChange={(e) => atualizarCampo("localizacao", e.target.value)}
             placeholder="Cidade / Estado"
           />
 
           <label>CPF/CNPJ</label>
           <input
             type="text"
-            value={cpf}
-            onChange={(e) => setCpf(e.target.value)}
+            value={dados.cpfCnpj}
+            onChange={(e) => atualizarCampo("cpfCnpj", e.target.value)}
             placeholder="Digite seu CPF ou CNPJ"
           />
 
@@ -83,8 +83,9 @@ export default function EditarPerfil() {
             type="button"
             className="editar-perfil-btn"
             onClick={salvarPerfil}
+            disabled={salvando}
           >
-            Salvar Alterações
+            {salvando ? "Salvando..." : "Salvar Alterações"}
           </button>
 
         </div>

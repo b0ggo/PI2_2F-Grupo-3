@@ -104,6 +104,13 @@
   margin-bottom: 6px;
 }
 
+.info-item p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
 .perfil-input {
   width: 100%;
   padding: 12px 14px;
