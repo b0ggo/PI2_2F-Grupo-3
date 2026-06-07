@@ -1,29 +1,20 @@
+import { useEffect, useState } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
+import { getAlertas } from "../../services/api.js";
 import "./Alertas.css";
 
-const ITENS = [
-  {
-    id: 1,
-    titulo: "Febre Aftosa — BR-001234",
-    detalhe: "Próxima dose em 11 dias",
-    urgente: true,
-  },
-  {
-    id: 2,
-    titulo: "Peste Suína — Lote A",
-    detalhe: "Reforço vencido há 75 dias",
-    urgente: true,
-  },
-  {
-    id: 3,
-    titulo: "Brucelose — BR-001235",
-    detalhe: "Próxima dose em agosto/2026",
-    urgente: false,
-  },
-];
-
 export default function Alertas() {
+  const [itens, setItens] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    getAlertas()
+      .then(setItens)
+      .catch(() => setItens([]))
+      .finally(() => setCarregando(false));
+  }, []);
+
   return (
     <div className="alertas-page">
       <div className="alertas-card-shell">
@@ -33,8 +24,20 @@ export default function Alertas() {
           subtitulo="Vacinas e compromissos que precisam da sua atenção."
         />
 
+        {carregando && (
+          <p className="alertas-card-detail" style={{ padding: "16px 20px" }}>
+            Carregando alertas…
+          </p>
+        )}
+
+        {!carregando && itens.length === 0 && (
+          <p className="alertas-card-detail" style={{ padding: "16px 20px" }}>
+            Nenhum alerta no momento.
+          </p>
+        )}
+
         <ul className="alertas-list">
-          {ITENS.map((item) => (
+          {itens.map((item) => (
             <li
               key={item.id}
               className={`alertas-card${item.urgente ? " alertas-card--urgente" : ""}`}
