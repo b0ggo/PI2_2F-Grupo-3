@@ -1,11 +1,104 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
+import { getAnimais, getLotes, getVacinacoes, postVacinacao } from "../../services/api.js";
 import "./Vacinacao.css";
+
+const VACINAS = ["Febre Aftosa", "Brucelose", "Peste Suína", "Raiva", "Clostridiose"];
+
+function formatarData(iso) {
+  if (!iso) return "—";
+  const [y, m, d] = iso.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+function diasAte(iso) {
+  if (!iso) return null;
+  const alvo = new Date(iso);
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  alvo.setHours(0, 0, 0, 0);
+  return Math.ceil((alvo - hoje) / (1000 * 60 * 60 * 24));
+}
 
 export default function Vacinacao() {
   const [aba, setAba] = useState("registrar");
+  const [alvos, setAlvos] = useState([]);
+  const [historico, setHistorico] = useState([]);
+  const [form, setForm] = useState({
+    alvo: "",
+    tipoVacina: "",
+    dataAplicacao: "",
+    proximaDose: "",
+    observacoes: "",
+  });
+  const [salvando, setSalvando] = useState(false);
+  const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    Promise.all([getAnimais(), getLotes()])
+      .then(([animais, lotes]) => {
+        const lista = [
+          ...animais.map((a) => ({
+            key: `animal:${a.id}`,
+            alvoTipo: "animal",
+            alvoId: a.id,
+            label: a.identificacao,
+          })),
+          ...lotes.map((l) => ({
+            key: `lote:${l.id}`,
+            alvoTipo: "lote",
+            alvoId: l.id,
+            label: l.nome,
+          })),
+        ];
+        setAlvos(lista);
+      })
+      .catch(() => setAlvos([]));
+  }, []);
+
+  useEffect(() => {
+    if (aba === "historico") {
+      getVacinacoes()
+        .then(setHistorico)
+        .catch(() => setHistorico([]));
+    }
+  }, [aba, salvando]);
+
+  async function registrar() {
+    const selecionado = alvos.find((a) => a.key === form.alvo);
+    if (!selecionado || !form.tipoVacina) {
+      setFeedback("Selecione animal/lote e tipo de vacina.");
+      return;
+    }
+
+    setSalvando(true);
+    setFeedback("");
+    try {
+      await postVacinacao({
+        alvoTipo: selecionado.alvoTipo,
+        alvoId: selecionado.alvoId,
+        alvoLabel: selecionado.label,
+        tipoVacina: form.tipoVacina,
+        dataAplicacao: form.dataAplicacao,
+        proximaDose: form.proximaDose,
+        observacoes: form.observacoes,
+      });
+      setForm({
+        alvo: "",
+        tipoVacina: "",
+        dataAplicacao: "",
+        proximaDose: "",
+        observacoes: "",
+      });
+      setFeedback("Vacina registrada com sucesso!");
+    } catch (err) {
+      setFeedback(err.message || "Erro ao registrar vacina.");
+    } finally {
+      setSalvando(false);
+    }
+  }
 
   return (
     <div className="vacina-page">
@@ -34,118 +127,95 @@ export default function Vacinacao() {
         </div>
 
       {aba === "registrar" && (
-
         <section className="vacina-corpo">
-
           <label>Animal/Lote *</label>
-
-          <select>
-            <option>Selecione o animal ou lote</option>
-            <option>Lote A</option>
-            <option>Bovino 01</option>
+          <select
+            value={form.alvo}
+            onChange={(e) => setForm((f) => ({ ...f, alvo: e.target.value }))}
+          >
+            <option value="">Selecione o animal ou lote</option>
+            {alvos.map((a) => (
+              <option key={a.key} value={a.key}>{a.label}</option>
+            ))}
           </select>
 
           <label>Tipo de Vacina *</label>
-
-          <select>
-            <option>Selecione a vacina</option>
-            <option>Febre Aftosa</option>
-            <option>Brucelose</option>
-            <option>Peste Suína</option>
+          <select
+            value={form.tipoVacina}
+            onChange={(e) => setForm((f) => ({ ...f, tipoVacina: e.target.value }))}
+          >
+            <option value="">Selecione a vacina</option>
+            {VACINAS.map((v) => (
+              <option key={v} value={v}>{v}</option>
+            ))}
           </select>
 
           <div className="datas">
-
             <div>
               <label>Data de Aplicação</label>
-              <input type="date" />
+              <input
+                type="date"
+                value={form.dataAplicacao}
+                onChange={(e) => setForm((f) => ({ ...f, dataAplicacao: e.target.value }))}
+              />
             </div>
-
             <div>
               <label>Próxima Dose</label>
-              <input type="date" />
+              <input
+                type="date"
+                value={form.proximaDose}
+                onChange={(e) => setForm((f) => ({ ...f, proximaDose: e.target.value }))}
+              />
             </div>
-
           </div>
 
           <label>Observações</label>
-
           <textarea
             placeholder="Informações adicionais sobre a vacinação..."
+            value={form.observacoes}
+            onChange={(e) => setForm((f) => ({ ...f, observacoes: e.target.value }))}
           />
 
-          <button type="button" className="vacina-btn-primario">
-            Registrar Vacina
+          {feedback && <p style={{ fontSize: 13, color: "#15803d", fontWeight: 600 }}>{feedback}</p>}
+
+          <button
+            type="button"
+            className="vacina-btn-primario"
+            onClick={registrar}
+            disabled={salvando}
+          >
+            {salvando ? "Salvando..." : "Registrar Vacina"}
           </button>
-
         </section>
-
       )}
 
       {aba === "historico" && (
-
         <section className="vacina-corpo vacina-corpo--lista">
-
-          <div className="vacina-hist-card vacina-hist-card--alerta">
-
-            <span className="vacina-tag">
-              Urgente
-            </span>
-
-            <h3>Febre Aftosa</h3>
-
-            <p>BR-001234</p>
-
-            <p>
-              Aplicada em: 14/10/2025
-            </p>
-
-            <p className="vacina-hist-alerta">
-              Próxima dose: 14/04/2026
-              (em -11 dias)
-            </p>
-
-          </div>
-
-          <div className="vacina-hist-card">
-
-            <h3>Brucelose</h3>
-
-            <p>BR-001235</p>
-
-            <p>
-              Aplicada em: 19/08/2025
-            </p>
-
-            <p>
-              Próxima dose: 19/08/2026
-            </p>
-
-          </div>
-
-          <div className="vacina-hist-card vacina-hist-card--alerta">
-
-            <span className="vacina-tag">
-              Urgente
-            </span>
-
-            <h3>Peste Suína</h3>
-
-            <p>Lote A - Janeiro</p>
-
-            <p>
-              Aplicada em: 09/11/2025
-            </p>
-
-            <p className="vacina-hist-alerta">
-              Próxima dose: 09/02/2026
-              (em -75 dias)
-            </p>
-
-          </div>
-
+          {historico.length === 0 && (
+            <p style={{ color: "#6b7280", fontSize: 14 }}>Nenhuma vacinação registrada.</p>
+          )}
+          {historico.map((item) => {
+            const dias = diasAte(item.proximaDose);
+            const urgente = dias !== null && dias <= 30;
+            return (
+              <div
+                key={item.id}
+                className={`vacina-hist-card${urgente ? " vacina-hist-card--alerta" : ""}`}
+              >
+                {urgente && <span className="vacina-tag">Urgente</span>}
+                <h3>{item.tipoVacina}</h3>
+                <p>{item.alvoLabel}</p>
+                <p>Aplicada em: {formatarData(item.dataAplicacao)}</p>
+                {item.proximaDose && (
+                  <p className={urgente ? "vacina-hist-alerta" : undefined}>
+                    Próxima dose: {formatarData(item.proximaDose)}
+                    {dias !== null && ` (em ${dias} dias)`}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </section>
-
       )}
       </div>
 
