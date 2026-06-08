@@ -1,80 +1,48 @@
-.home-app {
-  max-width: 390px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background: var(--color-bg);
-  font-family: var(--font-body);
-  padding: 12px 12px 88px;
-  box-sizing: border-box;
-}
-
-.home-app__hero {
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  overflow: hidden;
-}
-
 .home-app__alert {
   margin: 0;
-  padding: 14px 16px;
+  padding: 18px 18px;
   background: #fff;
   border: 0.5px solid var(--surface-border);
   border-top: none;
-  border-left: 3px solid var(--color-primary);
+  border-left: 4px solid var(--color-primary);
   display: flex;
-  gap: 12px;
+  gap: 14px;
   align-items: flex-start;
 }
 
-.home-app__alert-icon {
-  flex-shrink: 0;
-  margin-top: 1px;
-  color: var(--color-primary);
-}
-
-.home-app__alert-body {
-  flex: 1;
-  text-align: left;
-}
-
 .home-app__alert-text {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-text);
-  line-height: 1.4;
-  margin: 0 0 6px;
+  line-height: 1.5;
+  margin: 0 0 8px;
 }
 
 .home-app__alert-link {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: none;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  font-family: inherit;
 }
 
 .home-app__menu {
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   background: #fff;
   border: 0.5px solid var(--surface-border);
   border-top: none;
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .home-menu-card {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
   text-align: left;
-  padding: 14px 14px;
+  padding: 18px;
+  min-height: 76px;
   border-radius: var(--radius-md);
   border: 0.5px solid var(--surface-divider);
   background: #fff;
@@ -86,22 +54,9 @@
   transition: background 0.15s, border-color 0.15s;
 }
 
-.home-menu-card:last-of-type {
-  margin-bottom: 0;
-}
-
-.home-menu-card:hover {
-  background: #fafafa;
-  border-color: var(--color-input-border);
-}
-
-.home-menu-card:active {
-  transform: scale(0.99);
-}
-
 .home-menu-card__icon {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -109,45 +64,33 @@
   flex-shrink: 0;
 }
 
-.home-menu-card__content {
-  flex: 1;
-  min-width: 0;
-}
-
 .home-menu-card__title {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   color: var(--color-text);
-  margin: 0 0 2px;
+  margin: 0 0 4px;
 }
 
 .home-menu-card__desc {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--color-text-muted);
   margin: 0;
-  line-height: 1.35;
+  line-height: 1.5;
 }
 
 .home-menu-card__badge {
-  flex-shrink: 0;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .home-app__resumo-title {
-  padding: 0 4px 8px;
-  font-size: 11px;
+  padding: 0 4px 10px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-primary);
   text-align: left;
@@ -157,27 +100,27 @@
 .home-app__resumo-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
   padding: 0 0 8px;
 }
 
 .home-stat {
   background: #fff;
   border-radius: var(--radius-md);
-  padding: 12px 8px;
+  padding: 18px 10px;
   text-align: center;
   border: 0.5px solid var(--surface-border);
 }
 
 .home-stat__label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--color-text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .home-stat__value {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--color-primary);
 }

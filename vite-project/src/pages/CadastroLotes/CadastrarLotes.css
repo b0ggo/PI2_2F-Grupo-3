@@ -16,20 +16,19 @@
 }
 
 .cadastro-body {
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
 .field-group {
-  margin-bottom: 18px;
+  margin-bottom: 22px;
 }
 
 .field-label {
   display: block;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-primary);
@@ -46,28 +45,24 @@
 .tipo-selector {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .tipo-btn {
-  padding: 13px 14px;
+  min-height: 56px;
+  padding: 16px 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-input-border);
   background: #fff;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   font-family: var(--font-body);
   font-weight: 500;
   color: var(--color-text-muted);
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 10px;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
-}
-
-.tipo-btn:hover {
-  border-color: #d1d5db;
+  gap: 12px;
 }
 
 .tipo-btn.active {
@@ -78,8 +73,8 @@
 }
 
 .tipo-btn__dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--color-primary);
   flex-shrink: 0;
@@ -93,16 +88,18 @@
 .field-input,
 .field-textarea {
   width: 100%;
-  padding: 12px 14px;
+  min-height: 56px;
+  padding: 16px 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-input-border);
-  font-size: 14px;
+  font-size: 16px;
   font-family: var(--font-body);
   font-weight: 500;
   color: var(--color-text);
   background: #fff;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
 }
 
 .field-input:focus,
@@ -121,50 +118,51 @@
 }
 
 .field-textarea {
+  min-height: 130px;
   resize: none;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .field-trio {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
 .field-trio .field-input {
   text-align: center;
-  padding: 11px 8px;
+  padding: 16px 10px;
 }
 
 .resumo-card {
   background: var(--color-primary-soft);
   border: 0.5px solid var(--surface-border);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
-  margin-bottom: 20px;
+  padding: 18px;
+  margin-bottom: 24px;
 }
 
 .resumo-card__title {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-primary);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .resumo-card__row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px 24px;
+  gap: 18px 28px;
 }
 
 .resumo-card__item {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--color-text-muted);
 }
 
@@ -176,23 +174,23 @@
 .cadastro-actions {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 10px;
-  margin-top: 8px;
-  padding-top: 16px;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 20px;
   border-top: 0.5px solid var(--surface-divider);
 }
 
 .btn-cancel {
-  padding: 13px;
+  min-height: 56px;
+  padding: 16px;
   border-radius: var(--radius-md);
   border: 1px solid #ccc;
   background: transparent;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: background 0.15s;
 }
 
 .btn-cancel:hover {
@@ -200,20 +198,20 @@
 }
 
 .btn-save {
-  padding: 13px;
+  min-height: 56px;
+  padding: 16px;
   border-radius: var(--radius-md);
   border: none;
   background: var(--color-primary);
   font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.15s, transform 0.1s;
 }
 
 .btn-save:hover:not(:disabled) {
@@ -236,14 +234,12 @@
   transform: translateX(-50%);
   background: var(--color-primary-dark);
   color: #fff;
-  padding: 12px 20px;
+  padding: 16px 22px;
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   z-index: 999;
   max-width: min(340px, calc(100vw - 32px));
-  white-space: normal;
   text-align: center;
   font-family: var(--font-body);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
 }

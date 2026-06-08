@@ -15,8 +15,8 @@
 }
 
 .perfil-avatar {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   background: #fff;
   border-radius: 50%;
   margin: 0 auto;
@@ -31,7 +31,7 @@
   border: 0.5px solid var(--surface-border);
   border-top: none;
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   overflow: hidden;
 }
 
@@ -39,38 +39,38 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
+  padding: 18px;
 }
 
 .tipo-conta > span {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-text-muted);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .badge {
   background: var(--color-primary-soft);
   color: var(--color-primary-dark);
-  padding: 5px 12px;
+  padding: 8px 14px;
   border-radius: var(--radius-full);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .card-info,
 .menu-card {
   background: #fff;
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   border-radius: var(--radius-xl);
-  padding: 18px 16px;
+  padding: 22px 18px;
   border: 0.5px solid var(--surface-border);
 }
 
 .card-info h3,
 .estatisticas h3 {
-  margin: 0 0 16px;
-  font-size: 11px;
-  font-weight: 600;
+  margin: 0 0 20px;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-primary);
@@ -78,15 +78,15 @@
 
 .info-item {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   align-items: flex-start;
-  padding: 10px 0;
+  padding: 14px 0;
 }
 
 .icon {
   color: var(--color-primary);
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .info-item-content {
@@ -96,28 +96,29 @@
 
 .info-item span {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-primary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .info-item p {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--color-text);
 }
 
 .perfil-input {
   width: 100%;
-  padding: 12px 14px;
+  min-height: 52px;
+  padding: 16px 18px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-input-border);
   background: #fff;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   font-family: var(--font-body);
   color: var(--color-text);
@@ -132,11 +133,12 @@
 
 .perfil-input--badge {
   width: auto;
-  min-width: 100px;
-  padding: 5px 12px;
+  min-width: 120px;
+  min-height: auto;
+  padding: 8px 14px;
   border: none;
   background: transparent;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-primary-dark);
   text-align: right;
@@ -149,14 +151,15 @@
 
 .btn-salvar {
   width: 100%;
-  margin-top: 16px;
-  padding: 14px;
+  margin-top: 20px;
+  min-height: 58px;
+  padding: 18px;
   border: none;
   border-radius: var(--radius-md);
   background: var(--color-primary);
   color: #fff;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   cursor: pointer;
   font-family: inherit;
   transition: background 0.15s;
@@ -178,13 +181,14 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 14px 0;
+  min-height: 58px;
+  padding: 18px 0;
   border: none;
   border-bottom: 0.5px solid var(--surface-divider);
   background: none;
   cursor: pointer;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--color-text);
   text-align: left;
@@ -197,7 +201,7 @@
 .menu-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   color: var(--color-text-muted);
 }
 
@@ -207,32 +211,32 @@
 
 .estatisticas {
   padding: 0;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
+  gap: 14px;
 }
 
 .stat-card {
   border-radius: var(--radius-md);
   text-align: center;
-  padding: 14px 8px;
+  padding: 18px 10px;
   border: 0.5px solid var(--surface-border);
   background: #fff;
 }
 
 .stat-card h2 {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   color: var(--color-primary);
 }
 
 .stat-card p {
-  font-size: 12px;
+  font-size: 14px;
   margin: 0;
   color: var(--color-text-muted);
   font-weight: 500;
@@ -240,18 +244,19 @@
 
 .btn-sair {
   width: 100%;
-  margin: 8px 0 0;
-  padding: 14px;
+  min-height: 58px;
+  margin: 10px 0 0;
+  padding: 18px;
   border: 1px solid #fecaca;
   background: #fff;
   color: #b91c1c;
   border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   font-family: inherit;
   transition: background 0.15s;
