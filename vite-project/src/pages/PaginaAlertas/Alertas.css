@@ -1,0 +1,142 @@
+.alertas-page {
+  min-height: 100vh;
+  background: #f3f4f6;
+}
+
+.alertas-header {
+  background: #08a63d;
+  padding: 18px 15px 12px;
+  color: white;
+}
+
+.titulo-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titulo-area h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.badge {
+  background: white;
+  color: #08a63d;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.tab {
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.ativa {
+  background: white;
+  color: #08a63d;
+}
+
+.tab:not(.ativa) {
+  background: #028532;
+  color: white;
+}
+
+.marcar {
+  background: #ffffff;
+  padding: 12px 15px;
+  color: #08a63d;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+
+.lista-alertas {
+  padding: 10px;
+}
+
+.card-alerta {
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.card-alerta.ativo {
+  border: 1px solid #6edb8c;
+}
+
+.card-alerta.inativo {
+  border: 1px solid #ddd;
+  opacity: 0.55;
+}
+
+.icone-alerta {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f7eaea;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.conteudo-alerta {
+  flex: 1;
+}
+
+.linha-titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.linha-titulo h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.urgente {
+  background: #ff3b3b;
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.conteudo-alerta p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.data {
+  font-size: 12px;
+  color: #777;
+}
+
+.ponto-verde {
+  width: 8px;
+  height: 8px;
+  background: #08a63d;
+  border-radius: 50%;
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+}

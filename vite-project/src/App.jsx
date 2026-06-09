@@ -11,7 +11,7 @@ import ChatEmpresas from "./pages/ChatEmpresas/ChatEmpresas";
 import Perfil from "./pages/perfil/Perfil";
 import EditarPerfil from "./pages/EditarPerfil/EditarPerfil";
 import Consultar from "./pages/Consultar/Consultar";
-import Alertas from "./pages/Alertas/Alertas";
+import Alertas from "./pages/PaginaAlertas/Alertas";
 import { ROUTES } from "./constants/routes.js";
 
 function Protegido({ children }) {
