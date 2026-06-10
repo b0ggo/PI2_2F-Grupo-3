@@ -1,9 +1,10 @@
 .page {
-  max-width: 390px;
+  max-width: 100%;
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: 12px 12px 28px;
   background: var(--color-bg);
   font-family: var(--font-body);
   box-sizing: border-box;
@@ -149,4 +150,17 @@
 
 .toastError {
   background: var(--color-danger-text);
+}
+
+@media (min-width: 900px) {
+  .body {
+    padding: 32px 36px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .formActions {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

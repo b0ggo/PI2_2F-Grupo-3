@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import Login from "./pages/Login/Login";
+import EsqueciSenha from "./pages/EsqueciSenha/EsqueciSenha";
 import CadastroProdutor from "./pages/CadastroProdutor/CadastroProdutor";
 import CadastroEmpresa from "./pages/CadastroEmpresa/CadastroEmpresa";
 import PaginaInicial from "./pages/PaginaInicial/PaginaInicial";
@@ -24,6 +25,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to={ROUTES.LOGIN} replace />} />
         <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.ESQUECI_SENHA} element={<EsqueciSenha />} />
         <Route path={ROUTES.CADASTRO_PRODUTOR} element={<CadastroProdutor />} />
         <Route path={ROUTES.CADASTRO_EMPRESA} element={<CadastroEmpresa />} />
         <Route path={ROUTES.HOME} element={<Protegido><PaginaInicial /></Protegido>} />

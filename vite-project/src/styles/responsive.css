@@ -1,0 +1,375 @@
+/**
+ * Layout responsivo compartilhado — celular → tablet → desktop.
+ * Breakpoints: 400px, 600px, 900px, 1400px (alinhados ao Consultar/BottomNav).
+ */
+
+/* ── Shells com navbar inferior ── */
+.home-app,
+.consultar-page,
+.alertas-page,
+.cadastro-page,
+.vacina-page,
+.chat-page,
+.perfil-container,
+.editar-perfil-page,
+.app-page--nav {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* ── Shells de autenticação / formulário sem nav ── */
+.login-root,
+.esqueci-senha-page,
+.app-page {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* ── Chat em conversa (tela cheia) ── */
+.conv-page {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Celulares pequenos */
+@media (max-width: 359px) {
+  .home-app,
+  .app-page,
+  .cadastro-page,
+  .vacina-page,
+  .chat-page,
+  .perfil-container,
+  .editar-perfil-page {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .field-trio {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-app__resumo-row {
+    gap: 8px;
+  }
+
+  .home-stat__value {
+    font-size: 20px;
+  }
+}
+
+/* Celulares médios */
+@media (min-width: 400px) {
+  .login-root,
+  .esqueci-senha-page {
+    padding: 24px 20px 40px;
+    align-items: center;
+  }
+
+  .login-root .card,
+  .esqueci-senha-card {
+    max-width: 440px;
+    padding: 36px 32px;
+  }
+
+  .home-app,
+  .app-page,
+  .cadastro-page,
+  .vacina-page,
+  .chat-page,
+  .perfil-container,
+  .editar-perfil-page {
+    max-width: 480px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 600px) {
+  .login-root .card,
+  .esqueci-senha-card {
+    max-width: 480px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .home-app,
+  .app-page,
+  .cadastro-page,
+  .vacina-page,
+  .chat-page,
+  .perfil-container,
+  .editar-perfil-page {
+    max-width: 640px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .home-app__menu {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .home-menu-card {
+    margin: 0;
+  }
+
+  .chat-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .chat-cta {
+    grid-column: 1 / -1;
+  }
+
+  .vacina-corpo--lista {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .tipo-selector {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px !important;
+  }
+
+  .perfil-container .card-info,
+  .perfil-container .menu-card,
+  .perfil-container .estatisticas {
+    max-width: 100%;
+  }
+}
+
+/* Desktop */
+@media (min-width: 900px) {
+  .login-root .card,
+  .esqueci-senha-card {
+    max-width: 520px;
+    padding: 40px 40px;
+  }
+
+  .home-app,
+  .app-page,
+  .cadastro-page,
+  .vacina-page,
+  .chat-page,
+  .perfil-container,
+  .editar-perfil-page {
+    max-width: 1100px;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .home-app__hero .headerBase,
+  .home-app__alert,
+  .home-app__menu,
+  .home-app__resumo-title,
+  .home-app__resumo-row {
+    max-width: 100%;
+  }
+
+  .home-app__hero,
+  .home-app__alert,
+  .home-app__menu {
+    border-radius: var(--radius-xl);
+    border: 0.5px solid var(--surface-border);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .home-app__alert {
+    border-top: none;
+    border-left: 4px solid var(--color-primary);
+  }
+
+  .home-app__menu {
+    grid-template-columns: repeat(3, 1fr);
+    border-top: none;
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  }
+
+  .home-app__hero {
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    margin-bottom: 0;
+  }
+
+  .home-app__alert + .home-app__menu {
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  }
+
+  .home-app__resumo-row {
+    gap: 20px;
+    padding: 0 4px 8px;
+  }
+
+  .home-stat {
+    padding: 24px 16px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .home-stat:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 12px rgba(22, 163, 74, 0.08);
+  }
+
+  .home-menu-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 12px rgba(22, 163, 74, 0.08);
+  }
+
+  .cadastro-card,
+  .vacina-card,
+  .chat-shell,
+  .editar-perfil-card {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .cadastro-card,
+  .vacina-card,
+  .chat-shell,
+  .editar-perfil-card {
+    border-radius: 20px;
+  }
+
+  .chat-list {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 24px 28px;
+  }
+
+  .vacina-corpo--lista {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 24px 28px 32px;
+  }
+
+  .vacina-corpo:not(.vacina-corpo--lista) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    padding: 28px 32px 32px;
+  }
+
+  .vacina-corpo:not(.vacina-corpo--lista) label,
+  .vacina-corpo:not(.vacina-corpo--lista) select,
+  .vacina-corpo:not(.vacina-corpo--lista) input,
+  .vacina-corpo:not(.vacina-corpo--lista) textarea {
+    grid-column: span 1;
+  }
+
+  .vacina-corpo:not(.vacina-corpo--lista) textarea,
+  .vacina-corpo:not(.vacina-corpo--lista) .vacina-btn-primario,
+  .vacina-corpo:not(.vacina-corpo--lista) p {
+    grid-column: 1 / -1;
+  }
+
+  .vacina-corpo:not(.vacina-corpo--lista) .datas {
+    grid-column: 1 / -1;
+  }
+
+  .cadastro-body {
+    padding: 32px 36px;
+  }
+
+  .cadastro-actions,
+  .footer {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .editar-perfil-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+    padding: 32px 36px;
+  }
+
+  .editar-perfil-body label,
+  .editar-perfil-body input {
+    grid-column: span 1;
+  }
+
+  .editar-perfil-btn {
+    grid-column: 1 / -1;
+    max-width: 360px;
+    justify-self: center;
+  }
+
+  .perfil-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .perfil-hero-wrap {
+    grid-column: 1 / -1;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .perfil-sheet {
+    grid-column: 1 / -1;
+    border-radius: 0 0 20px 20px;
+  }
+
+  .perfil-container .card-info {
+    margin-bottom: 0;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .perfil-container .menu-card {
+    margin-bottom: 0;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .perfil-container .estatisticas {
+    margin-bottom: 0;
+  }
+
+  .perfil-container .btn-sair {
+    grid-column: 1 / -1;
+    max-width: 400px;
+    justify-self: center;
+  }
+
+  .conv-page {
+    max-width: 720px;
+    border-left: 0.5px solid var(--surface-border);
+    border-right: 0.5px solid var(--surface-border);
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* Telas muito largas */
+@media (min-width: 1400px) {
+  .home-app,
+  .app-page,
+  .cadastro-page,
+  .vacina-page,
+  .chat-page,
+  .perfil-container,
+  .editar-perfil-page {
+    max-width: 1280px;
+  }
+
+  .home-app__menu {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .chat-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

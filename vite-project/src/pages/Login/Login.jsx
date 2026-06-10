@@ -69,7 +69,9 @@ export default function Login() {
 
             {erro && <p className="login-erro">{erro}</p>}
 
-            <a href="#" className="forgot">Esqueci minha senha</a>
+            <Link to={ROUTES.ESQUECI_SENHA} className="forgot">
+              Esqueci minha senha
+            </Link>
 
             <button type="submit" className="btn-primary" disabled={carregando}>
               {carregando ? "Entrando..." : "Entrar"}

@@ -176,3 +176,22 @@
 .btn-outline:hover {
   background: #f7f7f7;
 }
+
+@media (min-width: 600px) {
+  .login-root {
+    align-items: center;
+    padding: 32px 24px;
+  }
+
+  .login-root .card {
+    max-width: 440px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+}
+
+@media (min-width: 900px) {
+  .login-root .card {
+    max-width: 520px;
+    padding: 40px;
+  }
+}

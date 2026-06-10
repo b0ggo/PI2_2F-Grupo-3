@@ -1,108 +1,206 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import BottomNav from "../../components/BottomNav/BottomNav.jsx";
+import Header from "../../components/Header/Header.jsx";
+import { ROUTES } from "../../constants/routes.js";
+import { getAlertas } from "../../services/api.js";
 import "./Alertas.css";
 
+const STORAGE_KEY = "alertas-lidos";
+
+function getLidos() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return new Set(JSON.parse(raw || "[]"));
+  } catch {
+    return new Set();
+  }
+}
+
+function saveLidos(ids) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]));
+}
+
+function iconeAlerta(alerta) {
+  if (alerta.urgente && alerta.detalhe?.toLowerCase().includes("vencido")) {
+    return "⚠️";
+  }
+  return "💉";
+}
+
 export default function Alertas() {
-  const alertas = [
-    {
-      id: 1,
-      titulo: "Vacina Próxima",
-      descricao: "Febre Aftosa para BR-001234 vence em 5 dias",
-      data: "19/03/2026",
-      urgente: true,
-      ativo: true,
-      icone: "💉",
-    },
-    {
-      id: 2,
-      titulo: "Vacina Próxima",
-      descricao: "Brucelose para Lote A vence em 15 dias",
-      data: "18/03/2026",
-      urgente: false,
-      ativo: true,
-      icone: "💉",
-    },
-    {
-      id: 3,
-      titulo: "Animal Doente",
-      descricao: "BR-001235 apresenta sintomas - verificar",
-      data: "17/03/2026",
-      urgente: true,
-      ativo: true,
-      icone: "⚠️",
-    },
-    {
-      id: 4,
-      titulo: "Lote Cadastrado",
-      descricao: "Lote B - Fevereiro foi cadastrado com sucesso",
-      data: "16/03/2026",
-      urgente: false,
-      ativo: false,
-      icone: "ℹ️",
-    },
-    {
-      id: 5,
-      titulo: "Vacina Aplicada",
-      descricao: "Peste Suína aplicada no Lote A",
-      data: "14/03/2026",
-      urgente: false,
-      ativo: false,
-      icone: "💉",
-    },
-  ];
+  const navigate = useNavigate();
+  const [aba, setAba] = useState("todas");
+  const [alertas, setAlertas] = useState([]);
+  const [lidos, setLidos] = useState(() => getLidos());
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+
+  const carregar = useCallback(() => {
+    setCarregando(true);
+    setErro("");
+    getAlertas()
+      .then(setAlertas)
+      .catch(() => {
+        setAlertas([]);
+        setErro("Não foi possível carregar as notificações.");
+      })
+      .finally(() => setCarregando(false));
+  }, []);
+
+  useEffect(() => {
+    carregar();
+  }, [carregar]);
+
+  const alertasComEstado = useMemo(
+    () =>
+      alertas.map((a) => ({
+        ...a,
+        lido: lidos.has(String(a.id)),
+      })),
+    [alertas, lidos]
+  );
+
+  const naoLidas = useMemo(
+    () => alertasComEstado.filter((a) => !a.lido),
+    [alertasComEstado]
+  );
+
+  const listaVisivel = aba === "nao-lidas" ? naoLidas : alertasComEstado;
+
+  function marcarComoLida(id) {
+    setLidos((prev) => {
+      const next = new Set(prev);
+      next.add(String(id));
+      saveLidos(next);
+      return next;
+    });
+  }
+
+  function marcarTodasComoLidas() {
+    setLidos((prev) => {
+      const next = new Set(prev);
+      alertas.forEach((a) => next.add(String(a.id)));
+      saveLidos(next);
+      return next;
+    });
+  }
 
   return (
     <div className="alertas-page">
-      <div className="alertas-header">
-        <div className="titulo-area">
-          <h2>Notificações</h2>
-          <span className="badge">3 novas</span>
-        </div>
+      <div className="alertas-card">
+        <Header
+          layout="nav"
+          titulo="Notificações"
+          onVoltar={() => navigate(ROUTES.HOME)}
+        />
 
-        <div className="tabs">
-          <button className="tab ativa">Todas</button>
-          <button className="tab">Não Lidas</button>
-        </div>
-      </div>
-
-      <div className="marcar">
-        ✓ Marcar todas como lidas
-      </div>
-
-      <div className="lista-alertas">
-        {alertas.map((alerta) => (
-          <div
-            key={alerta.id}
-            className={`card-alerta ${
-              alerta.ativo ? "ativo" : "inativo"
-            }`}
-          >
-            <div className="icone-alerta">
-              {alerta.icone}
-            </div>
-
-            <div className="conteudo-alerta">
-              <div className="linha-titulo">
-                <h3>{alerta.titulo}</h3>
-
-                {alerta.urgente && (
-                  <span className="urgente">
-                    Urgente
-                  </span>
-                )}
-              </div>
-
-              <p>{alerta.descricao}</p>
-
-              <span className="data">
-                {alerta.data}
-              </span>
-            </div>
-
-            {alerta.ativo && (
-              <div className="ponto-verde"></div>
-            )}
+        <div className="alertas-toolbar">
+          <div className="alertas-titulo-area">
+            <span className="alertas-badge">
+              {naoLidas.length > 0
+                ? `${naoLidas.length} nova${naoLidas.length > 1 ? "s" : ""}`
+                : "Tudo em dia"}
+            </span>
           </div>
-        ))}
+
+          <div className="alertas-tabs" role="tablist" aria-label="Filtrar notificações">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={aba === "todas"}
+              className={`alertas-tab${aba === "todas" ? " alertas-tab--ativa" : ""}`}
+              onClick={() => setAba("todas")}
+            >
+              Todas ({alertasComEstado.length})
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={aba === "nao-lidas"}
+              className={`alertas-tab${aba === "nao-lidas" ? " alertas-tab--ativa" : ""}`}
+              onClick={() => setAba("nao-lidas")}
+            >
+              Não lidas ({naoLidas.length})
+            </button>
+          </div>
+
+          {naoLidas.length > 0 && (
+            <button
+              type="button"
+              className="alertas-marcar"
+              onClick={marcarTodasComoLidas}
+            >
+              ✓ Marcar todas como lidas
+            </button>
+          )}
+        </div>
+
+        <div className="alertas-lista">
+          {carregando && (
+            <p className="alertas-estado" role="status">
+              Carregando notificações…
+            </p>
+          )}
+
+          {!carregando && erro && (
+            <div className="alertas-estado alertas-estado--erro">
+              <p>{erro}</p>
+              <button type="button" onClick={carregar}>
+                Tentar novamente
+              </button>
+            </div>
+          )}
+
+          {!carregando && !erro && listaVisivel.length === 0 && (
+            <p className="alertas-estado">
+              {aba === "nao-lidas"
+                ? "Nenhuma notificação não lida."
+                : "Nenhuma notificação no momento."}
+            </p>
+          )}
+
+          {!carregando &&
+            !erro &&
+            listaVisivel.map((alerta) => (
+              <article
+                key={alerta.id}
+                className={`alertas-item${alerta.lido ? " alertas-item--lido" : ""}`}
+                onClick={() => marcarComoLida(alerta.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    marcarComoLida(alerta.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${alerta.titulo}. ${alerta.detalhe}${alerta.lido ? ". Lida" : ". Não lida"}`}
+              >
+                <div className="alertas-icone" aria-hidden>
+                  {iconeAlerta(alerta)}
+                </div>
+
+                <div className="alertas-conteudo">
+                  <div className="alertas-linha-titulo">
+                    <h3>{alerta.titulo}</h3>
+                    {alerta.urgente && (
+                      <span className="alertas-urgente">Urgente</span>
+                    )}
+                  </div>
+
+                  <p>{alerta.detalhe}</p>
+                </div>
+
+                {!alerta.lido && (
+                  <span className="alertas-ponto" aria-hidden title="Não lida" />
+                )}
+              </article>
+            ))}
+        </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 }

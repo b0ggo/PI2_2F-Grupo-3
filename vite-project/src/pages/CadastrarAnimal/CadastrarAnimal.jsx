@@ -165,7 +165,7 @@ export default function CadastrarAnimal({ onVoltar }) {
 
   return (
     <>
-      <div className={styles.page}>
+      <div className={`app-page ${styles.page}`}>
       <div className={styles.card}>
         <Header onVoltar={voltar} pendentes={pendentes} />
 

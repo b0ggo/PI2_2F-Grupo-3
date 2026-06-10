@@ -40,6 +40,13 @@ export async function registrarUsuario(dados) {
   return result
 }
 
+export async function redefinirSenha(email, senha) {
+  return request('/api/auth/redefinir-senha', {
+    method: 'POST',
+    body: JSON.stringify({ email, senha }),
+  })
+}
+
 export async function loginUsuario(email, senha) {
   const result = await request('/api/auth/login', {
     method: 'POST',

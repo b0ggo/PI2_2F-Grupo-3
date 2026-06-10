@@ -1,8 +1,8 @@
 .chat-page {
-  max-width: 390px;
+  max-width: 100%;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 12px 12px 88px;
+  padding: 12px 12px calc(88px + env(safe-area-inset-bottom, 0));
   box-sizing: border-box;
   background: var(--color-bg);
   font-family: var(--font-body);
@@ -91,7 +91,7 @@
 }
 
 .conv-page {
-  max-width: 390px;
+  max-width: 100%;
   margin: 0 auto;
   min-height: 100vh;
   background: var(--color-bg);

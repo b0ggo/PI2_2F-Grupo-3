@@ -67,6 +67,27 @@ def login_user(email, senha):
     return token, _perfil_publico(user)
 
 
+def reset_password(email, senha):
+    email = email.strip().lower()
+    if not email or not senha:
+        raise ValueError("Email e nova senha são obrigatórios.")
+    if len(senha) < 6:
+        raise ValueError("A senha deve ter no mínimo 6 caracteres.")
+
+    user = find_user_by_email(email)
+    if not user:
+        raise ValueError("Email não encontrado.")
+
+    users = load_list(USERS_FILE)
+    for i, item in enumerate(users):
+        if item.get("id") != user["id"]:
+            continue
+        users[i] = {**item, "senhaHash": generate_password_hash(senha)}
+        save_list(USERS_FILE, users)
+        return
+    raise ValueError("Usuário não encontrado.")
+
+
 def logout_user(token):
     if not token:
         return

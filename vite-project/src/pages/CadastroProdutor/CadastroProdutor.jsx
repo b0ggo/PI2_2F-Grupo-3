@@ -68,7 +68,7 @@ export default function CadastroProdutor() {
   };
 
   return (
-    <div className={styles.page}>
+    <div className={`app-page ${styles.page}`}>
       <header className={styles.header}>
         <button type="button" className={styles.back} aria-label="Voltar" onClick={() => navigate(ROUTES.LOGIN)}>
           <IconBack />
