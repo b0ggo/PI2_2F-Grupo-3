@@ -46,6 +46,7 @@ export default function Perfil() {
       <div className="perfil-hero-wrap">
         <Header
           layout="hero"
+          voltarPara={ROUTES.HOME}
           titulo={dados.nome || "Nome não informado"}
           subtitulo={dados.email || "Email não informado"}
         >

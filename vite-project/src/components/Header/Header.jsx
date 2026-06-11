@@ -62,6 +62,10 @@ export default function Header({
       </button>
     ))
 
+  const backRow = showBack ? (
+    <div className={styles.headerBackRow}>{backControl}</div>
+  ) : null
+
   const badge =
     pendentes > 0 ? (
       <span className={styles.badge} title="Registros aguardando sincronização">
@@ -72,6 +76,7 @@ export default function Header({
   if (layout === 'hero') {
     return (
       <header className={`${styles.headerBase} ${styles.hero}`}>
+        {backRow}
         {children ? <div className={styles.heroSlot}>{children}</div> : null}
         <h1 className={styles.heroTitulo}>{titulo}</h1>
         {subtitulo ? <p className={styles.heroSub}>{subtitulo}</p> : null}
@@ -82,6 +87,7 @@ export default function Header({
   if (layout === 'stack') {
     return (
       <header className={`${styles.headerBase} ${styles.stack}`}>
+        {backRow}
         <h1 className={styles.stackTitulo}>{titulo}</h1>
         {subtitulo ? <p className={styles.stackSub}>{subtitulo}</p> : null}
         {children ? <div className={styles.stackSlot}>{children}</div> : null}

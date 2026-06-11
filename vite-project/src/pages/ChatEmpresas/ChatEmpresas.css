@@ -5,13 +5,24 @@
   box-sizing: border-box;
   background: var(--color-bg);
   font-family: var(--font-body);
+  display: flex;
+  justify-content: center;
 }
 
 .chat-shell {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   background: #fff;
   border-radius: var(--radius-xl);
   border: 0.5px solid var(--surface-border);
   overflow: hidden;
+}
+
+.conv-page {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .chat-list {
@@ -128,7 +139,7 @@
 
 .conv-input-bar {
   position: sticky;
-  bottom: 0;
+  bottom: 8px;
   left: 0;
   right: 0;
   display: flex;

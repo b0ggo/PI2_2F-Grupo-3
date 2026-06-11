@@ -31,6 +31,35 @@ export default function CadastroEmpresa() {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
+  const formatTelefone = (value) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (!digits) return "";
+    if (digits.length < 3) return `(${digits}`;
+    const ddd = digits.slice(0, 2);
+    const rest = digits.slice(2);
+    if (rest.length <= 4) return `(${ddd}) ${rest}`;
+    if (rest.length <= 8) return `(${ddd}) ${rest.slice(0, 4)}-${rest.slice(4)}`;
+    return `(${ddd}) ${rest.slice(0, 5)}-${rest.slice(5)}`;
+  };
+
+  const formatCpfCnpj = (value) => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length <= 11) {
+      const filtered = digits.slice(0, 11);
+      if (filtered.length <= 3) return filtered;
+      if (filtered.length <= 6) return `${filtered.slice(0, 3)}.${filtered.slice(3)}`;
+      if (filtered.length <= 9) return `${filtered.slice(0, 3)}.${filtered.slice(3, 6)}.${filtered.slice(6)}`;
+      return `${filtered.slice(0, 3)}.${filtered.slice(3, 6)}.${filtered.slice(6, 9)}-${filtered.slice(9)}`;
+    }
+
+    const filtered = digits.slice(0, 14);
+    if (filtered.length <= 2) return filtered;
+    if (filtered.length <= 5) return `${filtered.slice(0, 2)}.${filtered.slice(2)}`;
+    if (filtered.length <= 8) return `${filtered.slice(0, 2)}.${filtered.slice(2, 5)}.${filtered.slice(5)}`;
+    if (filtered.length <= 12) return `${filtered.slice(0, 2)}.${filtered.slice(2, 5)}.${filtered.slice(5, 8)}/${filtered.slice(8)}`;
+    return `${filtered.slice(0, 2)}.${filtered.slice(2, 5)}.${filtered.slice(5, 8)}/${filtered.slice(8, 12)}-${filtered.slice(12)}`;
+  };
+
   const show = (msg, err) => {
     if (timer.current) window.clearTimeout(timer.current);
     setToast({ msg, err });
@@ -99,9 +128,9 @@ export default function CadastroEmpresa() {
         </div>
         <div className={styles.fieldBlock}>
           <label htmlFor="cnpj">
-            CNPJ <span className={styles.req}>*</span>
+            CPF/CNPJ <span className={styles.req}>*</span>
           </label>
-          <input id="cnpj" className={styles.input} placeholder="00.000.000/0000-00" value={form.cnpj} onChange={(e) => set("cnpj", e.target.value)} />
+          <input id="cnpj" className={styles.input} placeholder="CPF ou CNPJ" value={form.cnpj} onChange={(e) => set("cnpj", formatCpfCnpj(e.target.value))} />
         </div>
         <div className={styles.fieldBlock}>
           <label htmlFor="email">
@@ -113,7 +142,7 @@ export default function CadastroEmpresa() {
           <label htmlFor="tel">
             Telefone <span className={styles.req}>*</span>
           </label>
-          <input id="tel" className={styles.input} placeholder="(00) 0000-0000" value={form.telefone} onChange={(e) => set("telefone", e.target.value)} />
+          <input id="tel" className={styles.input} placeholder="(00) 0000-0000" value={form.telefone} onChange={(e) => set("telefone", formatTelefone(e.target.value))} />
         </div>
         <div className={styles.fieldBlock}>
           <label htmlFor="loc">

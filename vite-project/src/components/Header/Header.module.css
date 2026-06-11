@@ -109,6 +109,12 @@
   margin-bottom: 12px;
 }
 
+.headerBackRow {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
 .navMiddle {
   flex: 1;
   display: flex;

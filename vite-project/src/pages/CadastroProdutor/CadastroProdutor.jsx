@@ -28,6 +28,25 @@ export default function CadastroProdutor() {
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
+  const formatTelefone = (value) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (!digits) return "";
+    if (digits.length < 3) return `(${digits}`;
+    const ddd = digits.slice(0, 2);
+    const rest = digits.slice(2);
+    if (rest.length <= 4) return `(${ddd}) ${rest}`;
+    if (rest.length <= 8) return `(${ddd}) ${rest.slice(0, 4)}-${rest.slice(4)}`;
+    return `(${ddd}) ${rest.slice(0, 5)}-${rest.slice(5)}`;
+  };
+
+  const formatCPF = (value) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+  };
+
   const show = (msg, err) => {
     if (t.current) window.clearTimeout(t.current);
     setToast({ msg, err });
@@ -96,7 +115,16 @@ export default function CadastroProdutor() {
               type={type}
               placeholder={ph}
               value={form[key]}
-              onChange={(e) => set(key, e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (key === "telefone") {
+                  set(key, formatTelefone(value));
+                } else if (key === "cpf") {
+                  set(key, formatCPF(value));
+                } else {
+                  set(key, value);
+                }
+              }}
               autoComplete={key === "senha" || key === "conf" ? "new-password" : "on"}
             />
           </div>

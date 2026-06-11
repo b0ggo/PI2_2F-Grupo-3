@@ -1,8 +1,8 @@
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  transform: none;
   width: 100%;
   max-width: 100%;
   background: #ffffff;
@@ -16,13 +16,13 @@
 
 @media (min-width: 400px) {
   .bottom-nav {
-    max-width: 480px;
+    max-width: 100%;
   }
 }
 
 @media (min-width: 600px) {
   .bottom-nav {
-    max-width: 640px;
+    max-width: 100%;
   }
 }
 

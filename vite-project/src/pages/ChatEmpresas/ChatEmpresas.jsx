@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import headerUi from "../../components/Header/Header.module.css";
+import { ROUTES } from "../../constants/routes.js";
 import { enviarMensagem, getConversas } from "../../services/api.js";
 import "./ChatEmpresas.css";
 
@@ -250,7 +251,7 @@ export default function ChatEmpresas() {
   return (
     <div className="chat-page">
       <div className="chat-shell">
-        <Header layout="stack" titulo="Chat">
+        <Header titulo="Chat" voltarPara={ROUTES.HOME} navMiddle={
           <div className="app-header-search">
             <Icon d={ICONS.search} size={16} color="#9ca3af" />
             <input
@@ -260,6 +261,7 @@ export default function ChatEmpresas() {
               aria-label="Buscar conversa"
             />
           </div>
+        }>
         </Header>
 
         <div className="chat-list">
