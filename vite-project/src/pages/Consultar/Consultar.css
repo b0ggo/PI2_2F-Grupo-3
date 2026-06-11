@@ -419,7 +419,4 @@
 
 /* Telas muito largas */
 @media (min-width: 1400px) {
-  .consultar-page {
-    max-width: 1280px;
-  }
 }
