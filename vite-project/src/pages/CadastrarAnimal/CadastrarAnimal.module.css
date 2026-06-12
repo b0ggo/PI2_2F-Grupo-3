@@ -2,7 +2,7 @@
   max-width: 100%;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 12px 12px 28px;
+  padding: 12px 12px calc(88px + env(safe-area-inset-bottom, 0));
   box-sizing: border-box;
 }
 

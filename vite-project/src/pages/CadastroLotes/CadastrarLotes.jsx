@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header.jsx";
+import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import { postLote } from "../../services/api.js";
 import "./CadastrarLotes.css";
@@ -302,6 +303,7 @@ export default function CadastrarLotes() {
           {feedback.message}
         </div>
       )}
+      <BottomNav />
     </div>
   );
 }

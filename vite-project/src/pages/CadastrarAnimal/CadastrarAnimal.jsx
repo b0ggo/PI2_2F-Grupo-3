@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Header              from '../../components/Header/Header'
+import BottomNav           from '../../components/BottomNav/BottomNav.jsx'
 import OfflineBanner       from '../../components/OfflineBanner/OfflineBanner'
 import ScanButtons         from '../../components/ScanButtons/ScanButtons'
 import AnimalTypeSelector  from '../../components/AnimalTypeSelector/AnimalTypeSelector'
@@ -262,6 +263,7 @@ export default function CadastrarAnimal({ onVoltar }) {
           visivel={feedback.visivel}
         />
       )}
+      <BottomNav />
     </>
   )
 }

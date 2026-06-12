@@ -50,6 +50,17 @@
   gap: 16px;
 }
 
+/* Force labels and selects to stack to avoid layout shifts on wide screens */
+.vacina-corpo > label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.vacina-corpo > select {
+  display: block;
+  width: 100%;
+}
+
 .vacina-corpo--lista {
   gap: 14px;
   padding-top: 16px;
@@ -180,4 +191,29 @@
   color: #fff;
   padding: 6px 10px;
   border-radius: 8px;
+}
+
+/* Override desktop grid from global responsive.css to keep form fields stacked */
+@media (min-width: 900px) {
+  .vacina-corpo {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px;
+    padding: 28px 32px 32px;
+    grid-template-columns: none !important;
+
+  .vacina-corpo label,
+  .vacina-corpo select,
+  .vacina-corpo input,
+  .vacina-corpo textarea {
+    width: 100% !important;
+    display: block !important;
+    grid-column: auto !important;
+  }
+
+  .vacina-corpo .datas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
 }
