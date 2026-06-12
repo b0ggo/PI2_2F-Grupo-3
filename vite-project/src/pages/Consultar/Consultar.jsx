@@ -394,7 +394,7 @@ export default function Consultar() {
         </section>
       </div>
 
-      <BottomNav />
+      <BottomNav mode="produtor" />
     </div>
   );
 }

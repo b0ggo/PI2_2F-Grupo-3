@@ -2,13 +2,14 @@
   position: fixed;
   bottom: 0;
   left: 0;
+  right: 0;
   transform: none;
   width: 100%;
   max-width: 100%;
   background: #ffffff;
   border-top: 0.5px solid var(--surface-divider);
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   padding: 8px 0 calc(14px + env(safe-area-inset-bottom, 0));
   z-index: 100;
   box-sizing: border-box;

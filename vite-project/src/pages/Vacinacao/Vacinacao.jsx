@@ -219,7 +219,7 @@ export default function Vacinacao() {
       )}
       </div>
 
-      <BottomNav />
+      <BottomNav mode="produtor" />
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { ROUTES } from "../../constants/routes.js";
 import "./BottomNav.css";
 
@@ -35,28 +36,66 @@ const TABS = [
   { to: ROUTES.PERFIL, label: "Perfil", icon: ICONS.user },
 ];
 
-export default function BottomNav({ tabs = TABS }) {
+export default function BottomNav({ tabs, mode }) {
+  const location = useLocation();
+
+  const PRODUTOR_TABS = TABS;
+  const COOPERATIVA_TABS = [
+    { to: ROUTES.HOME, end: true, label: "Início", icon: ICONS.home },
+    { to: ROUTES.COOPERATIVA, label: "Produtores", icon: ICONS.user },
+    { to: ROUTES.PERFIL, label: "Perfil", icon: ICONS.user },
+  ];
+
+  const isCoopMode = (() => {
+    try { return sessionStorage.getItem('bottomNavMode') === 'cooperativa'; } catch { return false }
+  })();
+
+  const effectiveTabs = Array.isArray(tabs)
+    ? tabs
+    : mode === "cooperativa"
+    ? COOPERATIVA_TABS
+    : mode === "produtor"
+    ? PRODUTOR_TABS
+    : isCoopMode
+    ? COOPERATIVA_TABS
+    : PRODUTOR_TABS;
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("bottomNavTabs", JSON.stringify(effectiveTabs));
+    } catch (e) {}
+  }, [effectiveTabs]);
+
+  useEffect(() => {
+    try { sessionStorage.setItem('lastRoute', location.pathname); } catch (e) {}
+  }, [location.pathname]);
+
   return (
     <nav className="bottom-nav" role="navigation" aria-label="Menu principal">
-      {tabs.map((t) => (
-        <NavLink
-          key={t.to}
-          to={t.to}
-          end={t.end}
-          className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
-        >
-          {({ isActive }) => (
-            <>
-              <Icon
-                d={t.icon}
-                size={20}
-                color={isActive ? "#16a34a" : "#9ca3af"}
-              />
-              {t.label}
-            </>
-          )}
-        </NavLink>
-      ))}
+      {effectiveTabs.map((t, i) => {
+        const extraState = { ...(t.state || {}), bottomTabs: effectiveTabs };
+        const toProp = typeof t.to === "string" ? { pathname: t.to, state: extraState } : t.to;
+
+        return (
+          <NavLink
+            key={t.to + "-" + i}
+            to={toProp}
+            end={t.end}
+            className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+          >
+            {({ isActive }) => (
+              <>
+                <Icon
+                  d={t.icon}
+                  size={20}
+                  color={isActive ? "#16a34a" : "#9ca3af"}
+                />
+                {t.label}
+              </>
+            )}
+          </NavLink>
+        );
+      })}
     </nav>
   );
 }

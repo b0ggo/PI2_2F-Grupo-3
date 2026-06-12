@@ -11,6 +11,11 @@ export default function Login() {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [loginTipoConta, setLoginTipoConta] = useState("produtor");
+
+  const emailPlaceholder = loginTipoConta === "cooperativa"
+    ? "Email da empresa ou cooperativa"
+    : "Digite seu email";
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -24,6 +29,13 @@ export default function Login() {
     setCarregando(true);
     try {
       await login(email, senha);
+      try {
+        sessionStorage.setItem("loginTipoConta", loginTipoConta);
+        sessionStorage.setItem("bottomNavMode", loginTipoConta === "cooperativa" ? "cooperativa" : "produtor");
+      } catch (e) {
+        /* ignore storage failures */
+      }
+
       navigate(ROUTES.HOME);
     } catch (err) {
       setErro(err.message || "Email ou senha incorretos.");
@@ -46,12 +58,30 @@ export default function Login() {
             <p>Gestão Rural Simplificada</p>
           </div>
 
+          <div className="login-mode-toggle">
+            <div className="login-mode-label">Entrar como</div>
+            <button
+              type="button"
+              className={loginTipoConta === "produtor" ? "active" : ""}
+              onClick={() => setLoginTipoConta("produtor")}
+            >
+              Produtor
+            </button>
+            <button
+              type="button"
+              className={loginTipoConta === "cooperativa" ? "active" : ""}
+              onClick={() => setLoginTipoConta("cooperativa")}
+            >
+              Empresa / Cooperativa
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit} noValidate>
             <label htmlFor="email">Email ou Usuário</label>
             <input
               id="email"
               type="email"
-              placeholder="Digite seu email"
+              placeholder={emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"

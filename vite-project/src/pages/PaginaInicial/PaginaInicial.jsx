@@ -100,6 +100,7 @@ export default function PaginaInicial() {
   const [stats, setStats] = useState({ animais: 0, lotes: 0, percentualVacinados: 0 });
   const [badges, setBadges] = useState({ alertas: 0, chat: 0 });
   const [coopProdutores, setCoopProdutores] = useState([]);
+  const [isCoopView, setIsCoopView] = useState(false);
 
   useEffect(() => {
     getPerfil().then(setPerfil);
@@ -113,7 +114,26 @@ export default function PaginaInicial() {
   }, []);
 
   useEffect(() => {
-    if ((perfil.tipoConta || "").toLowerCase() === "cooperativa") {
+    const isCoopPerfil = (perfil.tipoConta || "").toLowerCase() === "cooperativa";
+    const selectedLoginTipo = (() => {
+      try {
+        return sessionStorage.getItem('loginTipoConta');
+      } catch { return null; }
+    })();
+
+    const resolvedIsCoop = selectedLoginTipo
+      ? selectedLoginTipo === 'cooperativa'
+      : isCoopPerfil;
+
+    setIsCoopView(resolvedIsCoop);
+
+    try {
+      sessionStorage.setItem('bottomNavMode', resolvedIsCoop ? 'cooperativa' : 'produtor');
+    } catch (e) {
+      /* ignore storage failures */
+    }
+
+    if (isCoopPerfil) {
       try {
         const raw = localStorage.getItem("cooperativa:produtores") || "[]";
         setCoopProdutores(JSON.parse(raw));
@@ -123,10 +143,6 @@ export default function PaginaInicial() {
     }
   }, [perfil]);
 
-  const COOP_TABS = [
-    { to: ROUTES.COOPERATIVA, label: "Produtores", icon: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10" },
-    { to: ROUTES.PERFIL, label: "Perfil", icon: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" },
-  ];
 
   return (
     <div className="home-app">
@@ -161,7 +177,7 @@ export default function PaginaInicial() {
         </div>
       )}
 
-      {((perfil.tipoConta || "").toLowerCase() === "cooperativa") ? (
+      {isCoopView ? (
         <div className="home-app__coop">
           <nav className="home-app__menu" aria-label="Atalhos da cooperativa">
             <Link to={ROUTES.COOPERATIVA} className="home-menu-card">
@@ -175,7 +191,7 @@ export default function PaginaInicial() {
             </Link>
           </nav>
 
-          <BottomNav tabs={COOP_TABS} />
+          <BottomNav mode="cooperativa" />
         </div>
       ) : (
         <>
@@ -215,7 +231,7 @@ export default function PaginaInicial() {
             </div>
           </div>
 
-          <BottomNav />
+          <BottomNav mode="produtor" />
         </>
       )}
     </div>

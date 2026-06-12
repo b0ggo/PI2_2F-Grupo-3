@@ -263,7 +263,7 @@ export default function CadastrarAnimal({ onVoltar }) {
           visivel={feedback.visivel}
         />
       )}
-      <BottomNav />
+      <BottomNav mode="produtor" />
     </>
   )
 }

@@ -92,7 +92,16 @@ export async function login(email, senha) {
 }
 
 export async function fazerLogout() {
-  await logoutUsuario()
+  try {
+    await logoutUsuario();
+  } finally {
+    try {
+      sessionStorage.removeItem('bottomNavMode');
+      sessionStorage.removeItem('loginTipoConta');
+    } catch (e) {
+      /* ignore storage failures */
+    }
+  }
 }
 
 export function estaLogado() {

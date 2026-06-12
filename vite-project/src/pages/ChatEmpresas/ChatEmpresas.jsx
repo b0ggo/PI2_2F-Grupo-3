@@ -311,7 +311,7 @@ export default function ChatEmpresas() {
       </div>
       </div>
 
-      <BottomNav />
+      <BottomNav mode="produtor" />
     </div>
   );
 }

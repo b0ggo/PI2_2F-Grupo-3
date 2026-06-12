@@ -303,7 +303,7 @@ export default function CadastrarLotes() {
           {feedback.message}
         </div>
       )}
-      <BottomNav />
+      <BottomNav mode="produtor" />
     </div>
   );
 }

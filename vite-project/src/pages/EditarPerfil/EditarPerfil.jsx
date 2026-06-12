@@ -91,7 +91,7 @@ export default function EditarPerfil() {
         </div>
       </div>
 
-      <BottomNav />
+      <BottomNav mode="produtor" />
     </div>
   );
 }

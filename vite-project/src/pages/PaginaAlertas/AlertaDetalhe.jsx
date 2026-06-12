@@ -28,7 +28,7 @@ export default function AlertaDetalhe() {
             <p className="alertas-estado">Notificação não encontrada.</p>
           </div>
         </div>
-        <BottomNav />
+        <BottomNav mode="produtor" />
       </div>
     );
   }
@@ -43,7 +43,7 @@ export default function AlertaDetalhe() {
           <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{alerta.detalhe}</p>
         </div>
       </div>
-      <BottomNav />
+      <BottomNav mode="produtor" />
     </div>
   );
 }

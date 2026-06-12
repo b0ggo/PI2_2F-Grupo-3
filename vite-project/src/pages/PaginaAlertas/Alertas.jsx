@@ -193,7 +193,8 @@ export default function Alertas() {
         </div>
       </div>
 
-      <BottomNav />
+      <BottomNav mode="produtor" />
     </div>
   );
 }
+

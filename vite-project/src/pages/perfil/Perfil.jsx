@@ -37,6 +37,8 @@ export default function Perfil() {
     getStats().then(setStats).catch(() => {});
   }, [location.key]);
 
+  const isCoopPerfil = (dados && (dados.tipoConta || "").toLowerCase() === "cooperativa");
+
   function exibir(valor) {
     return valor || "Não informado";
   }
@@ -191,7 +193,7 @@ export default function Perfil() {
         Sair da Conta
       </button>
 
-      <BottomNav />
+      <BottomNav mode={isCoopPerfil ? "cooperativa" : "produtor"} />
     </div>
   );
 }

@@ -53,7 +53,7 @@ export default function Produtor() {
           </div>
         </div>
       </div>
-      <BottomNav />
+      <BottomNav mode="cooperativa" />
     </div>
   );
 }

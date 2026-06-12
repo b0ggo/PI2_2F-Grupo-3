@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import Login from "./pages/Login/Login";
 import EsqueciSenha from "./pages/EsqueciSenha/EsqueciSenha";
@@ -17,12 +18,27 @@ import AlertaDetalhe from "./pages/PaginaAlertas/AlertaDetalhe";
 import Cooperativa from "./pages/Cooperativa/Cooperativa";
 import Produtor from "./pages/Cooperativa/Produtor/Produtor";
 import { ROUTES } from "./constants/routes.js";
+import { getPerfil } from "./services/perfil.js";
 
 function Protegido({ children }) {
   return <ProtectedRoute>{children}</ProtectedRoute>;
 }
 
 export default function App() {
+  useEffect(() => {
+    let mounted = true;
+    getPerfil().then((p) => {
+      if (!mounted) return;
+      try {
+        const selectedLoginTipo = sessionStorage.getItem('loginTipoConta');
+        const modo = selectedLoginTipo === "cooperativa"
+          ? "cooperativa"
+          : (selectedLoginTipo === "produtor" ? "produtor" : ((p.tipoConta || "").toLowerCase() === "cooperativa" ? "cooperativa" : "produtor"));
+        sessionStorage.setItem('bottomNavMode', modo);
+      } catch (e) {}
+    }).catch(() => {});
+    return () => { mounted = false };
+  }, []);
   return (
     <BrowserRouter>
       <Routes>
