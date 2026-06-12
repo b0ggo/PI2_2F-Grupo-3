@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
@@ -163,18 +163,11 @@ export default function Alertas() {
           {!carregando &&
             !erro &&
             listaVisivel.map((alerta) => (
-              <article
+              <Link
                 key={alerta.id}
+                to={`/alertas/${alerta.id}`}
                 className={`alertas-item${alerta.lido ? " alertas-item--lido" : ""}`}
                 onClick={() => marcarComoLida(alerta.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    marcarComoLida(alerta.id);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
                 aria-label={`${alerta.titulo}. ${alerta.detalhe}${alerta.lido ? ". Lida" : ". Não lida"}`}
               >
                 <div className="alertas-icone" aria-hidden>
@@ -195,7 +188,7 @@ export default function Alertas() {
                 {!alerta.lido && (
                   <span className="alertas-ponto" aria-hidden title="Não lida" />
                 )}
-              </article>
+              </Link>
             ))}
         </div>
       </div>

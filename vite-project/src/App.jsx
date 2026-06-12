@@ -13,6 +13,9 @@ import Perfil from "./pages/perfil/Perfil";
 import EditarPerfil from "./pages/EditarPerfil/EditarPerfil";
 import Consultar from "./pages/Consultar/Consultar";
 import Alertas from "./pages/PaginaAlertas/Alertas";
+import AlertaDetalhe from "./pages/PaginaAlertas/AlertaDetalhe";
+import Cooperativa from "./pages/Cooperativa/Cooperativa";
+import Produtor from "./pages/Cooperativa/Produtor/Produtor";
 import { ROUTES } from "./constants/routes.js";
 
 function Protegido({ children }) {
@@ -36,6 +39,9 @@ export default function App() {
         <Route path={ROUTES.PERFIL} element={<Protegido><Perfil /></Protegido>} />
         <Route path={ROUTES.EDITAR_PERFIL} element={<Protegido><EditarPerfil /></Protegido>} />
         <Route path={ROUTES.CONSULTAR} element={<Protegido><Consultar /></Protegido>} />
+        <Route path={ROUTES.COOPERATIVA} element={<Protegido><Cooperativa /></Protegido>} />
+        <Route path="/produtor/:id" element={<Protegido><Produtor /></Protegido>} />
+        <Route path={ROUTES.ALERTA} element={<Protegido><AlertaDetalhe /></Protegido>} />
         <Route path={ROUTES.NOTIFICACAO} element={<Protegido><Alertas /></Protegido>} />
         <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
       </Routes>

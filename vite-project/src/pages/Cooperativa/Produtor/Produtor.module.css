@@ -1,0 +1,42 @@
+.page {
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 12px 12px calc(88px + env(safe-area-inset-bottom, 0));
+  box-sizing: border-box;
+}
+
+.card {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  border: 0.5px solid var(--surface-border);
+  overflow: hidden;
+}
+
+.body {
+  padding: 20px;
+}
+
+.name {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.meta {
+  margin: 6px 0;
+  color: var(--color-text-muted);
+}
+
+.actions {
+  margin-top: 18px;
+}
+
+.btn {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}

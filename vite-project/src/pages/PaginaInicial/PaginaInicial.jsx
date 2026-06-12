@@ -99,6 +99,7 @@ export default function PaginaInicial() {
   const [perfil, setPerfil] = useState({ nome: "", tipoConta: "" });
   const [stats, setStats] = useState({ animais: 0, lotes: 0, percentualVacinados: 0 });
   const [badges, setBadges] = useState({ alertas: 0, chat: 0 });
+  const [coopProdutores, setCoopProdutores] = useState([]);
 
   useEffect(() => {
     getPerfil().then(setPerfil);
@@ -110,6 +111,22 @@ export default function PaginaInicial() {
       .then((convs) => setBadges((b) => ({ ...b, chat: convs.reduce((n, c) => n + (c.unread || 0), 0) })))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if ((perfil.tipoConta || "").toLowerCase() === "cooperativa") {
+      try {
+        const raw = localStorage.getItem("cooperativa:produtores") || "[]";
+        setCoopProdutores(JSON.parse(raw));
+      } catch {
+        setCoopProdutores([]);
+      }
+    }
+  }, [perfil]);
+
+  const COOP_TABS = [
+    { to: ROUTES.COOPERATIVA, label: "Produtores", icon: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10" },
+    { to: ROUTES.PERFIL, label: "Perfil", icon: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" },
+  ];
 
   return (
     <div className="home-app">
@@ -144,43 +161,63 @@ export default function PaginaInicial() {
         </div>
       )}
 
-      <nav className="home-app__menu" aria-label="Atalhos do produtor">
-        {MENU_BASE.map((item) => {
-          const badge = item.badgeKey ? badges[item.badgeKey] : null;
-          return (
-            <Link key={item.to} to={item.to} className="home-menu-card">
+      {((perfil.tipoConta || "").toLowerCase() === "cooperativa") ? (
+        <div className="home-app__coop">
+          <nav className="home-app__menu" aria-label="Atalhos da cooperativa">
+            <Link to={ROUTES.COOPERATIVA} className="home-menu-card">
               <div className="home-menu-card__icon" style={{ background: ICON_BG }}>
-                {item.icon}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={ICON_STROKE} strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
               </div>
               <div className="home-menu-card__content">
-                <p className="home-menu-card__title">{item.title}</p>
-                <p className="home-menu-card__desc">{item.desc}</p>
+                <p className="home-menu-card__title">Produtores</p>
+                <p className="home-menu-card__desc">Gerenciar produtores vinculados</p>
               </div>
-              {badge > 0 && (
-                <span className="home-menu-card__badge">{badge}</span>
-              )}
             </Link>
-          );
-        })}
-      </nav>
+          </nav>
 
-      <h2 className="home-app__resumo-title">Resumo</h2>
-      <div className="home-app__resumo-row">
-        <div className="home-stat home-stat--animais">
-          <div className="home-stat__label">Animais</div>
-          <div className="home-stat__value">{stats.animais}</div>
+          <BottomNav tabs={COOP_TABS} />
         </div>
-        <div className="home-stat home-stat--lotes">
-          <div className="home-stat__label">Lotes</div>
-          <div className="home-stat__value">{stats.lotes}</div>
-        </div>
-        <div className="home-stat home-stat--vac">
-          <div className="home-stat__label">Vacinados</div>
-          <div className="home-stat__value">{stats.percentualVacinados}%</div>
-        </div>
-      </div>
+      ) : (
+        <>
+          <nav className="home-app__menu" aria-label="Atalhos do produtor">
+            {MENU_BASE.map((item) => {
+              const badge = item.badgeKey ? badges[item.badgeKey] : null;
+              return (
+                <Link key={item.to} to={item.to} className="home-menu-card">
+                  <div className="home-menu-card__icon" style={{ background: ICON_BG }}>
+                    {item.icon}
+                  </div>
+                  <div className="home-menu-card__content">
+                    <p className="home-menu-card__title">{item.title}</p>
+                    <p className="home-menu-card__desc">{item.desc}</p>
+                  </div>
+                  {badge > 0 && (
+                    <span className="home-menu-card__badge">{badge}</span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
 
-      <BottomNav />
+          <h2 className="home-app__resumo-title">Resumo</h2>
+          <div className="home-app__resumo-row">
+            <div className="home-stat home-stat--animais">
+              <div className="home-stat__label">Animais</div>
+              <div className="home-stat__value">{stats.animais}</div>
+            </div>
+            <div className="home-stat home-stat--lotes">
+              <div className="home-stat__label">Lotes</div>
+              <div className="home-stat__value">{stats.lotes}</div>
+            </div>
+            <div className="home-stat home-stat--vac">
+              <div className="home-stat__label">Vacinados</div>
+              <div className="home-stat__value">{stats.percentualVacinados}%</div>
+            </div>
+          </div>
+
+          <BottomNav />
+        </>
+      )}
     </div>
   );
 }

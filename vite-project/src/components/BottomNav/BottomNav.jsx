@@ -35,10 +35,10 @@ const TABS = [
   { to: ROUTES.PERFIL, label: "Perfil", icon: ICONS.user },
 ];
 
-export default function BottomNav() {
+export default function BottomNav({ tabs = TABS }) {
   return (
     <nav className="bottom-nav" role="navigation" aria-label="Menu principal">
-      {TABS.map((t) => (
+      {tabs.map((t) => (
         <NavLink
           key={t.to}
           to={t.to}

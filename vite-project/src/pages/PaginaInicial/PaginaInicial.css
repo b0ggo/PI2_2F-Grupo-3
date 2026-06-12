@@ -147,3 +147,46 @@
   font-weight: 700;
   color: var(--color-primary);
 }
+
+/* Cooperativa*/
+.home-app__coop .coop-toolbar {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 12px 0;
+}
+
+.btn {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.coop-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.coop-item {
+  padding: 12px;
+  text-align: left;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--surface-border);
+  background: #fff;
+}
+
+.home-app__empty {
+  color: var(--color-text-muted);
+}
