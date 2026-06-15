@@ -1,10 +1,86 @@
+from datetime import datetime
+
 from config import CONVERSAS_FILE, MENSAGENS_FILE
+from services.auth_service import find_producers_for_cooperative, find_user_by_id
 from storage.json_store import load_list, new_id, save_list
 
 
-def seed_chat_for_user(user_id):
+def _conversation_exists(conversas, user_id, partner_id):
+    return any(
+        c.get("userId") == user_id and c.get("partnerId") == partner_id
+        for c in conversas
+    )
+
+
+def _find_conversation(conversas, user_id, partner_id):
+    return next(
+        (
+            c
+            for c in conversas
+            if c.get("userId") == user_id and c.get("partnerId") == partner_id
+        ),
+        None,
+    )
+
+
+def _create_coop_prod_conversations(cooperativa, produtor):
+    conversas = load_list(CONVERSAS_FILE)
+    mensagens = load_list(MENSAGENS_FILE)
+
+    coop_conv = _find_conversation(conversas, cooperativa["id"], produtor["id"])
+    prod_conv = _find_conversation(conversas, produtor["id"], cooperativa["id"])
+
+    if not prod_conv:
+        prod_conv = {
+            "id": new_id(),
+            "userId": produtor["id"],
+            "partnerId": cooperativa["id"],
+            "name": cooperativa.get("nome", "Cooperativa"),
+            "type": "Cooperativa",
+            "lastMsg": "Conversa iniciada com a cooperativa.",
+            "time": datetime.now().strftime("%H:%M"),
+        }
+        conversas.append(prod_conv)
+
+    if not coop_conv:
+        coop_conv = {
+            "id": new_id(),
+            "userId": cooperativa["id"],
+            "partnerId": produtor["id"],
+            "name": produtor.get("nome", produtor.get("email", "Produtor")),
+            "type": "Produtor",
+            "lastMsg": "Conversa iniciada com o produtor.",
+            "time": datetime.now().strftime("%H:%M"),
+        }
+        conversas.append(coop_conv)
+
+    save_list(CONVERSAS_FILE, conversas)
+    save_list(MENSAGENS_FILE, mensagens)
+
+    return prod_conv, coop_conv
+
+
+def _seed_chat_for_cooperativa(cooperativa):
+    producer_ids = find_producers_for_cooperative(cooperativa["id"])
+    for producer_id in producer_ids:
+        produtor = find_user_by_id(producer_id)
+        if produtor:
+            _create_coop_prod_conversations(cooperativa, produtor)
+
+
+def seed_chat_for_user(user_id, user=None):
     conversas = load_list(CONVERSAS_FILE)
     if any(c.get("userId") == user_id for c in conversas):
+        return
+
+    if user and user.get("tipoConta") == "Produtor" and user.get("cooperativaId"):
+        cooperativa = find_user_by_id(user.get("cooperativaId"))
+        if cooperativa:
+            _create_coop_prod_conversations(cooperativa, user)
+            return
+
+    if user and user.get("tipoConta") == "Cooperativa":
+        _seed_chat_for_cooperativa(user)
         return
 
     demos = [

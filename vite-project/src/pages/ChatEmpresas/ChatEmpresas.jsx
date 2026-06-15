@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import headerUi from "../../components/Header/Header.module.css";
 import { ROUTES } from "../../constants/routes.js";
 import { enviarMensagem, getConversas } from "../../services/api.js";
+import { getPerfil, resolveUserMode } from "../../services/perfil.js";
 import "./ChatEmpresas.css";
 
 function Icon({ d, size = 22, color = "currentColor", strokeWidth = 2 }) {
@@ -46,8 +48,8 @@ function patchMessageStatus(messages, msgId, status) {
   return messages.map((m) => (m.id === msgId ? { ...m, status } : m));
 }
 
-function ConversationView({ conversation, onBack, onUpdate }) {
-  const [messages, setMessages] = useState(conversation.messages);
+export function ConversationView({ conversation, onBack, onUpdate }) {
+  const [messages, setMessages] = useState(conversation.messages || []);
   const [input, setInput] = useState("");
   const [remoteTyping, setRemoteTyping] = useState(false);
   const bottomRef = useRef(null);
@@ -65,12 +67,6 @@ function ConversationView({ conversation, onBack, onUpdate }) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, remoteTyping]);
-
-  const schedule = (fn, delay) => {
-    const id = window.setTimeout(fn, delay);
-    timersRef.current.push(id);
-    return id;
-  };
 
   const pushMessages = (updater) => {
     setMessages((prev) => {
@@ -157,22 +153,6 @@ function ConversationView({ conversation, onBack, onUpdate }) {
           </div>
         ))}
 
-        {remoteTyping && (
-          <div className="typing-row">
-            <div className="typing-bubble">
-              <span
-                style={{
-                  fontSize: 13,
-                  color: "#6b7280",
-                  fontWeight: 700,
-                }}
-              >
-                Usuário está digitando…
-              </span>
-            </div>
-          </div>
-        )}
-
         <div ref={bottomRef} />
       </div>
 
@@ -203,6 +183,28 @@ export default function ChatEmpresas() {
   const [search, setSearch] = useState("");
   const [openConv, setOpenConv] = useState(null);
   const [carregando, setCarregando] = useState(true);
+  const [modo, setModo] = useState("produtor");
+  const [autoOpened, setAutoOpened] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleCloseConversation = () => {
+    setOpenConv(null);
+    setAutoOpened(true);
+    navigate(location.pathname, { replace: true, state: {} });
+  };
+
+  useEffect(() => {
+    getPerfil()
+      .then((perfil) => {
+        const resolved = resolveUserMode(perfil);
+        setModo(resolved);
+        if (resolved === "cooperativa") {
+          navigate(ROUTES.COOPERATIVA_CHAT, { replace: true });
+        }
+      })
+      .catch(() => setModo("produtor"));
+  }, [navigate]);
 
   useEffect(() => {
     getConversas()
@@ -216,11 +218,27 @@ export default function ChatEmpresas() {
   );
 
   const handleOpen = (conv) => {
-    setConversations((cs) =>
-      cs.map((c) => (c.id === conv.id ? { ...c, unread: 0 } : c)),
-    );
+    setConversations((cs) => {
+      const updated = cs.map((c) => (c.id === conv.id ? { ...c, unread: 0 } : c));
+      const current = updated.find((c) => c.id === conv.id);
+      if (!current) return updated;
+      return [current, ...updated.filter((c) => c.id !== conv.id)];
+    });
     setOpenConv({ ...conv, unread: 0 });
   };
+
+  useEffect(() => {
+    if (autoOpened || (!location.state?.conversationId && !location.state?.partnerId)) return;
+
+    const state = location.state;
+    const conv = conversations.find((c) => c.id === state.conversationId)
+      || conversations.find((c) => c.partnerId === state.partnerId);
+
+    if (conv) {
+      handleOpen(conv);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, conversations, navigate, location.pathname, autoOpened]);
 
   const handleUpdate = (id, msgs) => {
     const last = msgs[msgs.length - 1];
@@ -242,7 +260,7 @@ export default function ChatEmpresas() {
       <ConversationView
         key={openConv.id}
         conversation={openConv}
-        onBack={() => setOpenConv(null)}
+        onBack={handleCloseConversation}
         onUpdate={handleUpdate}
       />
     );
@@ -251,11 +269,11 @@ export default function ChatEmpresas() {
   return (
     <div className="chat-page">
       <div className="chat-shell">
-        <Header titulo="Chat" voltarPara={ROUTES.HOME} navMiddle={
+        <Header titulo={modo === "cooperativa" ? "Chat Cooperativa" : "Chat"} voltarPara={ROUTES.HOME} navMiddle={
           <div className="app-header-search">
             <Icon d={ICONS.search} size={16} color="#9ca3af" />
             <input
-              placeholder="Buscar empresas..."
+              placeholder={modo === "cooperativa" ? "Buscar produtores..." : "Buscar empresas..."}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               aria-label="Buscar conversa"
@@ -301,17 +319,20 @@ export default function ChatEmpresas() {
         <div className="chat-cta">
           <div className="chat-cta__heading">
             <Icon d={ICONS.connect} size={16} color="#16a34a" />
-            <span className="chat-cta__title">Conecte-se com Empresas</span>
+            <span className="chat-cta__title">
+              {modo === "cooperativa" ? "Conecte-se com produtores" : "Conecte-se com empresas"}
+            </span>
           </div>
           <p className="chat-cta__text">
-            Entre em contato com cooperativas, veterinárias e fornecedores
-            diretamente pelo chat.
+            {modo === "cooperativa"
+              ? "Use este chat para conversar diretamente com produtores ligados à sua cooperativa."
+              : "Entre em contato com cooperativas, veterinárias e fornecedores diretamente pelo chat."}
           </p>
         </div>
       </div>
       </div>
 
-      <BottomNav mode="produtor" />
+      <BottomNav />
     </div>
   );
 }

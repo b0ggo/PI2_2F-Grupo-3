@@ -40,7 +40,9 @@ export default function Perfil() {
   const isCoopPerfil = (dados && (dados.tipoConta || "").toLowerCase() === "cooperativa");
 
   function exibir(valor) {
-    return valor || "Não informado";
+    if (!valor) return "Não informado";
+    if ((valor || "").toLowerCase() === "cooperativa") return "Empresa";
+    return valor;
   }
 
   return (

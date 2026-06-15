@@ -39,10 +39,17 @@ const TABS = [
 export default function BottomNav({ tabs, mode }) {
   const location = useLocation();
 
-  const PRODUTOR_TABS = TABS;
+  const PRODUTOR_TABS = [
+    { to: ROUTES.HOME, end: true, label: "Início", icon: ICONS.home },
+    { to: ROUTES.CONSULTAR, label: "Consultar", icon: ICONS.search },
+    { to: ROUTES.NOTIFICACAO, label: "Alertas", icon: ICONS.bell },
+    { to: ROUTES.CHAT, label: "Chat", icon: ICONS.chat },
+    { to: ROUTES.PERFIL, label: "Perfil", icon: ICONS.user },
+  ];
   const COOPERATIVA_TABS = [
     { to: ROUTES.HOME, end: true, label: "Início", icon: ICONS.home },
     { to: ROUTES.COOPERATIVA, label: "Produtores", icon: ICONS.user },
+    { to: ROUTES.COOPERATIVA_CHAT, label: "Chat", icon: ICONS.chat },
     { to: ROUTES.PERFIL, label: "Perfil", icon: ICONS.user },
   ];
 

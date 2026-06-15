@@ -30,6 +30,14 @@ def find_user_by_id(user_id):
     return None
 
 
+def find_producers_for_cooperative(coop_id):
+    ids = []
+    for user in load_list(USERS_FILE):
+        if user.get("cooperativaId") == coop_id:
+            ids.append(user.get("id"))
+    return ids
+
+
 def register_user(data):
     email = data.get("email", "").strip().lower()
     if not email or not data.get("senha"):
@@ -48,6 +56,10 @@ def register_user(data):
         "tipoConta": data.get("tipoConta", "").strip(),
         "senhaHash": generate_password_hash(data["senha"]),
     }
+
+    # Optionally associate a producer with a cooperativa
+    if data.get("cooperativaId"):
+        user["cooperativaId"] = str(data.get("cooperativaId")).strip()
 
     users = load_list(USERS_FILE)
     users.append(user)

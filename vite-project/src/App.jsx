@@ -17,8 +17,9 @@ import Alertas from "./pages/PaginaAlertas/Alertas";
 import AlertaDetalhe from "./pages/PaginaAlertas/AlertaDetalhe";
 import Cooperativa from "./pages/Cooperativa/Cooperativa";
 import Produtor from "./pages/Cooperativa/Produtor/Produtor";
+import ChatCooperativa from "./pages/ChatEmpresas/ChatCooperativa";
 import { ROUTES } from "./constants/routes.js";
-import { getPerfil } from "./services/perfil.js";
+import { getPerfil, resolveUserMode } from "./services/perfil.js";
 
 function Protegido({ children }) {
   return <ProtectedRoute>{children}</ProtectedRoute>;
@@ -29,11 +30,8 @@ export default function App() {
     let mounted = true;
     getPerfil().then((p) => {
       if (!mounted) return;
+      const modo = resolveUserMode(p);
       try {
-        const selectedLoginTipo = sessionStorage.getItem('loginTipoConta');
-        const modo = selectedLoginTipo === "cooperativa"
-          ? "cooperativa"
-          : (selectedLoginTipo === "produtor" ? "produtor" : ((p.tipoConta || "").toLowerCase() === "cooperativa" ? "cooperativa" : "produtor"));
         sessionStorage.setItem('bottomNavMode', modo);
       } catch (e) {}
     }).catch(() => {});
@@ -52,6 +50,7 @@ export default function App() {
         <Route path={ROUTES.CADASTRO_LOTES} element={<Protegido><CadastrarLotes /></Protegido>} />
         <Route path={ROUTES.VACINACAO} element={<Protegido><Vacinacao /></Protegido>} />
         <Route path={ROUTES.CHAT} element={<Protegido><ChatEmpresas /></Protegido>} />
+        <Route path={ROUTES.COOPERATIVA_CHAT} element={<Protegido><ChatCooperativa /></Protegido>} />
         <Route path={ROUTES.PERFIL} element={<Protegido><Perfil /></Protegido>} />
         <Route path={ROUTES.EDITAR_PERFIL} element={<Protegido><EditarPerfil /></Protegido>} />
         <Route path={ROUTES.CONSULTAR} element={<Protegido><Consultar /></Protegido>} />

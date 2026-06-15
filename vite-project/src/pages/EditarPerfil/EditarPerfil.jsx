@@ -3,16 +3,20 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header.jsx";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import { ROUTES } from "../../constants/routes.js";
-import { getPerfil, savePerfil, PERFIL_VAZIO } from "../../services/perfil.js";
+import { getPerfil, savePerfil, PERFIL_VAZIO, resolveUserMode } from "../../services/perfil.js";
 import "./EditarPerfil.css";
 
 export default function EditarPerfil() {
   const navigate = useNavigate();
   const [dados, setDados] = useState(PERFIL_VAZIO);
+  const [modo, setModo] = useState("produtor");
   const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
-    getPerfil().then(setDados);
+    getPerfil().then((perfil) => {
+      setDados(perfil);
+      setModo(resolveUserMode(perfil));
+    });
   }, []);
 
   function atualizarCampo(campo, valor) {
@@ -91,7 +95,7 @@ export default function EditarPerfil() {
         </div>
       </div>
 
-      <BottomNav mode="produtor" />
+      <BottomNav mode={modo === "cooperativa" ? "cooperativa" : "produtor"} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import { login } from "../../services/perfil.js";
+import { login, setLoginTipoConta as setLoginTipoContaStorage } from "../../services/perfil.js";
 import logo from "../../imagens/logo.png";
 import "./Login.css";
 
@@ -29,13 +29,7 @@ export default function Login() {
     setCarregando(true);
     try {
       await login(email, senha);
-      try {
-        sessionStorage.setItem("loginTipoConta", loginTipoConta);
-        sessionStorage.setItem("bottomNavMode", loginTipoConta === "cooperativa" ? "cooperativa" : "produtor");
-      } catch (e) {
-        /* ignore storage failures */
-      }
-
+      setLoginTipoContaStorage(loginTipoConta);
       navigate(ROUTES.HOME);
     } catch (err) {
       setErro(err.message || "Email ou senha incorretos.");

@@ -13,6 +13,7 @@ export const ROUTES = {
   ALERTA: "/alertas/:id",
   NOTIFICACAO: "/alertas",
   CHAT: "/chat",
+  COOPERATIVA_CHAT: "/chat-cooperativa",
   PERFIL: "/perfil",
   EDITAR_PERFIL: "/editar-perfil",
   CONSULTAR: "/consultar",

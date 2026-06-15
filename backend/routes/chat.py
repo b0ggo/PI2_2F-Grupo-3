@@ -65,13 +65,33 @@ def enviar_mensagem(user, conversa_id):
 
     mensagens = load_list(MENSAGENS_FILE)
     mensagens.append(msg)
+
+    mirror_conv = next(
+        (
+            c
+            for c in load_list(CONVERSAS_FILE)
+            if c.get("userId") == conv.get("partnerId")
+            and c.get("partnerId") == conv.get("userId")
+        ),
+        None,
+    )
+
+    if mirror_conv:
+        mensagens.append({
+            "id": new_id(),
+            "conversaId": mirror_conv["id"],
+            "from": "them",
+            "text": texto,
+            "time": agora,
+            "status": "received",
+        })
+
     save_list(MENSAGENS_FILE, mensagens)
 
     conversas = load_list(CONVERSAS_FILE)
     for i, c in enumerate(conversas):
-        if c.get("id") == conversa_id:
+        if c.get("id") == conversa_id or (mirror_conv and c.get("id") == mirror_conv["id"]):
             conversas[i] = {**c, "lastMsg": texto, "time": agora}
-            break
     save_list(CONVERSAS_FILE, conversas)
 
     return jsonify(msg), 201

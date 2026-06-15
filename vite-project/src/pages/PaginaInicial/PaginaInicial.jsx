@@ -4,7 +4,7 @@ import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import { getAlertas, getConversas, getStats } from "../../services/api.js";
-import { getPerfil } from "../../services/perfil.js";
+import { getPerfil, resolveUserMode } from "../../services/perfil.js";
 import "./PaginaInicial.css";
 
 function Svg({ children, size = 22, stroke = "currentColor" }) {
@@ -115,25 +115,18 @@ export default function PaginaInicial() {
 
   useEffect(() => {
     const isCoopPerfil = (perfil.tipoConta || "").toLowerCase() === "cooperativa";
-    const selectedLoginTipo = (() => {
-      try {
-        return sessionStorage.getItem('loginTipoConta');
-      } catch { return null; }
-    })();
-
-    const resolvedIsCoop = selectedLoginTipo
-      ? selectedLoginTipo === 'cooperativa'
-      : isCoopPerfil;
+    const resolvedMode = resolveUserMode(perfil);
+    const resolvedIsCoop = resolvedMode === 'cooperativa';
 
     setIsCoopView(resolvedIsCoop);
 
     try {
-      sessionStorage.setItem('bottomNavMode', resolvedIsCoop ? 'cooperativa' : 'produtor');
+      sessionStorage.setItem('bottomNavMode', resolvedMode);
     } catch (e) {
       /* ignore storage failures */
     }
 
-    if (isCoopPerfil) {
+    if (resolvedIsCoop) {
       try {
         const raw = localStorage.getItem("cooperativa:produtores") || "[]";
         setCoopProdutores(JSON.parse(raw));
@@ -150,7 +143,7 @@ export default function PaginaInicial() {
         <Header
           layout="hero"
           titulo={`Bem-vindo${perfil.nome ? `, ${perfil.nome.split(" ")[0]}` : ""}!`}
-          subtitulo={perfil.tipoConta || "Produtor Rural"}
+          subtitulo={(perfil.tipoConta || "").toLowerCase() === "cooperativa" ? "Empresa" : perfil.tipoConta || "Produtor Rural"}
         />
       </div>
 
@@ -179,14 +172,25 @@ export default function PaginaInicial() {
 
       {isCoopView ? (
         <div className="home-app__coop">
-          <nav className="home-app__menu" aria-label="Atalhos da cooperativa">
+          <nav className="home-app__menu" aria-label="Atalhos da empresa">
             <Link to={ROUTES.COOPERATIVA} className="home-menu-card">
               <div className="home-menu-card__icon" style={{ background: ICON_BG }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={ICON_STROKE} strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={ICON_STROKE} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
               </div>
               <div className="home-menu-card__content">
                 <p className="home-menu-card__title">Produtores</p>
                 <p className="home-menu-card__desc">Gerenciar produtores vinculados</p>
+              </div>
+            </Link>
+            <Link to={ROUTES.COOPERATIVA_CHAT} className="home-menu-card">
+              <div className="home-menu-card__icon" style={{ background: ICON_BG }}>
+                <Svg stroke={ICON_STROKE}>
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </Svg>
+              </div>
+              <div className="home-menu-card__content">
+                <p className="home-menu-card__title">Chat</p>
+                <p className="home-menu-card__desc">Converse com produtores</p>
               </div>
             </Link>
           </nav>

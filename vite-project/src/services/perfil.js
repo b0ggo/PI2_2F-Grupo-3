@@ -42,6 +42,41 @@ function salvarCacheLocal(perfil) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(perfil))
 }
 
+export function getLoginTipoConta() {
+  try {
+    return sessionStorage.getItem('loginTipoConta')
+  } catch {
+    return null
+  }
+}
+
+export function setLoginTipoConta(tipo) {
+  const normalized = tipo === 'cooperativa' ? 'cooperativa' : 'produtor'
+  try {
+    sessionStorage.setItem('loginTipoConta', normalized)
+    sessionStorage.setItem('bottomNavMode', normalized)
+  } catch {
+    /* ignore storage failures */
+  }
+}
+
+export function clearLoginTipoConta() {
+  try {
+    sessionStorage.removeItem('loginTipoConta')
+    sessionStorage.removeItem('bottomNavMode')
+  } catch {
+    /* ignore storage failures */
+  }
+}
+
+export function resolveUserMode(perfil = {}) {
+  const selected = getLoginTipoConta()
+  if (selected) {
+    return selected === 'cooperativa' ? 'cooperativa' : 'produtor'
+  }
+  return (perfil.tipoConta || '').toLowerCase() === 'cooperativa' ? 'cooperativa' : 'produtor'
+}
+
 export async function getPerfil() {
   if (!getToken()) return lerCacheLocal()
   try {
@@ -95,12 +130,7 @@ export async function fazerLogout() {
   try {
     await logoutUsuario();
   } finally {
-    try {
-      sessionStorage.removeItem('bottomNavMode');
-      sessionStorage.removeItem('loginTipoConta');
-    } catch (e) {
-      /* ignore storage failures */
-    }
+    clearLoginTipoConta();
   }
 }
 

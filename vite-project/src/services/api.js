@@ -31,6 +31,33 @@ async function request(path, options = {}) {
   return response.json()
 }
 
+async function requestNoAuth(path, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  }
+
+  const response = await fetch(`${BASE_URL}${path}`, {
+    ...options,
+    headers,
+  })
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}))
+    throw new Error(err.message || `Erro HTTP ${response.status}`)
+  }
+
+  if (response.status === 204) return null
+  return response.json()
+}
+
+export async function validarLoginUsuario(email, senha) {
+  return requestNoAuth('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, senha }),
+  })
+}
+
 export async function registrarUsuario(dados) {
   const result = await request('/api/auth/register', {
     method: 'POST',
@@ -96,8 +123,36 @@ export async function postLote(lote) {
   })
 }
 
+async function requestWithToken(path, token, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  }
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  const response = await fetch(`${BASE_URL}${path}`, {
+    ...options,
+    headers,
+  })
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}))
+    throw new Error(err.message || `Erro HTTP ${response.status}`)
+  }
+
+  if (response.status === 204) return null
+  return response.json()
+}
+
 export async function getLotes() {
   return request('/api/lotes')
+}
+
+export async function getLotesByToken(token) {
+  return requestWithToken('/api/lotes', token)
 }
 
 export async function getVacinacoes() {
@@ -131,5 +186,12 @@ export async function enviarMensagem(conversaId, text) {
   return request(`/api/conversas/${conversaId}/mensagens`, {
     method: 'POST',
     body: JSON.stringify({ text }),
+  })
+}
+
+export async function associateProducerByEmail(payload) {
+  return request('/api/cooperativa/produtores/associar', {
+    method: 'POST',
+    body: JSON.stringify(payload),
   })
 }

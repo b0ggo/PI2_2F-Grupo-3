@@ -11,7 +11,7 @@ def register():
     data = request.get_json(silent=True) or {}
     try:
         user = register_user(data)
-        seed_chat_for_user(user["id"])
+        seed_chat_for_user(user["id"], user)
         token, perfil = login_user(data.get("email", ""), data.get("senha", ""))
         return jsonify({"token": token, "perfil": perfil}), 201
     except ValueError as err:
@@ -27,7 +27,7 @@ def login():
         from services.auth_service import find_user_by_email
         user = find_user_by_email(email)
         if user:
-            seed_chat_for_user(user["id"])
+            seed_chat_for_user(user["id"], user)
         token, perfil = login_user(email, senha)
         return jsonify({"token": token, "perfil": perfil})
     except ValueError as err:

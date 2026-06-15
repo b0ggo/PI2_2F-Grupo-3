@@ -3,24 +3,28 @@ from flask import Blueprint, jsonify, request
 from config import LOTES_FILE
 from routes.helpers import require_auth
 from storage.json_store import load_list, new_id, save_list
+from services.auth_service import find_producers_for_cooperative
 
 lotes_bp = Blueprint("lotes", __name__)
 
 
-def _filtrar_user(items, user_id):
-    return [l for l in items if l.get("userId") == user_id]
+def _filtrar_user(items, user):
+    if user.get("tipoConta") == "Cooperativa":
+        producer_ids = set(find_producers_for_cooperative(user["id"]))
+        return [l for l in items if l.get("userId") in producer_ids]
+    return [l for l in items if l.get("userId") == user["id"]]
 
 
 @lotes_bp.get("/api/lotes")
 @require_auth
 def listar_lotes(user):
-    return jsonify(_filtrar_user(load_list(LOTES_FILE), user["id"]))
+    return jsonify(_filtrar_user(load_list(LOTES_FILE), user))
 
 
 @lotes_bp.get("/api/lotes/<lote_id>")
 @require_auth
 def obter_lote(user, lote_id):
-    for lote in _filtrar_user(load_list(LOTES_FILE), user["id"]):
+    for lote in _filtrar_user(load_list(LOTES_FILE), user):
         if lote.get("id") == lote_id:
             return jsonify(lote)
     return jsonify({"message": "Lote não encontrado."}), 404

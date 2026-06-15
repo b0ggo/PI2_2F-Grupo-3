@@ -10,6 +10,7 @@ from routes.lotes import lotes_bp
 from routes.perfil import perfil_bp
 from routes.stats import stats_bp
 from routes.vacinacoes import vacinacoes_bp
+from routes.cooperativa import cooperativa_bp
 
 
 def register_routes(app):
@@ -23,3 +24,4 @@ def register_routes(app):
     app.register_blueprint(stats_bp)
     app.register_blueprint(busca_bp)
     app.register_blueprint(chat_bp)
+    app.register_blueprint(cooperativa_bp)
