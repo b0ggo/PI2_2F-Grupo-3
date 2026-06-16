@@ -9,7 +9,8 @@ animais_bp = Blueprint("animais", __name__)
 
 CAMPOS = (
     "tipo", "identificacao", "raca", "idade", "peso", "sexo",
-    "dataNasc", "status", "vacinas", "historico", "timestamp",
+    "dataNasc", "status", "vacinas", "historico", "produtividadeLeite",
+    "timestamp",
 )
 
 

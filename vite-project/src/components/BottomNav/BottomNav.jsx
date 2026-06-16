@@ -41,7 +41,7 @@ export default function BottomNav({ tabs, mode }) {
 
   const PRODUTOR_TABS = [
     { to: ROUTES.HOME, end: true, label: "Início", icon: ICONS.home },
-    { to: ROUTES.CONSULTAR, label: "Consultar", icon: ICONS.search },
+    { to: ROUTES.CONSULTAR, label: "Buscar", icon: ICONS.search },
     { to: ROUTES.NOTIFICACAO, label: "Alertas", icon: ICONS.bell },
     { to: ROUTES.CHAT, label: "Chat", icon: ICONS.chat },
     { to: ROUTES.PERFIL, label: "Perfil", icon: ICONS.user },

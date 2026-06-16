@@ -24,17 +24,19 @@ import { ROUTES } from '../../constants/routes.js'
 import styles from './CadastrarAnimal.module.css'
 
 const FORM_INICIAL = {
-  tipo:          'bovino',
-  identificacao: '',
-  raca:          '',
-  outraRaca:     '',
-  idade:         '',
-  peso:          '',
-  sexo:          '',
-  dataNasc:      '',
-  status:        'saudavel',
-  vacinas:       [],
-  historico:     '',
+  tipo:               'bovino',
+  identificacao:      '',
+  raca:               '',
+  outraRaca:          '',
+  produtividadeLeite: '',
+  idade:              '',
+  peso:               '',
+  sexo:               '',
+  dataNasc:           '',
+  status:             'saudavel',
+  vacina:             '',
+  outraVacina:        '',
+  historico:          '',
 }
 
 export default function CadastrarAnimal({ onVoltar }) {
@@ -73,7 +75,15 @@ export default function CadastrarAnimal({ onVoltar }) {
   }
 
   function handleTipo(novoTipo) {
-    setForm((prev) => ({ ...prev, tipo: novoTipo, raca: '', outraRaca: '', vacinas: [] }))
+    setForm((prev) => ({
+      ...prev,
+      tipo: novoTipo,
+      raca: '',
+      outraRaca: '',
+      produtividadeLeite: novoTipo === 'bovino' ? prev.produtividadeLeite : '',
+      vacina: '',
+      outraVacina: '',
+    }))
   }
 
   function exibirFeedback(modo, opcoes = {}) {
@@ -119,6 +129,11 @@ export default function CadastrarAnimal({ onVoltar }) {
         ? form.outraRaca.trim() || 'Outra'
         : form.raca
 
+    const vacinaFinal =
+      form.vacina === '__outra__'
+        ? form.outraVacina.trim() || 'Outra'
+        : form.vacina
+
     const animal = {
       tipo:          form.tipo,
       identificacao: form.identificacao.trim(),
@@ -128,10 +143,14 @@ export default function CadastrarAnimal({ onVoltar }) {
       sexo:          form.sexo     || null,
       dataNasc:      form.dataNasc || null,
       status:        form.status,
-      vacinas:       form.vacinas,
+      vacinas:       vacinaFinal ? [vacinaFinal] : [],
       historico:     form.historico.trim(),
       sincronizado:  false,
       timestamp:     new Date().toISOString(),
+    }
+
+    if (form.tipo === 'bovino' && form.produtividadeLeite.trim()) {
+      animal.produtividadeLeite = form.produtividadeLeite.trim()
     }
 
     try {

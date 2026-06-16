@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
+import { ROUTES } from "../../constants/routes.js";
 import { getAnimais, getLotes } from "../../services/api.js";
 import "./Consultar.css";
 
@@ -106,7 +107,7 @@ export default function Consultar() {
   return (
     <div className="consultar-page">
       <div className="consultar-card">
-        <Header layout="stack" titulo="Consultar Dados">
+        <Header layout="stack" titulo="Buscar" voltarPara={ROUTES.HOME}>
           <label className="consultar-search-label" htmlFor="busca-consultar">
             <span className="app-header-search">
               <svg
@@ -314,6 +315,12 @@ export default function Consultar() {
                           ? animal.vacinas.join(", ")
                           : "Nenhuma registrada"}
                       </p>
+                      {animal.tipo === "bovino" && animal.produtividadeLeite && (
+                        <p>
+                          <strong>Produtividade leiteira:</strong>{" "}
+                          {animal.produtividadeLeite}
+                        </p>
+                      )}
                       {animal.historico && (
                         <p>
                           <strong>Histórico:</strong> {animal.historico}

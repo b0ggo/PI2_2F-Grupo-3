@@ -9,14 +9,7 @@ const STATUS = [
 
 export default function SaudeForm({ tipo, valores, onChange }) {
   const vacinasList = VACINAS[tipo] || []
-
-  function toggleVacina(vacina) {
-    const atual = valores.vacinas || []
-    const novo  = atual.includes(vacina)
-      ? atual.filter((v) => v !== vacina)
-      : [...atual, vacina]
-    onChange('vacinas', novo)
-  }
+  const mostrarOutra = valores.vacina === '__outra__'
 
   return (
     <div className={styles.wrapper}>
@@ -43,24 +36,42 @@ export default function SaudeForm({ tipo, valores, onChange }) {
       </div>
 
       <div className={styles.campo}>
-        <span className={styles.label}>Vacinas Aplicadas</span>
-        <div className={styles.tags}>
-          {vacinasList.map((v) => (
-            <button
-              key={v}
-              type="button"
-              aria-pressed={(valores.vacinas || []).includes(v)}
-              className={[
-                styles.tag,
-                (valores.vacinas || []).includes(v) ? styles.tagSel : '',
-              ].join(' ')}
-              onClick={() => toggleVacina(v)}
-            >
-              {v}
-            </button>
-          ))}
+        <label className={styles.label} htmlFor="campo-vacina">
+          Vacina Aplicada
+        </label>
+        <div className={styles.selectWrap}>
+          <select
+            id="campo-vacina"
+            className={styles.select}
+            value={valores.vacina}
+            onChange={(e) => onChange('vacina', e.target.value)}
+          >
+            <option value="">Selecione a vacina</option>
+            {vacinasList.map((v) => (
+              <option key={v} value={v === 'Outra' ? '__outra__' : v}>
+                {v}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+
+      {mostrarOutra && (
+        <div className={styles.campo}>
+          <label className={styles.label} htmlFor="campo-outra-vacina">
+            Especifique a vacina
+          </label>
+          <input
+            id="campo-outra-vacina"
+            className={styles.input}
+            type="text"
+            placeholder="Digite o nome da vacina"
+            maxLength={80}
+            value={valores.outraVacina}
+            onChange={(e) => onChange('outraVacina', e.target.value)}
+          />
+        </div>
+      )}
 
       <div className={styles.campo}>
         <label className={styles.label} htmlFor="campo-historico">

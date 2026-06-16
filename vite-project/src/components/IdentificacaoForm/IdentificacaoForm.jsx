@@ -68,6 +68,23 @@ export default function IdentificacaoForm({ tipo, valores, onChange, erros = {} 
         </div>
       )}
 
+      {tipo === 'bovino' && (
+        <div className={styles.campo}>
+          <label className={styles.label} htmlFor="campo-produtividade">
+            Produtividade Leiteira
+          </label>
+          <input
+            id="campo-produtividade"
+            className={styles.input}
+            type="text"
+            placeholder="Ex: 30 L por dia"
+            maxLength={50}
+            value={valores.produtividadeLeite || ''}
+            onChange={(e) => onChange('produtividadeLeite', e.target.value)}
+          />
+        </div>
+      )}
+
       <div className={styles.linha2}>
         <div className={styles.campo}>
           <label className={styles.label} htmlFor="campo-idade">Idade (meses)</label>

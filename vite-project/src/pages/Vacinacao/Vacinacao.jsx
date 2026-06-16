@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
+import { VACINAS } from "../../data/vacinas.js";
 import { getAnimais, getLotes, getVacinacoes, postVacinacao } from "../../services/api.js";
 import "./Vacinacao.css";
 
-const VACINAS = ["Febre Aftosa", "Brucelose", "Peste Suína", "Raiva", "Clostridiose"];
+const TODAS_VACINAS = [...new Set(Object.values(VACINAS).flat())];
 
 function formatarData(iso) {
   if (!iso) return "—";
@@ -29,6 +30,7 @@ export default function Vacinacao() {
   const [form, setForm] = useState({
     alvo: "",
     tipoVacina: "",
+    outraVacina: "",
     dataAplicacao: "",
     proximaDose: "",
     observacoes: "",
@@ -68,7 +70,12 @@ export default function Vacinacao() {
 
   async function registrar() {
     const selecionado = alvos.find((a) => a.key === form.alvo);
-    if (!selecionado || !form.tipoVacina) {
+    const tipoVacinaFinal =
+      form.tipoVacina === "__outra__"
+        ? form.outraVacina.trim() || "Outra"
+        : form.tipoVacina;
+
+    if (!selecionado || !tipoVacinaFinal) {
       setFeedback("Selecione animal/lote e tipo de vacina.");
       return;
     }
@@ -80,7 +87,7 @@ export default function Vacinacao() {
         alvoTipo: selecionado.alvoTipo,
         alvoId: selecionado.alvoId,
         alvoLabel: selecionado.label,
-        tipoVacina: form.tipoVacina,
+        tipoVacina: tipoVacinaFinal,
         dataAplicacao: form.dataAplicacao,
         proximaDose: form.proximaDose,
         observacoes: form.observacoes,
@@ -88,6 +95,7 @@ export default function Vacinacao() {
       setForm({
         alvo: "",
         tipoVacina: "",
+        outraVacina: "",
         dataAplicacao: "",
         proximaDose: "",
         observacoes: "",
@@ -142,13 +150,34 @@ export default function Vacinacao() {
           <label>Tipo de Vacina *</label>
           <select
             value={form.tipoVacina}
-            onChange={(e) => setForm((f) => ({ ...f, tipoVacina: e.target.value }))}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                tipoVacina: e.target.value,
+                outraVacina: e.target.value === "__outra__" ? f.outraVacina : "",
+              }))
+            }
           >
             <option value="">Selecione a vacina</option>
-            {VACINAS.map((v) => (
-              <option key={v} value={v}>{v}</option>
+            {TODAS_VACINAS.map((v) => (
+              <option key={v} value={v === "Outra" ? "__outra__" : v}>
+                {v}
+              </option>
             ))}
           </select>
+
+          {form.tipoVacina === "__outra__" && (
+            <>
+              <label>Especifique a vacina</label>
+              <input
+                type="text"
+                placeholder="Digite o nome da vacina"
+                maxLength={80}
+                value={form.outraVacina}
+                onChange={(e) => setForm((f) => ({ ...f, outraVacina: e.target.value }))}
+              />
+            </>
+          )}
 
           <div className="datas">
             <div>

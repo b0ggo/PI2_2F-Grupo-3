@@ -55,29 +55,45 @@
   color: var(--color-danger-text);
 }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.tag {
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 500;
+.input,
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-input-border);
-  cursor: pointer;
   background: var(--color-input-bg);
-  color: var(--color-text-muted);
   font-family: var(--font-body);
-  transition: all 0.15s;
+  font-size: 14px;
+  color: var(--color-text-main);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-.tagSel {
-  background: var(--color-primary-light);
+.input:focus,
+.select:focus {
   border-color: var(--color-primary);
-  color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-focus);
+  background: #fff;
+}
+
+.selectWrap {
+  position: relative;
+}
+
+.selectWrap::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--color-text-muted);
+  pointer-events: none;
 }
 
 .textarea {
