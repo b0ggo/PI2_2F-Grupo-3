@@ -191,8 +191,8 @@ export default function Consultar() {
             Filtros Avançados
           </button>
 
-          {filtrosAbertos && (
-            <div className="consultar-filtros-panel">
+          <div className="consultar-filtros-panel">
+            <div className="consultar-filtros-grupo">
               <label htmlFor="filtro-tipo">Tipo</label>
 
               <select
@@ -206,14 +206,15 @@ export default function Consultar() {
                 }
               >
                 <option value="">Todos</option>
-
                 <option value="bovino">Bovino</option>
                 <option value="suino">Suíno</option>
                 <option value="frango">Frango</option>
                 <option value="caprino">Caprino</option>
                 <option value="ovino">Ovino</option>
               </select>
+            </div>
 
+            <div className="consultar-filtros-grupo">
               <label htmlFor="filtro-status">Status</label>
 
               <select
@@ -271,16 +272,16 @@ export default function Consultar() {
                     </option>
                   ))}
               </select>
-
-              <button
-                type="button"
-                className="consultar-filtros-limpar"
-                onClick={limparFiltros}
-              >
-                Limpar filtros
-              </button>
             </div>
-          )}
+
+            <button
+              type="button"
+              className="consultar-filtros-limpar"
+              onClick={limparFiltros}
+            >
+              Limpar filtros
+            </button>
+          </div>
         </div>
 
         <section className="consultar-lista" aria-live="polite">
