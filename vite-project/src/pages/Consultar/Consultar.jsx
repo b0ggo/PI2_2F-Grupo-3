@@ -194,39 +194,83 @@ export default function Consultar() {
           {filtrosAbertos && (
             <div className="consultar-filtros-panel">
               <label htmlFor="filtro-tipo">Tipo</label>
+
               <select
                 id="filtro-tipo"
                 value={filtros.tipo}
                 onChange={(e) =>
-                  setFiltros((f) => ({ ...f, tipo: e.target.value }))
+                  setFiltros({
+                    tipo: e.target.value,
+                    status: "",
+                  })
                 }
               >
                 <option value="">Todos</option>
-                {TIPOS_ANIMAL.map((t) => (
-                  <option key={t} value={t}>
-                    {rotuloTipo(t)}
-                  </option>
-                ))}
+
+                <option value="bovino">Bovino</option>
+                <option value="suino">Suíno</option>
+                <option value="frango">Frango</option>
+                <option value="caprino">Caprino</option>
+                <option value="ovino">Ovino</option>
               </select>
 
-              {aba === "animais" && (
-                <>
-                  <label htmlFor="filtro-status">Status</label>
-                  <select
-                    id="filtro-status"
-                    value={filtros.status}
-                    onChange={(e) =>
-                      setFiltros((f) => ({ ...f, status: e.target.value }))
-                    }
-                  >
-                    {STATUS_ANIMAL.map((s) => (
-                      <option key={s.id || "todos"} value={s.id}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              )}
+              <label htmlFor="filtro-status">Status</label>
+
+              <select
+                id="filtro-status"
+                value={filtros.status}
+                onChange={(e) =>
+                  setFiltros((f) => ({
+                    ...f,
+                    status: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Todos</option>
+
+                {filtros.tipo === "bovino" && (
+                  <>
+                    <option value="saudavel">Saudável</option>
+                    <option value="tratamento">Em Tratamento</option>
+                    <option value="quarentena">Quarentena</option>
+                  </>
+                )}
+
+                {filtros.tipo === "suino" && (
+                  <>
+                    <option value="saudavel">Saudável</option>
+                    <option value="tratamento">Em Tratamento</option>
+                  </>
+                )}
+
+                {filtros.tipo === "frango" && (
+                  <>
+                    <option value="saudavel">Saudável</option>
+                    <option value="quarentena">Quarentena</option>
+                  </>
+                )}
+
+                {filtros.tipo === "caprino" && (
+                  <>
+                    <option value="saudavel">Saudável</option>
+                    <option value="tratamento">Em Tratamento</option>
+                  </>
+                )}
+
+                {filtros.tipo === "ovino" && (
+                  <>
+                    <option value="saudavel">Saudável</option>
+                    <option value="quarentena">Quarentena</option>
+                  </>
+                )}
+
+                {!filtros.tipo &&
+                  STATUS_ANIMAL.map((s) => (
+                    <option key={s.id || "todos"} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))}
+              </select>
 
               <button
                 type="button"

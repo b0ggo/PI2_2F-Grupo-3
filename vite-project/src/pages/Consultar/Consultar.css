@@ -88,9 +88,11 @@
   border-radius: var(--radius-md);
   border: 0.5px solid var(--surface-divider);
   background: #fafafa;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  align-items: end;
 }
 
 .consultar-filtros-panel label {
@@ -134,6 +136,16 @@
   color: var(--color-primary);
   cursor: pointer;
   padding: 4px 0;
+}
+
+.consultar-filtros-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consultar-filtros-grupo label {
+  margin: 0;
 }
 
 .consultar-lista {
@@ -285,7 +297,6 @@
   font-weight: 600;
 }
 
-/* Celulares pequenos */
 @media (max-width: 359px) {
   .consultar-page {
     padding: 8px 8px calc(84px + env(safe-area-inset-bottom, 0));
