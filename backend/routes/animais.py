@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 from config import ANIMAIS_FILE
 from routes.helpers import require_auth
 from storage.json_store import load_list, new_id, save_list
-from services.auth_service import find_producers_for_cooperative
+from services.auth_service import find_producers_for_cooperative, is_cooperative_user
 
 animais_bp = Blueprint("animais", __name__)
 
@@ -15,7 +15,7 @@ CAMPOS = (
 
 
 def _filtrar_user(items, user):
-    if user.get("tipoConta") == "Cooperativa":
+    if is_cooperative_user(user):
         producer_ids = set(find_producers_for_cooperative(user["id"]))
         return [a for a in items if a.get("userId") in producer_ids]
     return [a for a in items if a.get("userId") == user["id"]]

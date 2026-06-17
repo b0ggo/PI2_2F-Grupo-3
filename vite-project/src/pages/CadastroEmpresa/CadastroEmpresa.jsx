@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import { registrar } from "../../services/perfil.js";
+import { registrar, fazerLogout } from "../../services/perfil.js";
 import styles from "./CadastroEmpresa.module.css";
 
 const TIPOS = ["Selecione o tipo", "Cooperativa", "Fornecedor", "Veterinária", "Indústria"];
@@ -91,8 +91,9 @@ export default function CadastroEmpresa() {
         tipoConta: form.tipo,
         senha: form.senha,
       });
-      show("Cadastro da empresa realizado!", false);
-      setTimeout(() => navigate(ROUTES.HOME), 1500);
+      await fazerLogout();
+      show("Cadastro da empresa realizado! Faça login para acessar sua conta.", false);
+      navigate(ROUTES.LOGIN);
     } catch (err) {
       show(err.message || "Erro ao cadastrar.", true);
     }

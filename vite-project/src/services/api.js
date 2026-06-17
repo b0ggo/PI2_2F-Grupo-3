@@ -189,6 +189,16 @@ export async function enviarMensagem(conversaId, text) {
   })
 }
 
+export async function getCooperativaProdutores() {
+  return request('/api/cooperativa/produtores')
+}
+
+export async function removeCooperativaProdutor(produtorId) {
+  return request(`/api/cooperativa/produtores/${encodeURIComponent(produtorId)}`, {
+    method: 'DELETE',
+  })
+}
+
 export async function associateProducerByEmail(payload) {
   return request('/api/cooperativa/produtores/associar', {
     method: 'POST',

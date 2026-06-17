@@ -13,10 +13,15 @@ from seed import seed_chat_for_user, _create_coop_prod_conversations
 cooperativa_bp = Blueprint("cooperativa", __name__)
 
 
+def _is_cooperativa_user(user):
+    tipo = str(user.get("tipoConta") or "").strip().lower()
+    return tipo != "" and tipo != "produtor"
+
+
 @cooperativa_bp.get("/api/cooperativa/produtores")
 @require_auth
 def listar_produtores(user):
-    if user.get("tipoConta") != "Cooperativa":
+    if not _is_cooperativa_user(user):
         return jsonify({"message": "Não autorizado."}), 403
     users = load_list(USERS_FILE)
     producers = [u for u in users if u.get("cooperativaId") == user["id"]]
@@ -54,7 +59,7 @@ def _associate_producer(user, produtor):
 @cooperativa_bp.post("/api/cooperativa/produtores/associar")
 @require_auth
 def associar_produtor(user):
-    if user.get("tipoConta") != "Cooperativa":
+    if not _is_cooperativa_user(user):
         return jsonify({"message": "Não autorizado."}), 403
 
     data = request.get_json(silent=True) or {}
@@ -63,25 +68,16 @@ def associar_produtor(user):
         return jsonify({"message": "Email é obrigatório."}), 400
 
     produtor = find_user_by_email(email)
-    if produtor:
-        if produtor.get("tipoConta") != "Produtor":
-            return jsonify({"message": "Usuário não é produtor."}), 400
-        if produtor.get("cooperativaId") and produtor.get("cooperativaId") != user["id"]:
-            return jsonify({"message": "Produtor já está vinculado a outra cooperativa."}), 400
-        produtor = _associate_producer(user, produtor)
-    else:
-        data = {
-            "email": email,
-            "nome": email.split("@")[0] if "@" in email else email,
-            "tipoConta": "Produtor",
-            "cooperativaId": user["id"],
-            "senha": "produtor123",
-        }
-        try:
-            produtor = register_user(data)
-        except ValueError as err:
-            return jsonify({"message": str(err)}), 400
+    if not produtor:
+        return jsonify({"message": "Este produtor não existe."}), 400
 
+    produtor_tipo = str(produtor.get("tipoConta") or "").strip().lower()
+    if produtor_tipo != "produtor":
+        return jsonify({"message": "Usuário não é produtor."}), 400
+    if produtor.get("cooperativaId") and produtor.get("cooperativaId") != user["id"]:
+        return jsonify({"message": "Produtor já está vinculado a outra cooperativa."}), 400
+
+    produtor = _associate_producer(user, produtor)
     _, coop_conv = _create_coop_prod_conversations(user, produtor)
     return jsonify(
         {
@@ -95,7 +91,7 @@ def associar_produtor(user):
 @cooperativa_bp.post("/api/cooperativa/produtores")
 @require_auth
 def criar_produtor(user):
-    if user.get("tipoConta") != "Cooperativa":
+    if not _is_cooperativa_user(user):
         return jsonify({"message": "Não autorizado."}), 403
     data = request.get_json(silent=True) or {}
     # ensure the new user is a producer linked to this cooperativa
@@ -107,3 +103,22 @@ def criar_produtor(user):
         return jsonify(_perfil_publico(novo)), 201
     except ValueError as err:
         return jsonify({"message": str(err)}), 400
+
+
+@cooperativa_bp.delete("/api/cooperativa/produtores/<produtor_id>")
+@require_auth
+def remover_produtor(user, produtor_id):
+    if not _is_cooperativa_user(user):
+        return jsonify({"message": "Não autorizado."}), 403
+
+    users = load_list(USERS_FILE)
+    for i, item in enumerate(users):
+        if item.get("id") != produtor_id:
+            continue
+        if item.get("cooperativaId") != user["id"]:
+            return jsonify({"message": "Produtor não encontrado para esta cooperativa."}), 404
+        users[i] = {k: v for k, v in item.items() if k != "cooperativaId"}
+        save_list(USERS_FILE, users)
+        return jsonify({"message": "Produtor removido."}), 200
+
+    return jsonify({"message": "Produtor não encontrado."}), 404

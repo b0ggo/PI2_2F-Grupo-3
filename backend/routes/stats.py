@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify
 from config import ANIMAIS_FILE, LOTES_FILE, VACINACOES_FILE
 from routes.helpers import require_auth
 from storage.json_store import load_list
+from services.auth_service import find_producers_for_cooperative, is_cooperative_user
 
 stats_bp = Blueprint("stats", __name__)
 
@@ -11,9 +12,15 @@ stats_bp = Blueprint("stats", __name__)
 @require_auth
 def obter_stats(user):
     user_id = user["id"]
-    animais = [a for a in load_list(ANIMAIS_FILE) if a.get("userId") == user_id]
-    lotes = [l for l in load_list(LOTES_FILE) if l.get("userId") == user_id]
-    vacinacoes = [v for v in load_list(VACINACOES_FILE) if v.get("userId") == user_id]
+    if is_cooperative_user(user):
+        producer_ids = set(find_producers_for_cooperative(user_id))
+        animais = [a for a in load_list(ANIMAIS_FILE) if a.get("userId") in producer_ids]
+        lotes = [l for l in load_list(LOTES_FILE) if l.get("userId") in producer_ids]
+        vacinacoes = [v for v in load_list(VACINACOES_FILE) if v.get("userId") in producer_ids]
+    else:
+        animais = [a for a in load_list(ANIMAIS_FILE) if a.get("userId") == user_id]
+        lotes = [l for l in load_list(LOTES_FILE) if l.get("userId") == user_id]
+        vacinacoes = [v for v in load_list(VACINACOES_FILE) if v.get("userId") == user_id]
 
     total_animais_lotes = sum(l.get("quantidade", 0) for l in lotes)
     total_animais = len(animais) + total_animais_lotes

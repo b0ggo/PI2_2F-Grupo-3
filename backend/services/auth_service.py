@@ -6,6 +6,7 @@ from storage.json_store import load_dict, load_list, new_id, save_dict, save_lis
 
 def _perfil_publico(user):
     return {
+        "id": user.get("id", ""),
         "nome": user.get("nome", ""),
         "email": user.get("email", ""),
         "telefone": user.get("telefone", ""),
@@ -36,6 +37,11 @@ def find_producers_for_cooperative(coop_id):
         if user.get("cooperativaId") == coop_id:
             ids.append(user.get("id"))
     return ids
+
+
+def is_cooperative_user(user):
+    tipo = str(user.get("tipoConta") or "").strip().lower()
+    return tipo != "" and tipo != "produtor"
 
 
 def register_user(data):

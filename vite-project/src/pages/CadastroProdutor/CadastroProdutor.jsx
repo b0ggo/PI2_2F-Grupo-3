@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
-import { registrar } from "../../services/perfil.js";
+import { registrar, fazerLogout } from "../../services/perfil.js";
 import styles from "./CadastroProdutor.module.css";
 
 function IconBack() {
@@ -79,8 +79,9 @@ export default function CadastroProdutor() {
         tipoConta: "Produtor",
         senha,
       });
-      show("Cadastro realizado com sucesso!", false);
-      setTimeout(() => navigate(ROUTES.HOME), 1500);
+      await fazerLogout();
+      show("Cadastro realizado com sucesso! Faça login para acessar sua conta.", false);
+      navigate(ROUTES.LOGIN);
     } catch (err) {
       show(err.message || "Erro ao cadastrar.", true);
     }

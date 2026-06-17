@@ -69,12 +69,21 @@ export function clearLoginTipoConta() {
   }
 }
 
+export function isProdutorTipoConta(tipoConta) {
+  return String(tipoConta || "").trim().toLowerCase() === "produtor";
+}
+
+export function isCooperativaTipoConta(tipoConta) {
+  const normalized = String(tipoConta || "").trim().toLowerCase();
+  return normalized !== "" && normalized !== "produtor";
+}
+
 export function resolveUserMode(perfil = {}) {
-  const selected = getLoginTipoConta()
+  const selected = getLoginTipoConta();
   if (selected) {
-    return selected === 'cooperativa' ? 'cooperativa' : 'produtor'
+    return selected === 'cooperativa' ? 'cooperativa' : 'produtor';
   }
-  return (perfil.tipoConta || '').toLowerCase() === 'cooperativa' ? 'cooperativa' : 'produtor'
+  return isCooperativaTipoConta(perfil.tipoConta) ? 'cooperativa' : 'produtor';
 }
 
 export async function getPerfil() {

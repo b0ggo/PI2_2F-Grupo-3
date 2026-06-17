@@ -4,7 +4,7 @@ import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import { getStats } from "../../services/api.js";
-import { getPerfil, PERFIL_VAZIO, fazerLogout } from "../../services/perfil.js";
+import { getPerfil, PERFIL_VAZIO, fazerLogout, resolveUserMode } from "../../services/perfil.js";
 import "./Perfil.css";
 
 function Icon({ children, size = 18, className = "" }) {
@@ -31,17 +31,31 @@ export default function Perfil() {
   const location = useLocation();
   const [dados, setDados] = useState(PERFIL_VAZIO);
   const [stats, setStats] = useState({ animais: 0, lotes: 0, vacinas: 0 });
+  const [modo, setModo] = useState(() => {
+    try {
+      return sessionStorage.getItem('bottomNavMode') === 'cooperativa' ? 'cooperativa' : 'produtor';
+    } catch (e) {
+      return 'produtor';
+    }
+  });
 
   useEffect(() => {
-    getPerfil().then(setDados);
+    getPerfil().then((perfil) => {
+      setDados(perfil);
+      const modoPerfil = resolveUserMode(perfil);
+      setModo(modoPerfil);
+      try {
+        sessionStorage.setItem('bottomNavMode', modoPerfil);
+      } catch (e) {}
+    });
     getStats().then(setStats).catch(() => {});
   }, [location.key]);
 
-  const isCoopPerfil = (dados && (dados.tipoConta || "").toLowerCase() === "cooperativa");
+  const isCoopPerfil = modo === 'cooperativa';
 
   function exibir(valor) {
     if (!valor) return "Não informado";
-    if ((valor || "").toLowerCase() === "cooperativa") return "Empresa";
+    if ((valor || "").toLowerCase() === "cooperativa") return "Cooperativa";
     return valor;
   }
 

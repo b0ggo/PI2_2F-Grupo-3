@@ -28,8 +28,10 @@ export default function Login() {
 
     setCarregando(true);
     try {
-      await login(email, senha);
-      setLoginTipoContaStorage(loginTipoConta);
+      const result = await login(email, senha);
+      const tipoConta = (result.perfil?.tipoConta || "").toLowerCase();
+      const modo = tipoConta === "produtor" ? "produtor" : "cooperativa";
+      setLoginTipoContaStorage(modo);
       navigate(ROUTES.HOME);
     } catch (err) {
       setErro(err.message || "Email ou senha incorretos.");

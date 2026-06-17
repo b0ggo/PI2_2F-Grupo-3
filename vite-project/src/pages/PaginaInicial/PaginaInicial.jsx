@@ -4,7 +4,7 @@ import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import { getAlertas, getConversas, getStats } from "../../services/api.js";
-import { getPerfil, resolveUserMode } from "../../services/perfil.js";
+import { getPerfil, isCooperativaTipoConta, resolveUserMode } from "../../services/perfil.js";
 import "./PaginaInicial.css";
 
 function Svg({ children, size = 22, stroke = "currentColor" }) {
@@ -99,8 +99,13 @@ export default function PaginaInicial() {
   const [perfil, setPerfil] = useState({ nome: "", tipoConta: "" });
   const [stats, setStats] = useState({ animais: 0, lotes: 0, percentualVacinados: 0 });
   const [badges, setBadges] = useState({ alertas: 0, chat: 0 });
-  const [coopProdutores, setCoopProdutores] = useState([]);
-  const [isCoopView, setIsCoopView] = useState(false);
+  const [isCoopView, setIsCoopView] = useState(() => {
+    try {
+      return sessionStorage.getItem('bottomNavMode') === 'cooperativa';
+    } catch (e) {
+      return false;
+    }
+  });
 
   useEffect(() => {
     getPerfil().then(setPerfil);
@@ -114,7 +119,6 @@ export default function PaginaInicial() {
   }, []);
 
   useEffect(() => {
-    const isCoopPerfil = (perfil.tipoConta || "").toLowerCase() === "cooperativa";
     const resolvedMode = resolveUserMode(perfil);
     const resolvedIsCoop = resolvedMode === 'cooperativa';
 
@@ -125,15 +129,6 @@ export default function PaginaInicial() {
     } catch (e) {
       /* ignore storage failures */
     }
-
-    if (resolvedIsCoop) {
-      try {
-        const raw = localStorage.getItem("cooperativa:produtores") || "[]";
-        setCoopProdutores(JSON.parse(raw));
-      } catch {
-        setCoopProdutores([]);
-      }
-    }
   }, [perfil]);
 
 
@@ -143,7 +138,7 @@ export default function PaginaInicial() {
         <Header
           layout="hero"
           titulo={`Bem-vindo${perfil.nome ? `, ${perfil.nome.split(" ")[0]}` : ""}!`}
-          subtitulo={(perfil.tipoConta || "").toLowerCase() === "cooperativa" ? "Empresa" : perfil.tipoConta || "Produtor Rural"}
+          subtitulo={isCooperativaTipoConta(perfil.tipoConta) ? "Cooperativa" : perfil.tipoConta || "Produtor Rural"}
         />
       </div>
 

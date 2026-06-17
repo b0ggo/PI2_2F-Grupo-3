@@ -2,17 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../../../components/Header/Header.jsx";
 import BottomNav from "../../../components/BottomNav/BottomNav.jsx";
-import { getLotesByToken } from "../../../services/api.js";
+import { getCooperativaProdutores, getLotes } from "../../../services/api.js";
 import styles from "./Produtor.module.css";
-
-function loadProdutor(id) {
-  try {
-    const list = JSON.parse(localStorage.getItem("cooperativa:produtores") || "[]");
-    return list.find((p) => p.id === id) || null;
-  } catch {
-    return null;
-  }
-}
 
 export default function Produtor() {
   const { id } = useParams();
@@ -24,25 +15,31 @@ export default function Produtor() {
 
   useEffect(() => {
     if (!id) return;
-    const current = loadProdutor(id);
-    setProdutor(current);
+    setProdutor(null);
     setLotes([]);
     setLotesErro("");
 
-    if (!current) {
-      return;
+    async function loadProdutorDetalhes() {
+      try {
+        const producers = await getCooperativaProdutores();
+        const current = producers.find((p) => p.id === id) || null;
+        setProdutor(current);
+
+        if (!current) {
+          return;
+        }
+
+        setCarregandoLotes(true);
+        const allLotes = await getLotes();
+        setLotes(allLotes.filter((lote) => lote.userId === id));
+      } catch (err) {
+        setLotesErro(err.message || "Erro ao carregar produtor ou lotes.");
+      } finally {
+        setCarregandoLotes(false);
+      }
     }
 
-    if (!current.token) {
-      setLotesErro("Não há credenciais de produtor armazenadas para carregar os lotes.");
-      return;
-    }
-
-    setCarregandoLotes(true);
-    getLotesByToken(current.token)
-      .then(setLotes)
-      .catch((err) => setLotesErro(err.message || "Erro ao carregar lotes."))
-      .finally(() => setCarregandoLotes(false));
+    loadProdutorDetalhes();
   }, [id]);
 
   if (!produtor) {
