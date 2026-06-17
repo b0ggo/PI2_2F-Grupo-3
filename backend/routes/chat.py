@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request
 
 from config import CONVERSAS_FILE, MENSAGENS_FILE
 from routes.helpers import require_auth
+from services.auth_service import find_user_by_email, _perfil_publico
 from storage.json_store import load_list, new_id, save_list
 
 chat_bp = Blueprint("chat", __name__)
@@ -15,6 +16,95 @@ def _conversas_user(user_id):
 
 def _mensagens_conversa(conversa_id):
     return [m for m in load_list(MENSAGENS_FILE) if m.get("conversaId") == conversa_id]
+
+
+def _find_conversation(user_id, partner_id):
+    conversas = load_list(CONVERSAS_FILE)
+    return next(
+        (
+            c
+            for c in conversas
+            if c.get("userId") == user_id and c.get("partnerId") == partner_id
+        ),
+        None,
+    )
+
+
+def _create_chat_partner_conversations(user, partner):
+    """Criar conversas com um parceiro de chat (veterinário, fornecedor) sem associar."""
+    conversas = load_list(CONVERSAS_FILE)
+
+    partner_type_display = partner.get("tipoConta", "Parceiro")
+
+    user_conv = _find_conversation(user["id"], partner["id"])
+    partner_conv = _find_conversation(partner["id"], user["id"])
+
+    if not partner_conv:
+        partner_conv = {
+            "id": new_id(),
+            "userId": partner["id"],
+            "partnerId": user["id"],
+            "name": user.get("nome", user.get("email", "Produtor")),
+            "type": "Produtor",
+            "lastMsg": "Conversa iniciada com o produtor.",
+            "time": datetime.now().strftime("%H:%M"),
+        }
+        conversas.append(partner_conv)
+
+    if not user_conv:
+        user_conv = {
+            "id": new_id(),
+            "userId": user["id"],
+            "partnerId": partner["id"],
+            "name": partner.get("nome", partner.get("email", partner_type_display)),
+            "type": partner_type_display,
+            "lastMsg": f"Conversa iniciada com {partner_type_display.lower()}.",
+            "time": datetime.now().strftime("%H:%M"),
+        }
+        conversas.append(user_conv)
+
+    save_list(CONVERSAS_FILE, conversas)
+    return partner_conv, user_conv
+
+
+@chat_bp.post("/api/chat/profissionais/adicionar")
+@require_auth
+def adicionar_profissional_chat(user):
+    """Adicionar um veterinário ou fornecedor ao chat (apenas para produtores)."""
+    user_tipo = str(user.get("tipoConta", "")).strip().lower()
+    if user_tipo == "produtor":
+        pass
+    elif user_tipo in ["veterinária", "veterinario", "fornecedor"]:
+        # Permitir vets/fornecedores conversar com outros vets/fornecedores
+        pass
+    else:
+        # Cooperativas não podem usar este endpoint
+        return jsonify({"message": "Não autorizado."}), 403
+
+    data = request.get_json(silent=True) or {}
+    email = str(data.get("email", "")).strip().lower()
+    if not email:
+        return jsonify({"message": "Email é obrigatório."}), 400
+
+    partner = find_user_by_email(email)
+    if not partner:
+        return jsonify({"message": "Este usuário não existe."}), 400
+
+    partner_tipo = str(partner.get("tipoConta", "")).strip().lower()
+    # Apenas permitir tipos veterinário e fornecedor
+    allowed_types = ["veterinária", "veterinario", "fornecedor"]
+    
+    if partner_tipo not in allowed_types:
+        return jsonify({"message": "Você só pode conversar com veterinários e fornecedores."}), 400
+
+    _, user_conv = _create_chat_partner_conversations(user, partner)
+    return jsonify(
+        {
+            "conversationId": user_conv.get("id"),
+            "partnerId": partner.get("id"),
+            "partner": _perfil_publico(partner),
+        }
+    ), 201
 
 
 @chat_bp.get("/api/conversas")

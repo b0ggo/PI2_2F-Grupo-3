@@ -17,7 +17,7 @@ def main():
     coop_email = f"testcoop_{suffix}@example.com"
     coop_pwd = "pass123"
 
-    # Register cooperativa
+    # Registrar cooperativa
     r = requests.post(f"{BASE}/api/auth/register", json={
         "email": coop_email,
         "senha": coop_pwd,
@@ -32,7 +32,7 @@ def main():
 
     headers_coop = {"Authorization": f"Bearer {coop_token}"}
 
-    # Create producer via cooperativa
+    # Criar produtor via cooperativa
     prod_email = f"producer_{suffix}@example.com"
     prod_pwd = "prodpass"
     r = requests.post(f"{BASE}/api/cooperativa/produtores", json={
@@ -45,7 +45,7 @@ def main():
         print("Failed to create producer")
         return
 
-    # Login as producer
+    # Fazer login como produtor
     r = requests.post(f"{BASE}/api/auth/login", json={
         "email": prod_email,
         "senha": prod_pwd,
@@ -57,7 +57,7 @@ def main():
     prod_token = r.json()["token"]
     headers_prod = {"Authorization": f"Bearer {prod_token}"}
 
-    # Create lote as producer
+    # Criar lote como produtor
     r = requests.post(f"{BASE}/api/lotes", json={
         "nome": "Lote A",
         "quantidade": 10,
@@ -68,11 +68,11 @@ def main():
         print("Failed to create lote")
         return
 
-    # Cooperativa lists producers
+    # Cooperativa lista produtores
     r = requests.get(f"{BASE}/api/cooperativa/produtores", headers=headers_coop)
     print("coop list producers:", pretty(r))
 
-    # Cooperativa lists lotes
+    # Cooperativa lista lotes
     r = requests.get(f"{BASE}/api/lotes", headers=headers_coop)
     print("coop list lotes:", pretty(r))
 

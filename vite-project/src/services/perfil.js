@@ -56,7 +56,7 @@ export function setLoginTipoConta(tipo) {
     sessionStorage.setItem('loginTipoConta', normalized)
     sessionStorage.setItem('bottomNavMode', normalized)
   } catch {
-    /* ignore storage failures */
+    /* ignorar falhas de armazenamento */
   }
 }
 
@@ -65,7 +65,7 @@ export function clearLoginTipoConta() {
     sessionStorage.removeItem('loginTipoConta')
     sessionStorage.removeItem('bottomNavMode')
   } catch {
-    /* ignore storage failures */
+    /* ignorar falhas de armazenamento */
   }
 }
 

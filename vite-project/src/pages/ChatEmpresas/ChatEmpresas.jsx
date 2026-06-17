@@ -4,7 +4,7 @@ import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
 import headerUi from "../../components/Header/Header.module.css";
 import { ROUTES } from "../../constants/routes.js";
-import { enviarMensagem, getConversas } from "../../services/api.js";
+import { enviarMensagem, getConversas, addProducerChatPartner } from "../../services/api.js";
 import { getPerfil, resolveUserMode } from "../../services/perfil.js";
 import "./ChatEmpresas.css";
 
@@ -185,6 +185,11 @@ export default function ChatEmpresas() {
   const [carregando, setCarregando] = useState(true);
   const [modo, setModo] = useState("produtor");
   const [autoOpened, setAutoOpened] = useState(false);
+  const [tabAtivo, setTabAtivo] = useState("empresas"); // "empresas" ou "profissionais"
+  const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -213,7 +218,22 @@ export default function ChatEmpresas() {
       .finally(() => setCarregando(false));
   }, []);
 
-  const filtered = conversations.filter((c) =>
+  const empresasConversations = conversations.filter((c) =>
+    String(c.type || "").toLowerCase().includes("cooperativa") || String(c.type || "").toLowerCase().includes("empresa"),
+  );
+
+  const profissionaisConversations = conversations.filter(
+    (conv) => {
+      const type = String(conv.type || "").toLowerCase();
+      return type === "veterinária" || type === "veterinario" || type === "fornecedor";
+    }
+  );
+
+  const filteredEmpresas = empresasConversations.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const filteredProfissionais = profissionaisConversations.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -243,6 +263,10 @@ export default function ChatEmpresas() {
   const handleUpdate = (id, msgs) => {
     const last = msgs[msgs.length - 1];
     const lastMsg = last?.text ?? "";
+    const nowTime = () => {
+      const d = new Date();
+      return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
+    };
     setConversations((cs) =>
       cs.map((c) =>
         c.id === id ? { ...c, messages: msgs, lastMsg, time: nowTime() } : c,
@@ -253,6 +277,53 @@ export default function ChatEmpresas() {
         ? { ...prev, messages: msgs, lastMsg, time: nowTime() }
         : prev,
     );
+  };
+
+  const handleAbrirModal = () => {
+    setShowModal(true);
+  };
+
+  const handleFecharModal = () => {
+    setShowModal(false);
+    setEmail("");
+    setError("");
+    setLoading(false);
+  };
+
+  const handleAdicionar = async () => {
+    if (!email.trim()) {
+      setError("Informe o email do profissional.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await addProducerChatPartner({ email: email.trim() });
+      setLoading(false);
+      if (result?.conversationId) {
+        const nowTime = () => {
+          const d = new Date();
+          return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
+        };
+        const newConv = {
+          id: result.conversationId,
+          partnerId: result.partnerId,
+          name: result.partner?.nome || result.partner?.email || email.trim(),
+          type: result.partner?.tipoConta || "Profissional",
+          lastMsg: `Conversa iniciada com ${result.partner?.tipoConta || "profissional"}.`,
+          time: nowTime(),
+          unread: 0,
+          messages: [],
+        };
+        handleFecharModal();
+        setConversations((prev) => [newConv, ...prev]);
+        setOpenConv(newConv);
+      } else {
+        setError("Não foi possível iniciar a conversa.");
+      }
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Erro ao adicionar profissional.");
+    }
   };
 
   if (openConv) {
@@ -269,11 +340,11 @@ export default function ChatEmpresas() {
   return (
     <div className="chat-page">
       <div className="chat-shell">
-        <Header titulo={modo === "cooperativa" ? "Chat Cooperativa" : "Chat"} voltarPara={ROUTES.HOME} navMiddle={
+        <Header titulo="Chat" voltarPara={ROUTES.HOME} navMiddle={
           <div className="app-header-search">
             <Icon d={ICONS.search} size={16} color="#9ca3af" />
             <input
-              placeholder={modo === "cooperativa" ? "Buscar produtores..." : "Buscar empresas..."}
+              placeholder={tabAtivo === "empresas" ? "Buscar empresas..." : "Buscar profissionais..."}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               aria-label="Buscar conversa"
@@ -282,55 +353,242 @@ export default function ChatEmpresas() {
         }>
         </Header>
 
-        <div className="chat-list">
-        {carregando && (
-          <p style={{ padding: "16px", color: "#6b7280", fontSize: 14 }}>Carregando conversas…</p>
-        )}
-        {!carregando && filtered.length === 0 && (
-          <p style={{ padding: "16px", color: "#6b7280", fontSize: 14 }}>Nenhuma conversa encontrada.</p>
-        )}
-        {filtered.map((conv) => (
+        <div style={{ borderBottom: "1px solid #e5e7eb", display: "flex" }}>
           <button
-            key={conv.id}
-            type="button"
-            className="chat-item"
-            onClick={() => handleOpen(conv)}
+            onClick={() => { setTabAtivo("empresas"); setSearch(""); }}
+            style={{
+              flex: 1,
+              padding: "16px",
+              border: "none",
+              background: tabAtivo === "empresas" ? "#fff" : "#f9fafb",
+              borderBottom: tabAtivo === "empresas" ? "3px solid #16a34a" : "none",
+              color: tabAtivo === "empresas" ? "#111827" : "#6b7280",
+              fontWeight: tabAtivo === "empresas" ? "700" : "500",
+              cursor: "pointer",
+              fontSize: 14,
+            }}
           >
-            <div className="chat-item__avatar">
-              <Icon d={ICONS.chat} size={20} color="#16a34a" />
-            </div>
-
-            <div className="chat-item__content">
-              <div className="chat-item__top">
-                <span className="chat-item__name">{conv.name}</span>
-                <span className="chat-item__time">{conv.time}</span>
-              </div>
-              <div className="chat-item__type">{conv.type}</div>
-              <div className="chat-item__bottom">
-                <span className="chat-item__preview">{conv.lastMsg}</span>
-                {conv.unread > 0 && (
-                  <span className="chat-item__badge">{conv.unread}</span>
-                )}
-              </div>
-            </div>
+            Empresas
           </button>
-        ))}
+          <button
+            onClick={() => { setTabAtivo("profissionais"); setSearch(""); }}
+            style={{
+              flex: 1,
+              padding: "16px",
+              border: "none",
+              background: tabAtivo === "profissionais" ? "#fff" : "#f9fafb",
+              borderBottom: tabAtivo === "profissionais" ? "3px solid #16a34a" : "none",
+              color: tabAtivo === "profissionais" ? "#111827" : "#6b7280",
+              fontWeight: tabAtivo === "profissionais" ? "700" : "500",
+              cursor: "pointer",
+              fontSize: 14,
+            }}
+          >
+            Profissionais
+          </button>
+        </div>
 
-        <div className="chat-cta">
-          <div className="chat-cta__heading">
-            <Icon d={ICONS.connect} size={16} color="#16a34a" />
-            <span className="chat-cta__title">
-              {modo === "cooperativa" ? "Conecte-se com produtores" : "Conecte-se com empresas"}
-            </span>
-          </div>
-          <p className="chat-cta__text">
-            {modo === "cooperativa"
-              ? "Use este chat para conversar diretamente com produtores ligados à sua cooperativa."
-              : "Entre em contato com cooperativas, veterinárias e fornecedores diretamente pelo chat."}
-          </p>
+        <div className="chat-list">
+          {tabAtivo === "empresas" ? (
+            <>
+              {carregando && (
+                <p style={{ padding: "16px", color: "#6b7280", fontSize: 14 }}>Carregando conversas…</p>
+              )}
+              {!carregando && filteredEmpresas.length === 0 && (
+                <p style={{ padding: "16px", color: "#6b7280", fontSize: 14 }}>Nenhuma conversa com empresas encontrada.</p>
+              )}
+              {filteredEmpresas.map((conv) => (
+                <button
+                  key={conv.id}
+                  type="button"
+                  className="chat-item"
+                  onClick={() => handleOpen(conv)}
+                >
+                  <div className="chat-item__avatar">
+                    <Icon d={ICONS.chat} size={20} color="#16a34a" />
+                  </div>
+
+                  <div className="chat-item__content">
+                    <div className="chat-item__top">
+                      <span className="chat-item__name">{conv.name}</span>
+                      <span className="chat-item__time">{conv.time}</span>
+                    </div>
+                    <div className="chat-item__type">{conv.type}</div>
+                    <div className="chat-item__bottom">
+                      <span className="chat-item__preview">{conv.lastMsg}</span>
+                      {conv.unread > 0 && (
+                        <span className="chat-item__badge">{conv.unread}</span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </>
+          ) : (
+            <>
+              <div
+                className="chat-item"
+                style={{
+                  borderRadius: 16,
+                  marginTop: 16,
+                  marginBottom: 16,
+                  marginLeft: 16,
+                  marginRight: 16,
+                  padding: 24,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 16,
+                }}
+              >
+                <span style={{ fontSize: 16, fontWeight: 700, color: "#111827" }}>
+                  Converse com veterinários e fornecedores
+                </span>
+                <button
+                  type="button"
+                  onClick={handleAbrirModal}
+                  style={{
+                    borderRadius: 12,
+                    border: "none",
+                    background: "#16a34a",
+                    color: "#fff",
+                    padding: "12px 18px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontSize: 14,
+                  }}
+                >
+                  Adicionar
+                </button>
+              </div>
+
+              {carregando && (
+                <p style={{ padding: "16px", color: "#6b7280", fontSize: 14 }}>Carregando conversas…</p>
+              )}
+              {!carregando && filteredProfissionais.length === 0 && (
+                <p style={{ padding: "16px", color: "#6b7280", fontSize: 14 }}>
+                  Nenhuma conversa com profissionais ainda. Adicione um veterinário ou fornecedor para iniciar.
+                </p>
+              )}
+              {filteredProfissionais.map((conv) => (
+                <button
+                  key={conv.id}
+                  type="button"
+                  className="chat-item"
+                  onClick={() => handleOpen(conv)}
+                >
+                  <div className="chat-item__avatar">
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#16a34a" }}>
+                      {conv.name?.[0] ?? "V"}
+                    </span>
+                  </div>
+
+                  <div className="chat-item__content">
+                    <div className="chat-item__top">
+                      <span className="chat-item__name">{conv.name}</span>
+                      <span className="chat-item__time">{conv.time}</span>
+                    </div>
+                    <div className="chat-item__type">{conv.type}</div>
+                    <div className="chat-item__bottom">
+                      <span className="chat-item__preview">{conv.lastMsg}</span>
+                      {conv.unread > 0 && (
+                        <span className="chat-item__badge">{conv.unread}</span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
-      </div>
+
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.6)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 16,
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 420,
+              borderRadius: 20,
+              background: "#ffffff",
+              boxShadow: "0 24px 80px rgba(15, 23, 42, 0.18)",
+              padding: 24,
+            }}
+          >
+            <h2 style={{ margin: 0, fontSize: 22, color: "#111827" }}>
+              Adicionar profissional
+            </h2>
+            <p style={{ margin: "12px 0 20px", color: "#6b7280" }}>
+              Informe o email do veterinário ou fornecedor para iniciar a conversa.
+            </p>
+            <div style={{ display: "grid", gap: 14 }}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email do profissional"
+                style={{
+                  width: "100%",
+                  borderRadius: 12,
+                  border: "1px solid #d1d5db",
+                  padding: "12px 14px",
+                  fontSize: 16,
+                }}
+              />
+              {error && (
+                <div style={{ color: "#b91c1c", fontSize: 14 }}>
+                  {error}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={handleAdicionar}
+                disabled={loading}
+                style={{
+                  width: "100%",
+                  borderRadius: 12,
+                  border: "none",
+                  background: "#16a34a",
+                  color: "#fff",
+                  padding: "14px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  opacity: loading ? 0.7 : 1,
+                }}
+              >
+                {loading ? "Aguardando..." : "Adicionar"}
+              </button>
+              <button
+                type="button"
+                onClick={handleFecharModal}
+                style={{
+                  width: "100%",
+                  borderRadius: 12,
+                  border: "1px solid #d1d5db",
+                  background: "#fff",
+                  color: "#374151",
+                  padding: "14px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </div>

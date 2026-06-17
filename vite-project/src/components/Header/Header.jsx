@@ -19,12 +19,12 @@ function BackIcon() {
  * @param {'nav'|'stack'|'hero'} [layout='nav']
  * @param {string} [titulo]
  * @param {string} [subtitulo]
- * @param {import('react').ReactNode} [children] — stack: slot below subtitle; hero: slot above title (e.g. avatar)
+ * @param {import('react').ReactNode} [children] — stack: espaço abaixo do subtítulo; hero: espaço acima do título (ex: avatar)
  * @param {() => void} [onVoltar]
- * @param {string} [voltarPara] — if set, back control is a Link (overrides onVoltar for navigation)
+ * @param {string} [voltarPara] — se definido, controle de volta é um Link (substitui onVoltar para navegação)
  * @param {number} [pendentes]
- * @param {import('react').ReactNode} [navMiddle] — nav layout: replaces title row (e.g. chat conversation)
- * @param {boolean} [sticky] — nav layout: sticky top bar (e.g. chat thread)
+ * @param {import('react').ReactNode} [navMiddle] — layout nav: substitui linha de título (ex: conversa do chat)
+ * @param {boolean} [sticky] — layout nav: barra de topo fixa (ex: thread do chat)
  */
 export default function Header({
   titulo = 'Cadastrar Animal',

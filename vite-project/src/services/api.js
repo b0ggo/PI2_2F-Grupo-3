@@ -87,7 +87,7 @@ export async function logoutUsuario() {
   try {
     await request('/api/auth/logout', { method: 'POST' })
   } catch {
-    /* ignora erro de rede no logout */
+    /* ignorar erro de rede no logout */
   } finally {
     limparSessao()
   }
@@ -201,6 +201,20 @@ export async function removeCooperativaProdutor(produtorId) {
 
 export async function associateProducerByEmail(payload) {
   return request('/api/cooperativa/produtores/associar', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function addChatPartnerByEmail(payload) {
+  return request('/api/cooperativa/chat-partners/adicionar', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function addProducerChatPartner(payload) {
+  return request('/api/chat/profissionais/adicionar', {
     method: 'POST',
     body: JSON.stringify(payload),
   })
