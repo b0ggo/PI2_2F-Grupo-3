@@ -1,4 +1,4 @@
-/** Central route paths — keep imports as `.js` for consistency with existing files */
+/** Caminhos centrais de rotas — manter importações como `.js` para consistência com arquivos existentes */
 export const ROUTES = {
   HOME: "/inicio",
   LOGIN: "/login",

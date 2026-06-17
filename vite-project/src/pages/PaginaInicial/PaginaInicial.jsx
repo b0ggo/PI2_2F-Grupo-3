@@ -127,7 +127,7 @@ export default function PaginaInicial() {
     try {
       sessionStorage.setItem('bottomNavMode', resolvedMode);
     } catch (e) {
-      /* ignore storage failures */
+      /* ignorar falhas de armazenamento */
     }
   }, [perfil]);
 

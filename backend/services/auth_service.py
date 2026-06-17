@@ -63,7 +63,7 @@ def register_user(data):
         "senhaHash": generate_password_hash(data["senha"]),
     }
 
-    # Optionally associate a producer with a cooperativa
+    # Opcionalmente associar um produtor com uma cooperativa
     if data.get("cooperativaId"):
         user["cooperativaId"] = str(data.get("cooperativaId")).strip()
 
