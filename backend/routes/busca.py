@@ -1,8 +1,7 @@
 from flask import Blueprint, jsonify, request
 
-from config import ANIMAIS_FILE, LOTES_FILE
+from db.models import Animal, Lote
 from routes.helpers import require_auth
-from storage.json_store import load_list
 
 busca_bp = Blueprint("busca", __name__)
 
@@ -17,28 +16,24 @@ def buscar(user):
     user_id = user["id"]
     resultados = []
 
-    for animal in load_list(ANIMAIS_FILE):
-        if animal.get("userId") != user_id:
-            continue
-        label = animal.get("identificacao", "")
-        if q in label.lower() or q in animal.get("raca", "").lower():
+    for animal in Animal.query.filter_by(user_id=user_id).all():
+        label = animal.identificacao or ""
+        if q in label.lower() or q in (animal.raca or "").lower():
             resultados.append({
                 "tipo": "animal",
-                "id": animal.get("id"),
+                "id": animal.id,
                 "titulo": label,
-                "subtitulo": f"{animal.get('tipo', '')} · {animal.get('raca', '')}",
+                "subtitulo": f"{animal.tipo} · {animal.raca}",
             })
 
-    for lote in load_list(LOTES_FILE):
-        if lote.get("userId") != user_id:
-            continue
-        nome = lote.get("nome", "")
-        if q in nome.lower() or q in lote.get("tipo", "").lower():
+    for lote in Lote.query.filter_by(user_id=user_id).all():
+        nome = lote.nome or ""
+        if q in nome.lower() or q in (lote.tipo or "").lower():
             resultados.append({
                 "tipo": "lote",
-                "id": lote.get("id"),
+                "id": lote.id,
                 "titulo": nome,
-                "subtitulo": f"{lote.get('tipo', '')} · {lote.get('quantidade', 0)} animais",
+                "subtitulo": f"{lote.tipo} · {lote.quantidade} animais",
             })
 
     return jsonify(resultados)

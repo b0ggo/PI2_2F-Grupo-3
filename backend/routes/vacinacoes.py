@@ -2,15 +2,12 @@ from datetime import date, datetime
 
 from flask import Blueprint, jsonify, request
 
-from config import VACINACOES_FILE
+from db.database import db
+from db.models import Vacinacao
 from routes.helpers import require_auth
-from storage.json_store import load_list, new_id, save_list
+from utils import new_id
 
 vacinacoes_bp = Blueprint("vacinacoes", __name__)
-
-
-def _filtrar_user(items, user_id):
-    return [v for v in items if v.get("userId") == user_id]
 
 
 def _parse_date(value):
@@ -28,7 +25,12 @@ def _parse_date(value):
 @vacinacoes_bp.get("/api/vacinacoes")
 @require_auth
 def listar_vacinacoes(user):
-    return jsonify(_filtrar_user(load_list(VACINACOES_FILE), user["id"]))
+    items = (
+        Vacinacao.query.filter_by(user_id=user["id"])
+        .order_by(Vacinacao.created_at.desc())
+        .all()
+    )
+    return jsonify([v.to_dict() for v in items])
 
 
 @vacinacoes_bp.post("/api/vacinacoes")
@@ -38,33 +40,33 @@ def criar_vacinacao(user):
     if not data.get("tipoVacina") or not data.get("alvoLabel"):
         return jsonify({"message": "Animal/lote e tipo de vacina são obrigatórios."}), 400
 
-    registro = {
-        "id": new_id(),
-        "userId": user["id"],
-        "alvoTipo": data.get("alvoTipo", "animal"),
-        "alvoId": data.get("alvoId", ""),
-        "alvoLabel": str(data.get("alvoLabel", "")).strip(),
-        "tipoVacina": str(data.get("tipoVacina", "")).strip(),
-        "dataAplicacao": data.get("dataAplicacao", ""),
-        "proximaDose": data.get("proximaDose", ""),
-        "observacoes": str(data.get("observacoes", "")).strip(),
-    }
+    registro = Vacinacao(
+        id=new_id(),
+        user_id=user["id"],
+        alvo_tipo=data.get("alvoTipo", "animal"),
+        alvo_id=str(data.get("alvoId", "")),
+        alvo_label=str(data.get("alvoLabel", "")).strip(),
+        tipo_vacina=str(data.get("tipoVacina", "")).strip(),
+        data_aplicacao=data.get("dataAplicacao") or None,
+        proxima_dose=data.get("proximaDose") or None,
+        observacoes=str(data.get("observacoes", "")).strip(),
+    )
 
-    vacinacoes = load_list(VACINACOES_FILE)
-    vacinacoes.append(registro)
-    save_list(VACINACOES_FILE, vacinacoes)
-    return jsonify(registro), 201
+    db.session.add(registro)
+    db.session.commit()
+    return jsonify(registro.to_dict()), 201
 
 
 def build_alertas(user_id):
     hoje = date.today()
     alertas = []
-    for vac in _filtrar_user(load_list(VACINACOES_FILE), user_id):
-        proxima = _parse_date(vac.get("proximaDose"))
+    vacinacoes = Vacinacao.query.filter_by(user_id=user_id).all()
+    for vac in vacinacoes:
+        proxima = _parse_date(vac.proxima_dose)
         if not proxima:
             continue
         dias = (proxima - hoje).days
-        titulo = f"{vac.get('tipoVacina', 'Vacina')} — {vac.get('alvoLabel', '')}"
+        titulo = f"{vac.tipo_vacina} — {vac.alvo_label}"
         if dias < 0:
             detalhe = f"Reforço vencido há {abs(dias)} dias"
             urgente = True
@@ -75,7 +77,7 @@ def build_alertas(user_id):
             detalhe = f"Próxima dose em {proxima.strftime('%d/%m/%Y')}"
             urgente = False
         alertas.append({
-            "id": vac.get("id"),
+            "id": vac.id,
             "titulo": titulo,
             "detalhe": detalhe,
             "urgente": urgente,

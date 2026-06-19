@@ -1,15 +1,17 @@
 from datetime import datetime
+
 from flask import Blueprint, jsonify, request
 
-from config import USERS_FILE, CONVERSAS_FILE
+from db.database import db
+from db.models import Conversa, User
 from routes.helpers import require_auth
+from seed import seed_chat_for_user, _create_coop_prod_conversations
 from services.auth_service import (
     find_user_by_email,
     register_user,
     _perfil_publico,
 )
-from storage.json_store import load_list, save_list, new_id
-from seed import seed_chat_for_user, _create_coop_prod_conversations
+from utils import new_id
 
 cooperativa_bp = Blueprint("cooperativa", __name__)
 
@@ -19,63 +21,42 @@ def _is_cooperativa_user(user):
     return tipo != "" and tipo != "produtor"
 
 
-@cooperativa_bp.get("/api/cooperativa/produtores")
-@require_auth
-def listar_produtores(user):
-    if not _is_cooperativa_user(user):
-        return jsonify({"message": "Não autorizado."}), 403
-    users = load_list(USERS_FILE)
-    producers = [u for u in users if u.get("cooperativaId") == user["id"]]
-    return jsonify([_perfil_publico(p) for p in producers])
-
-
 def _find_conversation(user_id, partner_id):
-    conversas = load_list(CONVERSAS_FILE)
-    return next(
-        (
-            c
-            for c in conversas
-            if c.get("userId") == user_id and c.get("partnerId") == partner_id
-        ),
-        None,
-    )
+    return Conversa.query.filter_by(user_id=user_id, partner_id=partner_id).first()
 
 
 def _create_chat_partner_conversations(cooperativa, partner):
-    """Criar conversas com um parceiro de chat (veterinário, fornecedor) sem associar como produtor."""
-    conversas = load_list(CONVERSAS_FILE)
-
-    partner_tipo = str(partner.get("tipoConta") or "").strip().lower()
     partner_type_display = partner.get("tipoConta", "Parceiro")
+    agora = datetime.now().strftime("%H:%M")
 
     coop_conv = _find_conversation(cooperativa["id"], partner["id"])
     partner_conv = _find_conversation(partner["id"], cooperativa["id"])
 
     if not partner_conv:
-        partner_conv = {
-            "id": new_id(),
-            "userId": partner["id"],
-            "partnerId": cooperativa["id"],
-            "name": cooperativa.get("nome", "Cooperativa"),
-            "type": "Cooperativa",
-            "lastMsg": "Conversa iniciada com a cooperativa.",
-            "time": datetime.now().strftime("%H:%M"),
-        }
-        conversas.append(partner_conv)
+        partner_conv = Conversa(
+            id=new_id(),
+            user_id=partner["id"],
+            partner_id=cooperativa["id"],
+            name=cooperativa.get("nome", "Cooperativa"),
+            type="Cooperativa",
+            last_msg="Conversa iniciada com a cooperativa.",
+            time_label=agora,
+        )
+        db.session.add(partner_conv)
 
     if not coop_conv:
-        coop_conv = {
-            "id": new_id(),
-            "userId": cooperativa["id"],
-            "partnerId": partner["id"],
-            "name": partner.get("nome", partner.get("email", partner_type_display)),
-            "type": partner_type_display,
-            "lastMsg": f"Conversa iniciada com {partner_type_display.lower()}.",
-            "time": datetime.now().strftime("%H:%M"),
-        }
-        conversas.append(coop_conv)
+        coop_conv = Conversa(
+            id=new_id(),
+            user_id=cooperativa["id"],
+            partner_id=partner["id"],
+            name=partner.get("nome", partner.get("email", partner_type_display)),
+            type=partner_type_display,
+            last_msg=f"Conversa iniciada com {partner_type_display.lower()}.",
+            time_label=agora,
+        )
+        db.session.add(coop_conv)
 
-    save_list(CONVERSAS_FILE, conversas)
+    db.session.commit()
     return partner_conv, coop_conv
 
 
@@ -83,16 +64,22 @@ def _associate_producer(user, produtor):
     if produtor.get("cooperativaId"):
         return produtor
 
-    users = load_list(USERS_FILE)
-    for i, item in enumerate(users):
-        if item.get("id") != produtor.get("id"):
-            continue
-        users[i] = {**item, "cooperativaId": user["id"]}
-        produtor = users[i]
-        save_list(USERS_FILE, users)
-        break
+    db_user = User.query.get(produtor["id"])
+    if not db_user:
+        return produtor
 
-    return produtor
+    db_user.cooperativa_id = user["id"]
+    db.session.commit()
+    return db_user.to_dict(private=True)
+
+
+@cooperativa_bp.get("/api/cooperativa/produtores")
+@require_auth
+def listar_produtores(user):
+    if not _is_cooperativa_user(user):
+        return jsonify({"message": "Não autorizado."}), 403
+    producers = User.query.filter_by(cooperativa_id=user["id"]).all()
+    return jsonify([p.to_dict() for p in producers])
 
 
 @cooperativa_bp.post("/api/cooperativa/produtores/associar")
@@ -120,7 +107,7 @@ def associar_produtor(user):
     _, coop_conv = _create_coop_prod_conversations(user, produtor)
     return jsonify(
         {
-            "conversationId": coop_conv.get("id"),
+            "conversationId": coop_conv.id,
             "partnerId": produtor.get("id"),
             "partner": _perfil_publico(produtor),
         }
@@ -133,7 +120,6 @@ def criar_produtor(user):
     if not _is_cooperativa_user(user):
         return jsonify({"message": "Não autorizado."}), 403
     data = request.get_json(silent=True) or {}
-    # garantir que o novo usuário é um produtor vinculado a esta cooperativa
     data["tipoConta"] = data.get("tipoConta", "Produtor")
     data["cooperativaId"] = user["id"]
     try:
@@ -147,7 +133,6 @@ def criar_produtor(user):
 @cooperativa_bp.post("/api/cooperativa/chat-partners/adicionar")
 @require_auth
 def adicionar_chat_partner(user):
-    """Adicionar um veterinário ou fornecedor ao chat sem associar como produtor."""
     if not _is_cooperativa_user(user):
         return jsonify({"message": "Não autorizado."}), 403
 
@@ -161,7 +146,6 @@ def adicionar_chat_partner(user):
         return jsonify({"message": "Este usuário não existe."}), 400
 
     partner_tipo = str(partner.get("tipoConta", "")).strip().lower()
-    # Apenas permitir tipos veterinário e fornecedor
     allowed_types = ["veterinária", "veterinario", "fornecedor"]
     if partner_tipo not in allowed_types:
         return jsonify({"message": "Apenas veterinários e fornecedores podem ser adicionados ao chat."}), 400
@@ -169,7 +153,7 @@ def adicionar_chat_partner(user):
     _, coop_conv = _create_chat_partner_conversations(user, partner)
     return jsonify(
         {
-            "conversationId": coop_conv.get("id"),
+            "conversationId": coop_conv.id,
             "partnerId": partner.get("id"),
             "partner": _perfil_publico(partner),
         }
@@ -182,14 +166,10 @@ def remover_produtor(user, produtor_id):
     if not _is_cooperativa_user(user):
         return jsonify({"message": "Não autorizado."}), 403
 
-    users = load_list(USERS_FILE)
-    for i, item in enumerate(users):
-        if item.get("id") != produtor_id:
-            continue
-        if item.get("cooperativaId") != user["id"]:
-            return jsonify({"message": "Produtor não encontrado para esta cooperativa."}), 404
-        users[i] = {k: v for k, v in item.items() if k != "cooperativaId"}
-        save_list(USERS_FILE, users)
-        return jsonify({"message": "Produtor removido."}), 200
+    db_user = User.query.filter_by(id=produtor_id, cooperativa_id=user["id"]).first()
+    if not db_user:
+        return jsonify({"message": "Produtor não encontrado."}), 404
 
-    return jsonify({"message": "Produtor não encontrado."}), 404
+    db_user.cooperativa_id = None
+    db.session.commit()
+    return jsonify({"message": "Produtor removido."}), 200

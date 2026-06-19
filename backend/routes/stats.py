@@ -1,8 +1,7 @@
 from flask import Blueprint, jsonify
 
-from config import ANIMAIS_FILE, LOTES_FILE, VACINACOES_FILE
+from db.models import Animal, Lote, Vacinacao
 from routes.helpers import require_auth
-from storage.json_store import load_list
 from services.auth_service import find_producers_for_cooperative, is_cooperative_user
 
 stats_bp = Blueprint("stats", __name__)
@@ -14,19 +13,22 @@ def obter_stats(user):
     user_id = user["id"]
     if is_cooperative_user(user):
         producer_ids = set(find_producers_for_cooperative(user_id))
-        animais = [a for a in load_list(ANIMAIS_FILE) if a.get("userId") in producer_ids]
-        lotes = [l for l in load_list(LOTES_FILE) if l.get("userId") in producer_ids]
-        vacinacoes = [v for v in load_list(VACINACOES_FILE) if v.get("userId") in producer_ids]
+        if not producer_ids:
+            animais, lotes, vacinacoes = [], [], []
+        else:
+            animais = Animal.query.filter(Animal.user_id.in_(producer_ids)).all()
+            lotes = Lote.query.filter(Lote.user_id.in_(producer_ids)).all()
+            vacinacoes = Vacinacao.query.filter(Vacinacao.user_id.in_(producer_ids)).all()
     else:
-        animais = [a for a in load_list(ANIMAIS_FILE) if a.get("userId") == user_id]
-        lotes = [l for l in load_list(LOTES_FILE) if l.get("userId") == user_id]
-        vacinacoes = [v for v in load_list(VACINACOES_FILE) if v.get("userId") == user_id]
+        animais = Animal.query.filter_by(user_id=user_id).all()
+        lotes = Lote.query.filter_by(user_id=user_id).all()
+        vacinacoes = Vacinacao.query.filter_by(user_id=user_id).all()
 
-    total_animais_lotes = sum(l.get("quantidade", 0) for l in lotes)
+    total_animais_lotes = sum(l.quantidade for l in lotes)
     total_animais = len(animais) + total_animais_lotes
 
-    vacinados_lotes = sum(l.get("vacinados", 0) for l in lotes)
-    vacinados_animais = sum(len(a.get("vacinas", [])) > 0 for a in animais)
+    vacinados_lotes = sum(l.vacinados for l in lotes)
+    vacinados_animais = sum(1 for a in animais if a.vacinas)
     total_vacinados = vacinados_lotes + vacinados_animais
 
     percentual = 0

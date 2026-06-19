@@ -2,83 +2,63 @@ from datetime import datetime
 
 from flask import Blueprint, jsonify, request
 
-from config import CONVERSAS_FILE, MENSAGENS_FILE
+from db.database import db
+from db.models import Conversa, Mensagem
 from routes.helpers import require_auth
 from services.auth_service import find_user_by_email, _perfil_publico
-from storage.json_store import load_list, new_id, save_list
+from utils import new_id
 
 chat_bp = Blueprint("chat", __name__)
 
 
-def _conversas_user(user_id):
-    return [c for c in load_list(CONVERSAS_FILE) if c.get("userId") == user_id]
-
-
-def _mensagens_conversa(conversa_id):
-    return [m for m in load_list(MENSAGENS_FILE) if m.get("conversaId") == conversa_id]
-
-
 def _find_conversation(user_id, partner_id):
-    conversas = load_list(CONVERSAS_FILE)
-    return next(
-        (
-            c
-            for c in conversas
-            if c.get("userId") == user_id and c.get("partnerId") == partner_id
-        ),
-        None,
-    )
+    return Conversa.query.filter_by(user_id=user_id, partner_id=partner_id).first()
 
 
 def _create_chat_partner_conversations(user, partner):
-    """Criar conversas com um parceiro de chat (veterinário, fornecedor) sem associar."""
-    conversas = load_list(CONVERSAS_FILE)
-
     partner_type_display = partner.get("tipoConta", "Parceiro")
+    agora = datetime.now().strftime("%H:%M")
 
     user_conv = _find_conversation(user["id"], partner["id"])
     partner_conv = _find_conversation(partner["id"], user["id"])
 
     if not partner_conv:
-        partner_conv = {
-            "id": new_id(),
-            "userId": partner["id"],
-            "partnerId": user["id"],
-            "name": user.get("nome", user.get("email", "Produtor")),
-            "type": "Produtor",
-            "lastMsg": "Conversa iniciada com o produtor.",
-            "time": datetime.now().strftime("%H:%M"),
-        }
-        conversas.append(partner_conv)
+        partner_conv = Conversa(
+            id=new_id(),
+            user_id=partner["id"],
+            partner_id=user["id"],
+            name=user.get("nome", user.get("email", "Produtor")),
+            type="Produtor",
+            last_msg="Conversa iniciada com o produtor.",
+            time_label=agora,
+        )
+        db.session.add(partner_conv)
 
     if not user_conv:
-        user_conv = {
-            "id": new_id(),
-            "userId": user["id"],
-            "partnerId": partner["id"],
-            "name": partner.get("nome", partner.get("email", partner_type_display)),
-            "type": partner_type_display,
-            "lastMsg": f"Conversa iniciada com {partner_type_display.lower()}.",
-            "time": datetime.now().strftime("%H:%M"),
-        }
-        conversas.append(user_conv)
+        user_conv = Conversa(
+            id=new_id(),
+            user_id=user["id"],
+            partner_id=partner["id"],
+            name=partner.get("nome", partner.get("email", partner_type_display)),
+            type=partner_type_display,
+            last_msg=f"Conversa iniciada com {partner_type_display.lower()}.",
+            time_label=agora,
+        )
+        db.session.add(user_conv)
 
-    save_list(CONVERSAS_FILE, conversas)
+    db.session.commit()
     return partner_conv, user_conv
 
 
 @chat_bp.post("/api/chat/profissionais/adicionar")
 @require_auth
 def adicionar_profissional_chat(user):
-    """Adicionar um veterinário ou fornecedor ao chat (apenas para produtores)."""
     user_tipo = str(user.get("tipoConta", "")).strip().lower()
     if user_tipo == "produtor":
         pass
     elif user_tipo in ["veterinária", "veterinario", "fornecedor"]:
-        # Permitir vets/fornecedores conversar com outros vets/fornecedores
         pass
     else:
-        # Cooperativas não podem usar este endpoint
         return jsonify({"message": "Não autorizado."}), 403
 
     data = request.get_json(silent=True) or {}
@@ -91,16 +71,15 @@ def adicionar_profissional_chat(user):
         return jsonify({"message": "Este usuário não existe."}), 400
 
     partner_tipo = str(partner.get("tipoConta", "")).strip().lower()
-    # Apenas permitir tipos veterinário e fornecedor
     allowed_types = ["veterinária", "veterinario", "fornecedor"]
-    
+
     if partner_tipo not in allowed_types:
         return jsonify({"message": "Você só pode conversar com veterinários e fornecedores."}), 400
 
     _, user_conv = _create_chat_partner_conversations(user, partner)
     return jsonify(
         {
-            "conversationId": user_conv.get("id"),
+            "conversationId": user_conv.id,
             "partnerId": partner.get("id"),
             "partner": _perfil_publico(partner),
         }
@@ -111,30 +90,29 @@ def adicionar_profissional_chat(user):
 @require_auth
 def listar_conversas(user):
     conversas = []
-    for conv in _conversas_user(user["id"]):
-        mensagens = _mensagens_conversa(conv["id"])
-        unread = sum(1 for m in mensagens if m.get("from") == "them" and not m.get("lida"))
-        conversas.append({
-            **conv,
-            "unread": unread,
-            "messages": mensagens,
-        })
+    for conv in Conversa.query.filter_by(user_id=user["id"]).order_by(Conversa.updated_at.desc()).all():
+        mensagens = Mensagem.query.filter_by(conversa_id=conv.id).order_by(Mensagem.created_at).all()
+        unread = sum(1 for m in mensagens if m.sender_side == "them" and not m.lida)
+        data = conv.to_dict(include_messages=True, unread=unread)
+        data["messages"] = [m.to_dict() for m in mensagens]
+        conversas.append(data)
     return jsonify(conversas)
 
 
 @chat_bp.get("/api/conversas/<conversa_id>/mensagens")
 @require_auth
 def listar_mensagens(user, conversa_id):
-    conv = next((c for c in _conversas_user(user["id"]) if c["id"] == conversa_id), None)
+    conv = Conversa.query.filter_by(id=conversa_id, user_id=user["id"]).first()
     if not conv:
         return jsonify({"message": "Conversa não encontrada."}), 404
-    return jsonify(_mensagens_conversa(conversa_id))
+    mensagens = Mensagem.query.filter_by(conversa_id=conversa_id).order_by(Mensagem.created_at).all()
+    return jsonify([m.to_dict() for m in mensagens])
 
 
 @chat_bp.post("/api/conversas/<conversa_id>/mensagens")
 @require_auth
 def enviar_mensagem(user, conversa_id):
-    conv = next((c for c in _conversas_user(user["id"]) if c["id"] == conversa_id), None)
+    conv = Conversa.query.filter_by(id=conversa_id, user_id=user["id"]).first()
     if not conv:
         return jsonify({"message": "Conversa não encontrada."}), 404
 
@@ -144,44 +122,39 @@ def enviar_mensagem(user, conversa_id):
         return jsonify({"message": "Mensagem vazia."}), 400
 
     agora = datetime.now().strftime("%H:%M")
-    msg = {
-        "id": new_id(),
-        "conversaId": conversa_id,
-        "from": "me",
-        "text": texto,
-        "time": agora,
-        "status": "sent",
-    }
-
-    mensagens = load_list(MENSAGENS_FILE)
-    mensagens.append(msg)
-
-    mirror_conv = next(
-        (
-            c
-            for c in load_list(CONVERSAS_FILE)
-            if c.get("userId") == conv.get("partnerId")
-            and c.get("partnerId") == conv.get("userId")
-        ),
-        None,
+    msg = Mensagem(
+        id=new_id(),
+        conversa_id=conversa_id,
+        sender_side="me",
+        text=texto,
+        time_label=agora,
+        status="sent",
     )
+    db.session.add(msg)
+
+    mirror_conv = None
+    if conv.partner_id:
+        mirror_conv = Conversa.query.filter_by(
+            user_id=conv.partner_id, partner_id=conv.user_id
+        ).first()
 
     if mirror_conv:
-        mensagens.append({
-            "id": new_id(),
-            "conversaId": mirror_conv["id"],
-            "from": "them",
-            "text": texto,
-            "time": agora,
-            "status": "received",
-        })
+        db.session.add(
+            Mensagem(
+                id=new_id(),
+                conversa_id=mirror_conv.id,
+                sender_side="them",
+                text=texto,
+                time_label=agora,
+                status="received",
+            )
+        )
 
-    save_list(MENSAGENS_FILE, mensagens)
+    conv.last_msg = texto
+    conv.time_label = agora
+    if mirror_conv:
+        mirror_conv.last_msg = texto
+        mirror_conv.time_label = agora
 
-    conversas = load_list(CONVERSAS_FILE)
-    for i, c in enumerate(conversas):
-        if c.get("id") == conversa_id or (mirror_conv and c.get("id") == mirror_conv["id"]):
-            conversas[i] = {**c, "lastMsg": texto, "time": agora}
-    save_list(CONVERSAS_FILE, conversas)
-
-    return jsonify(msg), 201
+    db.session.commit()
+    return jsonify(msg.to_dict()), 201

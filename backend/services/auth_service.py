@@ -1,42 +1,40 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from config import TOKENS_FILE, USERS_FILE
-from storage.json_store import load_dict, load_list, new_id, save_dict, save_list
+from db.database import db
+from db.models import AuthToken, User
+from utils import new_id
 
 
 def _perfil_publico(user):
-    return {
-        "id": user.get("id", ""),
-        "nome": user.get("nome", ""),
-        "email": user.get("email", ""),
-        "telefone": user.get("telefone", ""),
-        "localizacao": user.get("localizacao", ""),
-        "cpfCnpj": user.get("cpfCnpj", ""),
-        "tipoConta": user.get("tipoConta", ""),
-    }
+    if isinstance(user, dict):
+        return {
+            "id": user.get("id", ""),
+            "nome": user.get("nome", ""),
+            "email": user.get("email", ""),
+            "telefone": user.get("telefone", ""),
+            "localizacao": user.get("localizacao", ""),
+            "cpfCnpj": user.get("cpfCnpj", ""),
+            "tipoConta": user.get("tipoConta", ""),
+        }
+    return user.to_dict()
 
 
 def find_user_by_email(email):
     email = email.strip().lower()
-    for user in load_list(USERS_FILE):
-        if user.get("email", "").lower() == email:
-            return user
-    return None
+    user = User.query.filter_by(email=email).first()
+    return user.to_dict(private=True) if user else None
 
 
 def find_user_by_id(user_id):
-    for user in load_list(USERS_FILE):
-        if user.get("id") == user_id:
-            return user
-    return None
+    user = User.query.get(user_id)
+    return user.to_dict(private=True) if user else None
 
 
 def find_producers_for_cooperative(coop_id):
-    ids = []
-    for user in load_list(USERS_FILE):
-        if user.get("cooperativaId") == coop_id:
-            ids.append(user.get("id"))
-    return ids
+    return [
+        u.id
+        for u in User.query.filter_by(cooperativa_id=coop_id).all()
+    ]
 
 
 def is_cooperative_user(user):
@@ -49,40 +47,37 @@ def register_user(data):
     if not email or not data.get("senha"):
         raise ValueError("Email e senha são obrigatórios.")
 
-    if find_user_by_email(email):
+    if User.query.filter_by(email=email).first():
         raise ValueError("Este email já está cadastrado.")
 
-    user = {
-        "id": new_id(),
-        "nome": data.get("nome", "").strip(),
-        "email": email,
-        "telefone": data.get("telefone", "").strip(),
-        "localizacao": data.get("localizacao", "").strip(),
-        "cpfCnpj": data.get("cpfCnpj", "").strip(),
-        "tipoConta": data.get("tipoConta", "").strip(),
-        "senhaHash": generate_password_hash(data["senha"]),
-    }
+    user = User(
+        id=new_id(),
+        nome=data.get("nome", "").strip(),
+        email=email,
+        telefone=data.get("telefone", "").strip(),
+        localizacao=data.get("localizacao", "").strip(),
+        cpf_cnpj=data.get("cpfCnpj", "").strip(),
+        tipo_conta=data.get("tipoConta", "").strip(),
+        senha_hash=generate_password_hash(data["senha"]),
+    )
 
-    # Opcionalmente associar um produtor com uma cooperativa
     if data.get("cooperativaId"):
-        user["cooperativaId"] = str(data.get("cooperativaId")).strip()
+        user.cooperativa_id = str(data.get("cooperativaId")).strip()
 
-    users = load_list(USERS_FILE)
-    users.append(user)
-    save_list(USERS_FILE, users)
-    return user
+    db.session.add(user)
+    db.session.commit()
+    return user.to_dict(private=True)
 
 
 def login_user(email, senha):
-    user = find_user_by_email(email)
-    if not user or not check_password_hash(user.get("senhaHash", ""), senha):
+    user = User.query.filter_by(email=email.strip().lower()).first()
+    if not user or not check_password_hash(user.senha_hash, senha):
         raise ValueError("Email ou senha incorretos.")
 
     token = new_id()
-    tokens = load_dict(TOKENS_FILE)
-    tokens[token] = user["id"]
-    save_dict(TOKENS_FILE, tokens)
-    return token, _perfil_publico(user)
+    db.session.add(AuthToken(token=token, user_id=user.id))
+    db.session.commit()
+    return token, user.to_dict()
 
 
 def reset_password(email, senha):
@@ -92,61 +87,53 @@ def reset_password(email, senha):
     if len(senha) < 6:
         raise ValueError("A senha deve ter no mínimo 6 caracteres.")
 
-    user = find_user_by_email(email)
+    user = User.query.filter_by(email=email).first()
     if not user:
         raise ValueError("Email não encontrado.")
 
-    users = load_list(USERS_FILE)
-    for i, item in enumerate(users):
-        if item.get("id") != user["id"]:
-            continue
-        users[i] = {**item, "senhaHash": generate_password_hash(senha)}
-        save_list(USERS_FILE, users)
-        return
-    raise ValueError("Usuário não encontrado.")
+    user.senha_hash = generate_password_hash(senha)
+    db.session.commit()
 
 
 def logout_user(token):
     if not token:
         return
-    tokens = load_dict(TOKENS_FILE)
-    if token in tokens:
-        del tokens[token]
-        save_dict(TOKENS_FILE, tokens)
+    AuthToken.query.filter_by(token=token).delete()
+    db.session.commit()
 
 
 def get_user_from_token(token):
     if not token:
         return None
-    tokens = load_dict(TOKENS_FILE)
-    user_id = tokens.get(token)
-    if not user_id:
+    auth = AuthToken.query.filter_by(token=token).first()
+    if not auth:
         return None
-    return find_user_by_id(user_id)
+    user = User.query.get(auth.user_id)
+    return user.to_dict(private=True) if user else None
 
 
 def update_user_profile(user_id, data):
-    users = load_list(USERS_FILE)
-    updated = None
-    for i, user in enumerate(users):
-        if user.get("id") != user_id:
-            continue
-        user = {**user}
-        for key in ("nome", "telefone", "localizacao", "cpfCnpj", "tipoConta"):
-            if key in data and data[key] is not None:
-                user[key] = str(data[key]).strip()
-        if "email" in data and data["email"]:
-            novo_email = str(data["email"]).strip().lower()
-            existente = find_user_by_email(novo_email)
-            if existente and existente["id"] != user_id:
-                raise ValueError("Este email já está em uso.")
-            user["email"] = novo_email
-        users[i] = user
-        updated = user
-        break
-
-    if not updated:
+    user = User.query.get(user_id)
+    if not user:
         raise ValueError("Usuário não encontrado.")
 
-    save_list(USERS_FILE, users)
-    return _perfil_publico(updated)
+    field_map = {
+        "nome": "nome",
+        "telefone": "telefone",
+        "localizacao": "localizacao",
+        "cpfCnpj": "cpf_cnpj",
+        "tipoConta": "tipo_conta",
+    }
+    for api_key, col in field_map.items():
+        if api_key in data and data[api_key] is not None:
+            setattr(user, col, str(data[api_key]).strip())
+
+    if "email" in data and data["email"]:
+        novo_email = str(data["email"]).strip().lower()
+        existente = User.query.filter_by(email=novo_email).first()
+        if existente and existente.id != user_id:
+            raise ValueError("Este email já está em uso.")
+        user.email = novo_email
+
+    db.session.commit()
+    return user.to_dict()
