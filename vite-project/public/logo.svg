@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="AgroGestor">
+  <circle cx="60" cy="60" r="56" fill="#166534"/>
+  <path d="M60 28c-8 14-24 22-24 38 0 13 11 24 24 24s24-11 24-24c0-16-16-24-24-38z" fill="#86efac"/>
+  <path d="M60 52v32M48 68h24" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+</svg>

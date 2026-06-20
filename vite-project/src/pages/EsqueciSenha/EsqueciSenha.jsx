@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
 import { redefinirSenha } from "../../services/api.js";
-import logo from "../../imagens/logo.png";
+const LOGO_SRC = "/logo.svg";
 import "./EsqueciSenha.css";
 
 export default function EsqueciSenha() {
@@ -49,7 +49,7 @@ export default function EsqueciSenha() {
       <div className="esqueci-senha-container">
         <div className="esqueci-senha-card">
           <div className="esqueci-senha-logo">
-            <img src={logo} alt="Logo" className="esqueci-senha-logo-img" />
+            <img src={LOGO_SRC} alt="Logo AgroGestor" className="esqueci-senha-logo-img" />
             <h1>Recuperar senha</h1>
             <p>Informe seu email e defina uma nova senha</p>
           </div>

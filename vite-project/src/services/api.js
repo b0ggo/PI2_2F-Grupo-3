@@ -59,7 +59,7 @@ export async function validarLoginUsuario(email, senha) {
 }
 
 export async function registrarUsuario(dados) {
-  const result = await request('/api/auth/register', {
+  const result = await requestNoAuth('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(dados),
   })
@@ -68,14 +68,14 @@ export async function registrarUsuario(dados) {
 }
 
 export async function redefinirSenha(email, senha) {
-  return request('/api/auth/redefinir-senha', {
+  return requestNoAuth('/api/auth/redefinir-senha', {
     method: 'POST',
     body: JSON.stringify({ email, senha }),
   })
 }
 
 export async function loginUsuario(email, senha) {
-  const result = await request('/api/auth/login', {
+  const result = await requestNoAuth('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, senha }),
   })
