@@ -2,6 +2,18 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
 import { registrar, fazerLogout } from "../../services/perfil.js";
+import {
+  validarNome,
+  validarEmail,
+  validarTelefone,
+  validarCpf,
+  validarSenha,
+  obterEstados,
+  validarEstado,
+  validarMunicipio,
+  formatarTelefone,
+  formatarCPF,
+} from "../../services/validations.js";
 import styles from "./CadastroProdutor.module.css";
 
 function IconBack() {
@@ -20,10 +32,12 @@ export default function CadastroProdutor() {
     email: "",
     telefone: "",
     cpf: "",
-    local: "",
+    estado: "",
+    municipio: "",
     senha: "",
     conf: "",
   });
+  const [errors, setErrors] = useState({});
   const [toast, setToast] = useState(null);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -53,31 +67,63 @@ export default function CadastroProdutor() {
     t.current = window.setTimeout(() => setToast(null), 2800);
   };
 
+  const validarFormulario = () => {
+    const novoErros = {};
+
+    if (!validarNome(form.nome)) {
+      novoErros.nome = "O nome deve conter pelo menos 2 palavras";
+    }
+
+    if (!validarEmail(form.email)) {
+      novoErros.email = "Email inválido";
+    }
+
+    if (!validarTelefone(form.telefone)) {
+      novoErros.telefone = "Telefone deve ter no mínimo 10 dígitos";
+    }
+
+    if (!validarCpf(form.cpf)) {
+      novoErros.cpf = "CPF inválido. Deve ter 11 dígitos válidos";
+    }
+
+    if (!validarEstado(form.estado)) {
+      novoErros.estado = "Selecione um estado válido";
+    }
+
+    if (!validarMunicipio(form.municipio)) {
+      novoErros.municipio = "Município inválido";
+    }
+
+    if (!validarSenha(form.senha)) {
+      novoErros.senha =
+        "Senha deve ter pelo menos 1 letra, 1 número e 1 caractere especial (!@#$%^&*)";
+    }
+
+    if (form.senha !== form.conf) {
+      novoErros.conf = "As senhas não coincidem";
+    }
+
+    setErrors(novoErros);
+    return Object.keys(novoErros).length === 0;
+  };
+
   const submit = async (e) => {
     e.preventDefault();
-    const { nome, email, telefone, cpf, local, senha, conf } = form;
-    if (!nome.trim() || !email.trim() || !telefone.trim() || !cpf.trim() || !local.trim()) {
-      show("Preencha todos os campos obrigatórios.", true);
-      return;
-    }
-    if (senha.length < 6) {
-      show("A senha deve ter no mínimo 6 caracteres.", true);
-      return;
-    }
-    if (senha !== conf) {
-      show("As senhas não coincidem.", true);
+    
+    if (!validarFormulario()) {
+      show("Por favor, corrija os erros no formulário", true);
       return;
     }
 
     try {
       await registrar({
-        nome: nome.trim(),
-        email: email.trim(),
-        telefone: telefone.trim(),
-        localizacao: local.trim(),
-        cpfCnpj: cpf.trim(),
+        nome: form.nome.trim(),
+        email: form.email.trim(),
+        telefone: form.telefone.trim(),
+        localizacao: `${form.municipio.trim()}, ${form.estado}`,
+        cpfCnpj: form.cpf.trim(),
         tipoConta: "Produtor",
-        senha,
+        senha: form.senha,
       });
       await fazerLogout();
       show("Cadastro realizado com sucesso! Faça login para acessar sua conta.", false);
@@ -97,39 +143,138 @@ export default function CadastroProdutor() {
       </header>
 
       <form className={styles.body} onSubmit={submit} noValidate>
-        {[
-          ["nome", "Nome Completo", "text", "Digite seu nome", true],
-          ["email", "Email", "email", "seu@email.com", true],
-          ["telefone", "Telefone", "tel", "(00) 00000-0000", true],
-          ["cpf", "CPF", "text", "000.000.000-00", true],
-          ["local", "Localização", "text", "Cidade, Estado", true],
-          ["senha", "Senha", "password", "Mínimo 6 caracteres", true],
-          ["conf", "Confirmar Senha", "password", "Digite a senha novamente", true],
-        ].map(([key, label, type, ph, req]) => (
-          <div className={styles.fieldBlock} key={key}>
-            <label htmlFor={key}>
-              {label} {req && <span className={styles.req}>*</span>}
-            </label>
-            <input
-              id={key}
-              className={styles.input}
-              type={type}
-              placeholder={ph}
-              value={form[key]}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (key === "telefone") {
-                  set(key, formatTelefone(value));
-                } else if (key === "cpf") {
-                  set(key, formatCPF(value));
-                } else {
-                  set(key, value);
-                }
-              }}
-              autoComplete={key === "senha" || key === "conf" ? "new-password" : "on"}
-            />
-          </div>
-        ))}
+        <div className={styles.fieldBlock}>
+          <label htmlFor="nome">
+            Nome Completo <span className={styles.req}>*</span>
+          </label>
+          <input
+            id="nome"
+            className={`${styles.input} ${errors.nome ? styles.inputError : ""}`}
+            type="text"
+            placeholder="Digite seu nome completo"
+            value={form.nome}
+            onChange={(e) => set("nome", e.target.value)}
+          />
+          {errors.nome && <span className={styles.errorMsg}>{errors.nome}</span>}
+        </div>
+
+        <div className={styles.fieldBlock}>
+          <label htmlFor="email">
+            Email <span className={styles.req}>*</span>
+          </label>
+          <input
+            id="email"
+            className={`${styles.input} ${errors.email ? styles.inputError : ""}`}
+            type="email"
+            placeholder="seu@email.com"
+            value={form.email}
+            onChange={(e) => set("email", e.target.value)}
+          />
+          {errors.email && <span className={styles.errorMsg}>{errors.email}</span>}
+        </div>
+
+        <div className={styles.fieldBlock}>
+          <label htmlFor="telefone">
+            Telefone <span className={styles.req}>*</span>
+          </label>
+          <input
+            id="telefone"
+            className={`${styles.input} ${errors.telefone ? styles.inputError : ""}`}
+            type="tel"
+            placeholder="(00) 00000-0000"
+            value={form.telefone}
+            onChange={(e) => {
+              const value = e.target.value;
+              set("telefone", formatarTelefone(value));
+            }}
+          />
+          {errors.telefone && <span className={styles.errorMsg}>{errors.telefone}</span>}
+        </div>
+
+        <div className={styles.fieldBlock}>
+          <label htmlFor="cpf">
+            CPF <span className={styles.req}>*</span>
+          </label>
+          <input
+            id="cpf"
+            className={`${styles.input} ${errors.cpf ? styles.inputError : ""}`}
+            type="text"
+            placeholder="000.000.000-00"
+            value={form.cpf}
+            onChange={(e) => {
+              const value = e.target.value;
+              set("cpf", formatarCPF(value));
+            }}
+          />
+          {errors.cpf && <span className={styles.errorMsg}>{errors.cpf}</span>}
+        </div>
+
+        <div className={styles.fieldBlock}>
+          <label htmlFor="estado">
+            Estado <span className={styles.req}>*</span>
+          </label>
+          <select
+            id="estado"
+            className={`${styles.select} ${errors.estado ? styles.inputError : ""}`}
+            value={form.estado}
+            onChange={(e) => set("estado", e.target.value)}
+          >
+            <option value="">Selecione um estado</option>
+            {obterEstados().map((estado) => (
+              <option key={estado.code} value={estado.code}>
+                {estado.name} ({estado.code})
+              </option>
+            ))}
+          </select>
+          {errors.estado && <span className={styles.errorMsg}>{errors.estado}</span>}
+        </div>
+
+        <div className={styles.fieldBlock}>
+          <label htmlFor="municipio">
+            Município <span className={styles.req}>*</span>
+          </label>
+          <input
+            id="municipio"
+            className={`${styles.input} ${errors.municipio ? styles.inputError : ""}`}
+            type="text"
+            placeholder="Digite o município"
+            value={form.municipio}
+            onChange={(e) => set("municipio", e.target.value)}
+          />
+          {errors.municipio && <span className={styles.errorMsg}>{errors.municipio}</span>}
+        </div>
+
+        <div className={styles.fieldBlock}>
+          <label htmlFor="senha">
+            Senha <span className={styles.req}>*</span>
+          </label>
+          <input
+            id="senha"
+            className={`${styles.input} ${errors.senha ? styles.inputError : ""}`}
+            type="password"
+            placeholder="Mínimo 1 letra, 1 número e 1 caractere especial"
+            value={form.senha}
+            onChange={(e) => set("senha", e.target.value)}
+            autoComplete="new-password"
+          />
+          {errors.senha && <span className={styles.errorMsg}>{errors.senha}</span>}
+        </div>
+
+        <div className={styles.fieldBlock}>
+          <label htmlFor="conf">
+            Confirmar Senha <span className={styles.req}>*</span>
+          </label>
+          <input
+            id="conf"
+            className={`${styles.input} ${errors.conf ? styles.inputError : ""}`}
+            type="password"
+            placeholder="Digite a senha novamente"
+            value={form.conf}
+            onChange={(e) => set("conf", e.target.value)}
+            autoComplete="new-password"
+          />
+          {errors.conf && <span className={styles.errorMsg}>{errors.conf}</span>}
+        </div>
 
         <div className={styles.formActions} style={{ marginTop: 16 }}>
           <button type="button" className={styles.btnOutlineGray} onClick={() => navigate(ROUTES.LOGIN)}>
