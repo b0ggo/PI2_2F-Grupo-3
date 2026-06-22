@@ -2,6 +2,18 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
 import { registrar, fazerLogout } from "../../services/perfil.js";
+import {
+  validarNome,
+  validarEmail,
+  validarTelefone,
+  validarCnpj,
+  validarSenha,
+  obterEstados,
+  validarEstado,
+  validarMunicipio,
+  formatarTelefone,
+  formatarCNPJ,
+} from "../../services/validations.js";
 import styles from "./CadastroEmpresa.module.css";
 
 const TIPOS = ["Selecione o tipo", "Cooperativa", "Fornecedor", "Veterinária", "Indústria"];
@@ -23,42 +35,15 @@ export default function CadastroEmpresa() {
     cnpj: "",
     email: "",
     telefone: "",
-    local: "",
+    estado: "",
+    municipio: "",
     senha: "",
     conf: "",
   });
+  const [errors, setErrors] = useState({});
   const [toast, setToast] = useState(null);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const formatTelefone = (value) => {
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    if (!digits) return "";
-    if (digits.length < 3) return `(${digits}`;
-    const ddd = digits.slice(0, 2);
-    const rest = digits.slice(2);
-    if (rest.length <= 4) return `(${ddd}) ${rest}`;
-    if (rest.length <= 8) return `(${ddd}) ${rest.slice(0, 4)}-${rest.slice(4)}`;
-    return `(${ddd}) ${rest.slice(0, 5)}-${rest.slice(5)}`;
-  };
-
-  const formatCpfCnpj = (value) => {
-    const digits = value.replace(/\D/g, "");
-    if (digits.length <= 11) {
-      const filtered = digits.slice(0, 11);
-      if (filtered.length <= 3) return filtered;
-      if (filtered.length <= 6) return `${filtered.slice(0, 3)}.${filtered.slice(3)}`;
-      if (filtered.length <= 9) return `${filtered.slice(0, 3)}.${filtered.slice(3, 6)}.${filtered.slice(6)}`;
-      return `${filtered.slice(0, 3)}.${filtered.slice(3, 6)}.${filtered.slice(6, 9)}-${filtered.slice(9)}`;
-    }
-
-    const filtered = digits.slice(0, 14);
-    if (filtered.length <= 2) return filtered;
-    if (filtered.length <= 5) return `${filtered.slice(0, 2)}.${filtered.slice(2)}`;
-    if (filtered.length <= 8) return `${filtered.slice(0, 2)}.${filtered.slice(2, 5)}.${filtered.slice(5)}`;
-    if (filtered.length <= 12) return `${filtered.slice(0, 2)}.${filtered.slice(2, 5)}.${filtered.slice(5, 8)}/${filtered.slice(8)}`;
-    return `${filtered.slice(0, 2)}.${filtered.slice(2, 5)}.${filtered.slice(5, 8)}/${filtered.slice(8, 12)}-${filtered.slice(12)}`;
-  };
 
   const show = (msg, err) => {
     if (timer.current) window.clearTimeout(timer.current);
@@ -66,18 +51,55 @@ export default function CadastroEmpresa() {
     timer.current = window.setTimeout(() => setToast(null), 2800);
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!validarNome(form.nome)) {
+      newErrors.nome = "O nome deve conter pelo menos 2 palavras";
+    }
+
+    if (form.tipo === TIPOS[0]) {
+      newErrors.tipo = "Selecione um tipo de empresa";
+    }
+
+    if (!validarCnpj(form.cnpj)) {
+      newErrors.cnpj = "CNPJ inválido. Deve ter 14 dígitos válidos";
+    }
+
+    if (!validarEmail(form.email)) {
+      newErrors.email = "Email inválido";
+    }
+
+    if (!validarTelefone(form.telefone)) {
+      newErrors.telefone = "Telefone deve ter no mínimo 10 dígitos";
+    }
+
+    if (!validarEstado(form.estado)) {
+      newErrors.estado = "Selecione um estado válido";
+    }
+
+    if (!validarMunicipio(form.municipio)) {
+      newErrors.municipio = "Município inválido";
+    }
+
+    if (!validarSenha(form.senha)) {
+      newErrors.senha =
+        "Senha deve ter pelo menos 1 letra, 1 número e 1 caractere especial (!@#$%^&*)";
+    }
+
+    if (form.senha !== form.conf) {
+      newErrors.conf = "As senhas não coincidem";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const submit = async (e) => {
     e.preventDefault();
-    if (!form.nome.trim() || form.tipo === TIPOS[0] || !form.cnpj.trim() || !form.email.trim()) {
-      show("Preencha nome, tipo, CNPJ e email.", true);
-      return;
-    }
-    if (form.senha.length < 6) {
-      show("A senha deve ter no mínimo 6 caracteres.", true);
-      return;
-    }
-    if (form.senha !== form.conf) {
-      show("As senhas não coincidem.", true);
+    
+    if (!validateForm()) {
+      show("Por favor, corrija os erros no formulário", true);
       return;
     }
 
@@ -86,7 +108,7 @@ export default function CadastroEmpresa() {
         nome: form.nome.trim(),
         email: form.email.trim(),
         telefone: form.telefone.trim(),
-        localizacao: form.local.trim(),
+        localizacao: `${form.municipio.trim()}, ${form.estado}`,
         cpfCnpj: form.cnpj.trim(),
         tipoConta: form.tipo,
         senha: form.senha,
@@ -113,55 +135,142 @@ export default function CadastroEmpresa() {
           <label htmlFor="nome">
             Nome da Empresa <span className={styles.req}>*</span>
           </label>
-          <input id="nome" className={styles.input} placeholder="Digite o nome da empresa" value={form.nome} onChange={(e) => set("nome", e.target.value)} />
+          <input
+            id="nome"
+            className={`${styles.input} ${errors.nome ? styles.inputError : ""}`}
+            placeholder="Digite o nome da empresa"
+            value={form.nome}
+            onChange={(e) => set("nome", e.target.value)}
+          />
+          {errors.nome && <span className={styles.errorMsg}>{errors.nome}</span>}
         </div>
+
         <div className={styles.fieldBlock}>
           <label htmlFor="tipo">
             Tipo de Empresa <span className={styles.req}>*</span>
           </label>
-          <select id="tipo" className={styles.select} value={form.tipo} onChange={(e) => set("tipo", e.target.value)}>
+          <select
+            id="tipo"
+            className={`${styles.select} ${errors.tipo ? styles.inputError : ""}`}
+            value={form.tipo}
+            onChange={(e) => set("tipo", e.target.value)}
+          >
             {TIPOS.map((x) => (
               <option key={x} value={x}>
                 {x}
               </option>
             ))}
           </select>
+          {errors.tipo && <span className={styles.errorMsg}>{errors.tipo}</span>}
         </div>
+
         <div className={styles.fieldBlock}>
           <label htmlFor="cnpj">
-            CPF/CNPJ <span className={styles.req}>*</span>
+            CNPJ <span className={styles.req}>*</span>
           </label>
-          <input id="cnpj" className={styles.input} placeholder="CPF ou CNPJ" value={form.cnpj} onChange={(e) => set("cnpj", formatCpfCnpj(e.target.value))} />
+          <input
+            id="cnpj"
+            className={`${styles.input} ${errors.cnpj ? styles.inputError : ""}`}
+            placeholder="00.000.000/0000-00"
+            value={form.cnpj}
+            onChange={(e) => set("cnpj", formatarCNPJ(e.target.value))}
+          />
+          {errors.cnpj && <span className={styles.errorMsg}>{errors.cnpj}</span>}
         </div>
+
         <div className={styles.fieldBlock}>
           <label htmlFor="email">
             Email <span className={styles.req}>*</span>
           </label>
-          <input id="email" type="email" className={styles.input} placeholder="empresa@email.com" value={form.email} onChange={(e) => set("email", e.target.value)} />
+          <input
+            id="email"
+            type="email"
+            className={`${styles.input} ${errors.email ? styles.inputError : ""}`}
+            placeholder="empresa@email.com"
+            value={form.email}
+            onChange={(e) => set("email", e.target.value)}
+          />
+          {errors.email && <span className={styles.errorMsg}>{errors.email}</span>}
         </div>
+
         <div className={styles.fieldBlock}>
           <label htmlFor="tel">
             Telefone <span className={styles.req}>*</span>
           </label>
-          <input id="tel" className={styles.input} placeholder="(00) 0000-0000" value={form.telefone} onChange={(e) => set("telefone", formatTelefone(e.target.value))} />
+          <input
+            id="tel"
+            className={`${styles.input} ${errors.telefone ? styles.inputError : ""}`}
+            placeholder="(00) 00000-0000"
+            value={form.telefone}
+            onChange={(e) => set("telefone", formatarTelefone(e.target.value))}
+          />
+          {errors.telefone && <span className={styles.errorMsg}>{errors.telefone}</span>}
         </div>
+
         <div className={styles.fieldBlock}>
-          <label htmlFor="loc">
-            Localização <span className={styles.req}>*</span>
+          <label htmlFor="estado">
+            Estado <span className={styles.req}>*</span>
           </label>
-          <input id="loc" className={styles.input} placeholder="Cidade, Estado" value={form.local} onChange={(e) => set("local", e.target.value)} />
+          <select
+            id="estado"
+            className={`${styles.select} ${errors.estado ? styles.inputError : ""}`}
+            value={form.estado}
+            onChange={(e) => set("estado", e.target.value)}
+          >
+            <option value="">Selecione um estado</option>
+            {obterEstados().map((estado) => (
+              <option key={estado.code} value={estado.code}>
+                {estado.name} ({estado.code})
+              </option>
+            ))}
+          </select>
+          {errors.estado && <span className={styles.errorMsg}>{errors.estado}</span>}
         </div>
+
+        <div className={styles.fieldBlock}>
+          <label htmlFor="municipio">
+            Município <span className={styles.req}>*</span>
+          </label>
+          <input
+            id="municipio"
+            className={`${styles.input} ${errors.municipio ? styles.inputError : ""}`}
+            placeholder="Digite o município"
+            value={form.municipio}
+            onChange={(e) => set("municipio", e.target.value)}
+          />
+          {errors.municipio && <span className={styles.errorMsg}>{errors.municipio}</span>}
+        </div>
+
         <div className={styles.fieldBlock}>
           <label htmlFor="senha">
             Senha <span className={styles.req}>*</span>
           </label>
-          <input id="senha" type="password" className={styles.input} placeholder="Mínimo 6 caracteres" value={form.senha} onChange={(e) => set("senha", e.target.value)} autoComplete="new-password" />
+          <input
+            id="senha"
+            type="password"
+            className={`${styles.input} ${errors.senha ? styles.inputError : ""}`}
+            placeholder="Mínimo 1 letra, 1 número e 1 caractere especial"
+            value={form.senha}
+            onChange={(e) => set("senha", e.target.value)}
+            autoComplete="new-password"
+          />
+          {errors.senha && <span className={styles.errorMsg}>{errors.senha}</span>}
         </div>
+
         <div className={styles.fieldBlock}>
           <label htmlFor="conf">
             Confirmar Senha <span className={styles.req}>*</span>
           </label>
-          <input id="conf" type="password" className={styles.input} placeholder="Digite a senha novamente" value={form.conf} onChange={(e) => set("conf", e.target.value)} autoComplete="new-password" />
+          <input
+            id="conf"
+            type="password"
+            className={`${styles.input} ${errors.conf ? styles.inputError : ""}`}
+            placeholder="Digite a senha novamente"
+            value={form.conf}
+            onChange={(e) => set("conf", e.target.value)}
+            autoComplete="new-password"
+          />
+          {errors.conf && <span className={styles.errorMsg}>{errors.conf}</span>}
         </div>
 
         <div className={styles.formActions} style={{ marginTop: 16 }}>
