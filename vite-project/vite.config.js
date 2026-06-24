@@ -8,6 +8,10 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+    },
     proxy: {
       '/api': {
         target: proxyTarget,
