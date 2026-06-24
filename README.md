@@ -60,7 +60,8 @@ docker compose up -d db
 
 ```bash
 cd backend
-copy .env.example .env        # Windows
+python -m venv .venv
+.venv\Scripts\activate         # Windows
 pip install -r requirements.txt
 python init_db.py
 python app.py
@@ -70,7 +71,6 @@ python app.py
 
 ```bash
 cd vite-project
-copy .env.example .env
 npm install
 npm run dev
 ```
