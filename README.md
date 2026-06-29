@@ -1,6 +1,6 @@
 # PI2_2F — Grupo 3 (AgroGestor)
 
-**Integrantes:** Lara Letícia Appel, João Batista Bach Cerutti, Tiago Wilhelm Golunski, João Vitor Braatz, Carina Vitória Gugel Müller
+**Integrantes:** Lara Letícia Appel, João Batista Bach Cerutti, Tiago Wilhelm Golunski, João Vitor Braatz, Carina Vitória Gugel Müller, Vinicius Pecini Giordani
 
 Sistema de gestão rural com **React + Flask + PostgreSQL**.
 
