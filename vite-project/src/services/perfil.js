@@ -16,6 +16,7 @@ export const PERFIL_VAZIO = {
   localizacao: '',
   cpfCnpj: '',
   tipoConta: '',
+  fotoPerfil: '',
 }
 
 export function normalizarPerfil(dados = {}) {
@@ -26,6 +27,7 @@ export function normalizarPerfil(dados = {}) {
     localizacao: String(dados.localizacao ?? ''),
     cpfCnpj: String(dados.cpfCnpj ?? dados.cpf ?? ''),
     tipoConta: String(dados.tipoConta ?? ''),
+    fotoPerfil: String(dados.fotoPerfil ?? ''),
   }
 }
 

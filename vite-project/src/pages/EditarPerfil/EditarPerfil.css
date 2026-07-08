@@ -32,6 +32,70 @@
   margin-bottom: 8px;
 }
 
+.editar-perfil-body label:first-of-type {
+  margin-top: 18px;
+}
+
+.editar-perfil-foto {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.editar-perfil-foto-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.editar-perfil-foto-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.editar-perfil-foto-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.editar-perfil-foto-btn,
+.editar-perfil-foto-remove {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.editar-perfil-foto-btn {
+  color: var(--color-primary);
+}
+
+.editar-perfil-foto-remove {
+  color: #b91c1c;
+}
+
+.editar-perfil-foto-erro {
+  margin: 0;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
 .editar-perfil-body label:first-child {
   margin-top: 0;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header.jsx";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
@@ -6,11 +6,15 @@ import { ROUTES } from "../../constants/routes.js";
 import { getPerfil, savePerfil, PERFIL_VAZIO, resolveUserMode } from "../../services/perfil.js";
 import "./EditarPerfil.css";
 
+const MAX_FOTO_BYTES = 500 * 1024;
+
 export default function EditarPerfil() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [dados, setDados] = useState(PERFIL_VAZIO);
   const [modo, setModo] = useState("produtor");
   const [salvando, setSalvando] = useState(false);
+  const [erroFoto, setErroFoto] = useState("");
 
   useEffect(() => {
     getPerfil().then((perfil) => {
@@ -21,6 +25,35 @@ export default function EditarPerfil() {
 
   function atualizarCampo(campo, valor) {
     setDados((prev) => ({ ...prev, [campo]: valor }));
+  }
+
+  function handleFotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setErroFoto("");
+
+    if (!file.type.startsWith("image/")) {
+      setErroFoto("Selecione um arquivo de imagem.");
+      return;
+    }
+
+    if (file.size > MAX_FOTO_BYTES) {
+      setErroFoto("A imagem deve ter no máximo 500 KB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (ev) => atualizarCampo("fotoPerfil", ev.target.result);
+    reader.readAsDataURL(file);
+  }
+
+  function removerFoto() {
+    atualizarCampo("fotoPerfil", "");
+    setErroFoto("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }
 
   async function salvarPerfil() {
@@ -42,6 +75,42 @@ export default function EditarPerfil() {
         />
 
         <div className="editar-perfil-body">
+
+          <div className="editar-perfil-foto">
+            <div className="editar-perfil-foto-preview">
+              {dados.fotoPerfil ? (
+                <img src={dados.fotoPerfil} alt="" />
+              ) : (
+                <span>?</span>
+              )}
+            </div>
+            <div className="editar-perfil-foto-actions">
+              <button
+                type="button"
+                className="editar-perfil-foto-btn"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Escolher foto
+              </button>
+              {dados.fotoPerfil && (
+                <button
+                  type="button"
+                  className="editar-perfil-foto-remove"
+                  onClick={removerFoto}
+                >
+                  Remover
+                </button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleFotoChange}
+              />
+              {erroFoto && <p className="editar-perfil-foto-erro">{erroFoto}</p>}
+            </div>
+          </div>
 
           <label>Nome Completo</label>
           <input

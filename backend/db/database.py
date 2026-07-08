@@ -14,3 +14,9 @@ def init_db(app):
     with app.app_context():
         from db import models  # noqa: F401
         db.create_all()
+        db.session.execute(
+            db.text(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS foto_perfil TEXT NOT NULL DEFAULT ''"
+            )
+        )
+        db.session.commit()

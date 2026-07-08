@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
 import { login, setLoginTipoConta as setLoginTipoContaStorage } from "../../services/perfil.js";
-const LOGO_SRC = "/logo.svg";
+import logoImg from "../../imagens/logo1.png";
 import "./Login.css";
 
 export default function Login() {
@@ -47,7 +47,7 @@ export default function Login() {
 
           <div className="logo">
             <img
-              src={LOGO_SRC}
+              src={logoImg}
               alt="Logo AgroGestor"
               className="logo-img"
             />

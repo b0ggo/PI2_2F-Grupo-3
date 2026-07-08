@@ -15,6 +15,7 @@ def _perfil_publico(user):
             "localizacao": user.get("localizacao", ""),
             "cpfCnpj": user.get("cpfCnpj", ""),
             "tipoConta": user.get("tipoConta", ""),
+            "fotoPerfil": user.get("fotoPerfil", ""),
         }
     return user.to_dict()
 
@@ -123,6 +124,7 @@ def update_user_profile(user_id, data):
         "localizacao": "localizacao",
         "cpfCnpj": "cpf_cnpj",
         "tipoConta": "tipo_conta",
+        "fotoPerfil": "foto_perfil",
     }
     for api_key, col in field_map.items():
         if api_key in data and data[api_key] is not None:

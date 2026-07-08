@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     localizacao     VARCHAR(255) NOT NULL DEFAULT '',
     cpf_cnpj        VARCHAR(30) NOT NULL DEFAULT '',
     tipo_conta      VARCHAR(50) NOT NULL DEFAULT '',
+    foto_perfil     TEXT NOT NULL DEFAULT '',
     senha_hash      TEXT NOT NULL,
     cooperativa_id  VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),

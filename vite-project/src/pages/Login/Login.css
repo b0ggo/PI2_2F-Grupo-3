@@ -61,7 +61,8 @@
 }
 
 .logo-img {
-  width: 110px;
+  width: 180px;
+  max-width: 100%;
   height: auto;
   margin: 10px auto 20px;
   display: block;

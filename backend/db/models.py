@@ -18,6 +18,7 @@ class User(db.Model):
     localizacao: Mapped[str] = mapped_column(String(255), nullable=False, default="")
     cpf_cnpj: Mapped[str] = mapped_column(String(30), nullable=False, default="")
     tipo_conta: Mapped[str] = mapped_column(String(50), nullable=False, default="")
+    foto_perfil: Mapped[str] = mapped_column(Text, nullable=False, default="")
     senha_hash: Mapped[str] = mapped_column(Text, nullable=False)
     cooperativa_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
@@ -36,6 +37,7 @@ class User(db.Model):
             "localizacao": self.localizacao,
             "cpfCnpj": self.cpf_cnpj,
             "tipoConta": self.tipo_conta,
+            "fotoPerfil": self.foto_perfil,
         }
         if private:
             data["senhaHash"] = self.senha_hash
