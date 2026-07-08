@@ -78,3 +78,24 @@ def criar_animal(user):
     db.session.add(animal)
     db.session.commit()
     return jsonify(animal.to_dict()), 201
+
+
+@animais_bp.put("/api/animais/<animal_id>")
+@require_auth
+def atualizar_animal(user, animal_id):
+    ids = _user_ids(user)
+    animal = Animal.query.filter(Animal.id == animal_id, Animal.user_id.in_(ids)).first()
+    if not animal:
+        return jsonify({"message": "Animal não encontrado."}), 404
+
+    data = request.get_json(silent=True) or {}
+    identificacao = str(data.get("identificacao", animal.identificacao)).strip()
+    if not identificacao:
+        return jsonify({"message": "Identificação é obrigatória."}), 400
+
+    for api_key, col in CAMPOS.items():
+        if api_key in data and api_key != "timestamp":
+            setattr(animal, col, data[api_key])
+
+    db.session.commit()
+    return jsonify(animal.to_dict())

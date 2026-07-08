@@ -13,6 +13,8 @@ import ChatEmpresas from "./pages/ChatEmpresas/ChatEmpresas";
 import Perfil from "./pages/perfil/Perfil";
 import EditarPerfil from "./pages/EditarPerfil/EditarPerfil";
 import Consultar from "./pages/Consultar/Consultar";
+import EditarAnimal from "./pages/EditarAnimal/EditarAnimal";
+import EditarLote from "./pages/EditarLote/EditarLote";
 import Alertas from "./pages/PaginaAlertas/Alertas";
 import AlertaDetalhe from "./pages/PaginaAlertas/AlertaDetalhe";
 import Cooperativa from "./pages/Cooperativa/Cooperativa";
@@ -54,6 +56,8 @@ export default function App() {
         <Route path={ROUTES.PERFIL} element={<Protegido><Perfil /></Protegido>} />
         <Route path={ROUTES.EDITAR_PERFIL} element={<Protegido><EditarPerfil /></Protegido>} />
         <Route path={ROUTES.CONSULTAR} element={<Protegido><Consultar /></Protegido>} />
+        <Route path={ROUTES.EDITAR_ANIMAL} element={<Protegido><EditarAnimal /></Protegido>} />
+        <Route path={ROUTES.EDITAR_LOTE} element={<Protegido><EditarLote /></Protegido>} />
         <Route path={ROUTES.COOPERATIVA} element={<Protegido><Cooperativa /></Protegido>} />
         <Route path="/produtor/:id" element={<Protegido><Produtor /></Protegido>} />
         <Route path={ROUTES.ALERTA} element={<Protegido><AlertaDetalhe /></Protegido>} />

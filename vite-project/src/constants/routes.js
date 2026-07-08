@@ -17,4 +17,14 @@ export const ROUTES = {
   PERFIL: "/perfil",
   EDITAR_PERFIL: "/editar-perfil",
   CONSULTAR: "/consultar",
+  EDITAR_ANIMAL: "/editar-animal/:id",
+  EDITAR_LOTE: "/editar-lote/:id",
 };
+
+export function rotaEditarAnimal(id) {
+  return `/editar-animal/${encodeURIComponent(id)}`;
+}
+
+export function rotaEditarLote(id) {
+  return `/editar-lote/${encodeURIComponent(id)}`;
+}

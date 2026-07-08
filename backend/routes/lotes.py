@@ -65,3 +65,39 @@ def criar_lote(user):
     db.session.add(lote)
     db.session.commit()
     return jsonify(lote.to_dict()), 201
+
+
+@lotes_bp.put("/api/lotes/<lote_id>")
+@require_auth
+def atualizar_lote(user, lote_id):
+    ids = _user_ids(user)
+    lote = Lote.query.filter(Lote.id == lote_id, Lote.user_id.in_(ids)).first()
+    if not lote:
+        return jsonify({"message": "Lote não encontrado."}), 404
+
+    data = request.get_json(silent=True) or {}
+    nome = str(data.get("nome", lote.nome)).strip()
+    if not nome:
+        return jsonify({"message": "Nome do lote é obrigatório."}), 400
+
+    quantidade = int(data.get("quantidade", lote.quantidade))
+    doentes = int(data.get("doentes", lote.doentes))
+    mortes = int(data.get("mortes", lote.mortes))
+
+    if doentes + mortes > quantidade:
+        return jsonify({
+            "message": "A soma de doentes e mortes não pode ser maior que a quantidade total de animais."
+        }), 400
+
+    if "tipo" in data:
+        lote.tipo = data["tipo"]
+    lote.nome = nome
+    lote.quantidade = quantidade
+    lote.doentes = doentes
+    lote.vacinados = int(data.get("vacinados", lote.vacinados))
+    lote.mortes = mortes
+    if "observacoes" in data:
+        lote.observacoes = str(data.get("observacoes", "")).strip()
+
+    db.session.commit()
+    return jsonify(lote.to_dict())

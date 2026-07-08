@@ -116,6 +116,17 @@ export async function getAnimais(q = '') {
   return request(`/api/animais${query}`)
 }
 
+export async function getAnimal(id) {
+  return request(`/api/animais/${encodeURIComponent(id)}`)
+}
+
+export async function putAnimal(id, animal) {
+  return request(`/api/animais/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    body: JSON.stringify(animal),
+  })
+}
+
 export async function postLote(lote) {
   return request('/api/lotes', {
     method: 'POST',
@@ -149,6 +160,17 @@ async function requestWithToken(path, token, options = {}) {
 
 export async function getLotes() {
   return request('/api/lotes')
+}
+
+export async function getLote(id) {
+  return request(`/api/lotes/${encodeURIComponent(id)}`)
+}
+
+export async function putLote(id, lote) {
+  return request(`/api/lotes/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    body: JSON.stringify(lote),
+  })
 }
 
 export async function getLotesByToken(token) {

@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
-import { ROUTES } from "../../constants/routes.js";
+import { ROUTES, rotaEditarAnimal, rotaEditarLote } from "../../constants/routes.js";
 import { getAnimais, getLotes } from "../../services/api.js";
 import "./Consultar.css";
 
@@ -47,6 +48,8 @@ function formatarData(iso) {
 }
 
 export default function Consultar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [aba, setAba] = useState("animais");
   const [q, setQ] = useState("");
   const [animais, setAnimais] = useState([]);
@@ -56,9 +59,9 @@ export default function Consultar() {
   const [filtros, setFiltros] = useState({ tipo: "", status: "" });
   const [detalheId, setDetalheId] = useState(null);
 
-  useEffect(() => {
+  const carregarDados = useCallback(() => {
     setCarregando(true);
-    Promise.all([getAnimais(), getLotes()])
+    return Promise.all([getAnimais(), getLotes()])
       .then(([listaAnimais, listaLotes]) => {
         setAnimais(listaAnimais);
         setLotes(listaLotes);
@@ -69,6 +72,19 @@ export default function Consultar() {
       })
       .finally(() => setCarregando(false));
   }, []);
+
+  useEffect(() => {
+    carregarDados();
+  }, [carregarDados]);
+
+  useEffect(() => {
+    if (!location.state?.atualizado) return;
+    if (location.state.aba === "lotes" || location.state.aba === "animais") {
+      setAba(location.state.aba);
+    }
+    carregarDados();
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.state, location.pathname, navigate, carregarDados]);
 
   const animaisFiltrados = useMemo(() => {
     const termo = q.trim();
@@ -329,16 +345,25 @@ export default function Consultar() {
                     <span className="consultar-item-peso">
                       Peso: {animal.peso ? `${animal.peso} kg` : "—"}
                     </span>
-                    <button
-                      type="button"
-                      className="consultar-detalhes"
-                      onClick={() =>
-                        setDetalheId(aberto ? null : animal.id)
-                      }
-                      aria-expanded={aberto}
-                    >
-                      Ver detalhes →
-                    </button>
+                    <div className="consultar-item-acoes">
+                      <button
+                        type="button"
+                        className="consultar-editar"
+                        onClick={() => navigate(rotaEditarAnimal(animal.id))}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        className="consultar-detalhes"
+                        onClick={() =>
+                          setDetalheId(aberto ? null : animal.id)
+                        }
+                        aria-expanded={aberto}
+                      >
+                        Ver detalhes →
+                      </button>
+                    </div>
                   </div>
 
                   {aberto && (
@@ -409,14 +434,23 @@ export default function Consultar() {
                     <span className="consultar-item-peso">
                       Vacinados: {lote.vacinados ?? 0}
                     </span>
-                    <button
-                      type="button"
-                      className="consultar-detalhes"
-                      onClick={() => setDetalheId(aberto ? null : lote.id)}
-                      aria-expanded={aberto}
-                    >
-                      Ver detalhes →
-                    </button>
+                    <div className="consultar-item-acoes">
+                      <button
+                        type="button"
+                        className="consultar-editar"
+                        onClick={() => navigate(rotaEditarLote(lote.id))}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        className="consultar-detalhes"
+                        onClick={() => setDetalheId(aberto ? null : lote.id)}
+                        aria-expanded={aberto}
+                      >
+                        Ver detalhes →
+                      </button>
+                    </div>
                   </div>
 
                   {aberto && (
