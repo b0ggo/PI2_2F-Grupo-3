@@ -192,6 +192,16 @@ export async function getAlertas() {
   return request('/api/alertas')
 }
 
+export async function deleteAlerta(id) {
+  return request(`/api/alertas/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function getPesoHistorico(animalId) {
+  return request(`/api/animais/${encodeURIComponent(animalId)}/peso-historico`)
+}
+
 export async function getStats() {
   return request('/api/stats')
 }

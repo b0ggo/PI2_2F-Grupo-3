@@ -11,6 +11,7 @@ import SaudeForm           from '../../components/SaudeForm/SaudeForm'
 import { QRModal, CodigoModal } from '../../components/ScanModal/ScanModal'
 import BarcodeModal          from '../../components/BarcodeModal/BarcodeModal'
 import Toast                    from '../../components/Toast/Toast'
+import { useToast } from '../../contexts/ToastContext.jsx'
 import MensagemAnimalSalvo      from '../../components/MensagemAnimalSalvo/MensagemAnimalSalvo'
 import MensagemAnimalCancelado  from '../../components/MensagemAnimalCancelado/MensagemAnimalCancelado'
 
@@ -21,6 +22,7 @@ import { marcarComoSincronizado } from '../../services/db'
 import { sincronizarPendentes } from '../../services/sync'
 
 import { ROUTES } from '../../constants/routes.js'
+import { formParaAnimal, validarFormAnimal } from '../../utils/animalForm'
 import styles from './CadastrarAnimal.module.css'
 
 const FORM_INICIAL = {
@@ -29,7 +31,6 @@ const FORM_INICIAL = {
   raca:               '',
   outraRaca:          '',
   produtividadeLeite: '',
-  idade:              '',
   peso:               '',
   sexo:               '',
   dataNasc:           '',
@@ -41,6 +42,7 @@ const FORM_INICIAL = {
 
 export default function CadastrarAnimal({ onVoltar }) {
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const voltar = onVoltar ?? (() => navigate(ROUTES.HOME))
 
   const online                          = useOnlineStatus()
@@ -70,7 +72,16 @@ export default function CadastrarAnimal({ onVoltar }) {
   }, [online, pronto, atualizarContagem])
 
   function handleChange(campo, valor) {
-    setForm((prev) => ({ ...prev, [campo]: valor }))
+    setForm((prev) => {
+      const novo = { ...prev, [campo]: valor }
+
+      // Se o sexo mudar para macho, não faz sentido manter produtividade leiteira preenchida
+      if (campo === 'sexo' && valor !== 'femea') {
+        novo.produtividadeLeite = ''
+      }
+
+      return novo
+    })
     if (erros[campo]) setErros((prev) => ({ ...prev, [campo]: undefined }))
   }
 
@@ -112,45 +123,21 @@ export default function CadastrarAnimal({ onVoltar }) {
   }
 
   function validar() {
-    const novosErros = {}
-    if (!form.identificacao.trim())
-      novosErros.identificacao = 'Identificação é obrigatória.'
-    if (!form.raca)
-      novosErros.raca = 'Selecione uma raça.'
+    const novosErros = validarFormAnimal(form)
     setErros(novosErros)
     return Object.keys(novosErros).length === 0
   }
 
   async function handleSalvar() {
-    if (!validar()) return
-
-    const racaFinal =
-      form.raca === '__outra__'
-        ? form.outraRaca.trim() || 'Outra'
-        : form.raca
-
-    const vacinaFinal =
-      form.vacina === '__outra__'
-        ? form.outraVacina.trim() || 'Outra'
-        : form.vacina
-
-    const animal = {
-      tipo:          form.tipo,
-      identificacao: form.identificacao.trim(),
-      raca:          racaFinal,
-      idade:         form.idade    || null,
-      peso:          form.peso     || null,
-      sexo:          form.sexo     || null,
-      dataNasc:      form.dataNasc || null,
-      status:        form.status,
-      vacinas:       vacinaFinal ? [vacinaFinal] : [],
-      historico:     form.historico.trim(),
-      sincronizado:  false,
-      timestamp:     new Date().toISOString(),
+    if (!validar()) {
+      showToast('Corrija os campos obrigatórios.', 'error')
+      return
     }
 
-    if (form.tipo === 'bovino' && form.produtividadeLeite.trim()) {
-      animal.produtividadeLeite = form.produtividadeLeite.trim()
+    const animal = {
+      ...formParaAnimal(form),
+      sincronizado: false,
+      timestamp: new Date().toISOString(),
     }
 
     try {
@@ -161,15 +148,19 @@ export default function CadastrarAnimal({ onVoltar }) {
           await marcarComoSincronizado(id)
           await atualizarContagem()
           exibirFeedback('salvo', { variante: 'success' })
-        } catch {
+          showToast('Animal cadastrado com sucesso.', 'success')
+        } catch (err) {
           exibirFeedback('salvo', { variante: 'offline' })
+          showToast(err.message || 'Animal salvo localmente. Sincronize quando estiver online.', 'offline')
         }
       } else {
         exibirFeedback('salvo', { variante: 'offline' })
+        showToast('Animal salvo offline. Será sincronizado depois.', 'offline')
       }
       setForm(FORM_INICIAL)
     } catch {
       exibirFeedback('salvo', { variante: 'error' })
+      showToast('Erro ao cadastrar animal.', 'error')
     }
   }
 

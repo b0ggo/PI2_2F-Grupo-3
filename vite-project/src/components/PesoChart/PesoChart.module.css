@@ -1,0 +1,26 @@
+.chartWrap {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--surface-divider, #e5e7eb);
+}
+
+.titulo {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+}
+
+.estado {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.estadoErro {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #b91c1c;
+}

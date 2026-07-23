@@ -89,8 +89,14 @@ python migrate_json.py
 | Variável | Padrão | Descrição |
 |----------|--------|-----------|
 | `DATABASE_URL` | `postgresql+psycopg2://agrogestor:agrogestor@localhost:5432/agrogestor` | Conexão PostgreSQL |
-| `SECRET_KEY` | `agrogestor-dev-key` | Chave da aplicação |
-| `CORS_ORIGINS` | `http://localhost:5173` | Origens permitidas (frontend) |
+| `SECRET_KEY` | `agrogestor-dev-key` | Chave da aplicação (obrigatória e segura em produção) |
+| `CORS_ORIGINS` | `http://localhost:5173` | Origens permitidas (frontend), separadas por vírgula |
+| `APP_ENV` | `development` | Use `production` na VPS |
+| `FLASK_DEBUG` | `0` | Use `1` apenas em desenvolvimento local |
+| `GUNICORN` | `0` | Use `1` em produção (Docker Compose prod já define) |
+| `GUNICORN_WORKERS` | `2` | Número de workers do Gunicorn |
+
+Em produção, use `docker compose -f docker-compose.prod.yml` na raiz do projeto (veja README principal).
 
 ## Estrutura do banco
 

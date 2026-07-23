@@ -139,9 +139,30 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
+.login-password-field {
+  margin-bottom: 12px;
+}
+
+.login-password-input {
+  min-height: 52px;
+  padding: 16px 48px 16px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-input-border);
+  font-size: 16px;
+  font-family: var(--font-body);
+  background: #fff;
+  color: var(--color-text);
+}
+
 .login-root form input:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-focus);
+}
+
+.login-password-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-focus);
+  outline: none;
 }
 
 .login-erro {

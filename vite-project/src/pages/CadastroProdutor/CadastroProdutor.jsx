@@ -1,5 +1,7 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PasswordInput from "../../components/PasswordInput/PasswordInput.jsx";
+import { useToast } from "../../contexts/ToastContext.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import { registrar, fazerLogout } from "../../services/perfil.js";
 import {
@@ -26,7 +28,7 @@ function IconBack() {
 
 export default function CadastroProdutor() {
   const navigate = useNavigate();
-  const t = useRef(null);
+  const { showToast } = useToast();
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -38,7 +40,6 @@ export default function CadastroProdutor() {
     conf: "",
   });
   const [errors, setErrors] = useState({});
-  const [toast, setToast] = useState(null);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -59,12 +60,6 @@ export default function CadastroProdutor() {
     if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
     if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
     return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
-  };
-
-  const show = (msg, err) => {
-    if (t.current) window.clearTimeout(t.current);
-    setToast({ msg, err });
-    t.current = window.setTimeout(() => setToast(null), 2800);
   };
 
   const validarFormulario = () => {
@@ -111,7 +106,7 @@ export default function CadastroProdutor() {
     e.preventDefault();
     
     if (!validarFormulario()) {
-      show("Por favor, corrija os erros no formulário", true);
+      showToast("Por favor, corrija os erros no formulário", "error");
       return;
     }
 
@@ -126,10 +121,10 @@ export default function CadastroProdutor() {
         senha: form.senha,
       });
       await fazerLogout();
-      show("Cadastro realizado com sucesso! Faça login para acessar sua conta.", false);
+      showToast("Cadastro realizado com sucesso!", "success");
       navigate(ROUTES.LOGIN);
     } catch (err) {
-      show(err.message || "Erro ao cadastrar.", true);
+      showToast(err.message || "Erro ao cadastrar.", "error");
     }
   };
 
@@ -248,14 +243,14 @@ export default function CadastroProdutor() {
           <label htmlFor="senha">
             Senha <span className={styles.req}>*</span>
           </label>
-          <input
+          <PasswordInput
             id="senha"
             className={`${styles.input} ${errors.senha ? styles.inputError : ""}`}
-            type="password"
             placeholder="Mínimo 1 letra, 1 número e 1 caractere especial"
             value={form.senha}
             onChange={(e) => set("senha", e.target.value)}
             autoComplete="new-password"
+            invalid={Boolean(errors.senha)}
           />
           {errors.senha && <span className={styles.errorMsg}>{errors.senha}</span>}
         </div>
@@ -264,14 +259,14 @@ export default function CadastroProdutor() {
           <label htmlFor="conf">
             Confirmar Senha <span className={styles.req}>*</span>
           </label>
-          <input
+          <PasswordInput
             id="conf"
             className={`${styles.input} ${errors.conf ? styles.inputError : ""}`}
-            type="password"
             placeholder="Digite a senha novamente"
             value={form.conf}
             onChange={(e) => set("conf", e.target.value)}
             autoComplete="new-password"
+            invalid={Boolean(errors.conf)}
           />
           {errors.conf && <span className={styles.errorMsg}>{errors.conf}</span>}
         </div>
@@ -285,10 +280,6 @@ export default function CadastroProdutor() {
           </button>
         </div>
       </form>
-
-      {toast && (
-        <div className={`${styles.toast}${toast.err ? ` ${styles.toastError}` : ""}`}>{toast.msg}</div>
-      )}
     </div>
   );
 }

@@ -1,9 +1,19 @@
 import { RACAS } from '../../data/racas'
+import { formatarIdade } from '../../utils/ageUtils'
 import styles from './IdentificacaoForm.module.css'
 
 export default function IdentificacaoForm({ tipo, valores, onChange, erros = {} }) {
-  const racas        = RACAS[tipo] || []
+  const racas = RACAS[tipo] || []
   const mostrarOutra = valores.raca === '__outra__'
+  const mostrarProdutividade = tipo === 'bovino' && valores.sexo === 'femea'
+  const idadeCalculada = formatarIdade(valores.dataNasc)
+
+  function handleSexoChange(novoSexo) {
+    onChange('sexo', novoSexo)
+    if (tipo === 'bovino' && novoSexo === 'macho' && valores.produtividadeLeite) {
+      onChange('produtividadeLeite', '')
+    }
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -68,7 +78,23 @@ export default function IdentificacaoForm({ tipo, valores, onChange, erros = {} 
         </div>
       )}
 
-      {tipo === 'bovino' && (
+      <div className={styles.campo}>
+        <label className={styles.label} htmlFor="campo-sexo">Sexo</label>
+        <div className={styles.selectWrap}>
+          <select
+            id="campo-sexo"
+            className={styles.select}
+            value={valores.sexo}
+            onChange={(e) => handleSexoChange(e.target.value)}
+          >
+            <option value="">Selecione</option>
+            <option value="macho">Macho</option>
+            <option value="femea">Fêmea</option>
+          </select>
+        </div>
+      </div>
+
+      {mostrarProdutividade && (
         <div className={styles.campo}>
           <label className={styles.label} htmlFor="campo-produtividade">
             Produtividade Leiteira
@@ -85,51 +111,6 @@ export default function IdentificacaoForm({ tipo, valores, onChange, erros = {} 
         </div>
       )}
 
-      <div className={styles.linha2}>
-        <div className={styles.campo}>
-          <label className={styles.label} htmlFor="campo-idade">Idade (meses)</label>
-          <input
-            id="campo-idade"
-            className={styles.input}
-            type="number"
-            placeholder="Ex: 12"
-            min="0"
-            max="360"
-            value={valores.idade}
-            onChange={(e) => onChange('idade', e.target.value)}
-          />
-        </div>
-        <div className={styles.campo}>
-          <label className={styles.label} htmlFor="campo-peso">Peso (kg)</label>
-          <input
-            id="campo-peso"
-            className={styles.input}
-            type="number"
-            placeholder="Ex: 450"
-            min="0"
-            step="0.1"
-            value={valores.peso}
-            onChange={(e) => onChange('peso', e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className={styles.campo}>
-        <label className={styles.label} htmlFor="campo-sexo">Sexo</label>
-        <div className={styles.selectWrap}>
-          <select
-            id="campo-sexo"
-            className={styles.select}
-            value={valores.sexo}
-            onChange={(e) => onChange('sexo', e.target.value)}
-          >
-            <option value="">Selecione</option>
-            <option value="macho">Macho</option>
-            <option value="femea">Fêmea</option>
-          </select>
-        </div>
-      </div>
-
       <div className={styles.campo}>
         <label className={styles.label} htmlFor="campo-nasc">Data de Nascimento</label>
         <input
@@ -138,6 +119,25 @@ export default function IdentificacaoForm({ tipo, valores, onChange, erros = {} 
           type="date"
           value={valores.dataNasc}
           onChange={(e) => onChange('dataNasc', e.target.value)}
+        />
+        {valores.dataNasc && (
+          <p className={styles.idadeCalculada}>
+            Idade: <strong>{idadeCalculada}</strong>
+          </p>
+        )}
+      </div>
+
+      <div className={styles.campo}>
+        <label className={styles.label} htmlFor="campo-peso">Peso (kg)</label>
+        <input
+          id="campo-peso"
+          className={styles.input}
+          type="number"
+          placeholder="Ex: 450"
+          min="0"
+          step="0.1"
+          value={valores.peso}
+          onChange={(e) => onChange('peso', e.target.value)}
         />
       </div>
 

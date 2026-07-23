@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import PasswordInput from "../../components/PasswordInput/PasswordInput.jsx";
+import { useToast } from "../../contexts/ToastContext.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import { login, setLoginTipoConta as setLoginTipoContaStorage } from "../../services/perfil.js";
 import logoImg from "../../imagens/logo1.png";
@@ -7,9 +9,9 @@ import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [loginTipoConta, setLoginTipoConta] = useState("produtor");
 
@@ -19,10 +21,9 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setErro("");
 
     if (!email.trim() || !senha) {
-      setErro("Preencha email e senha.");
+      showToast("Preencha email e senha.", "error");
       return;
     }
 
@@ -32,9 +33,15 @@ export default function Login() {
       const tipoConta = (result.perfil?.tipoConta || "").toLowerCase();
       const modo = tipoConta === "produtor" ? "produtor" : "cooperativa";
       setLoginTipoContaStorage(modo);
+      showToast("Login realizado com sucesso.", "success");
       navigate(ROUTES.HOME);
     } catch (err) {
-      setErro(err.message || "Email ou senha incorretos.");
+      const msg = err.message || "Email ou senha incorretos.";
+      if (msg.includes("fetch") || msg.includes("Failed") || msg.includes("Network")) {
+        showToast("Erro ao conectar ao servidor.", "error");
+      } else {
+        showToast(msg, "error");
+      }
     } finally {
       setCarregando(false);
     }
@@ -84,16 +91,16 @@ export default function Login() {
             />
 
             <label htmlFor="senha">Senha</label>
-            <input
-              id="senha"
-              type="password"
-              placeholder="Digite sua senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              autoComplete="current-password"
-            />
-
-            {erro && <p className="login-erro">{erro}</p>}
+            <div className="login-password-field">
+              <PasswordInput
+                id="senha"
+                placeholder="Digite sua senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                autoComplete="current-password"
+                className="login-password-input"
+              />
+            </div>
 
             <Link to={ROUTES.ESQUECI_SENHA} className="forgot">
               Esqueci minha senha

@@ -14,5 +14,18 @@ echo "Postgres is ready. Running DB init and seed (if present)..."
 python init_db.py || true
 python seed.py || true
 
-echo "Starting Flask app..."
-exec python app.py
+if [ "${GUNICORN:-0}" = "1" ]; then
+  WORKERS="${GUNICORN_WORKERS:-2}"
+  TIMEOUT="${GUNICORN_TIMEOUT:-120}"
+  echo "Starting Gunicorn (${WORKERS} workers)..."
+  exec gunicorn \
+    --bind 0.0.0.0:5000 \
+    --workers "$WORKERS" \
+    --timeout "$TIMEOUT" \
+    --access-logfile - \
+    --error-logfile - \
+    wsgi:app
+else
+  echo "Starting Flask dev server..."
+  exec python app.py
+fi

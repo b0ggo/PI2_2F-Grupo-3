@@ -56,6 +56,42 @@ class AuthToken(db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
+class NotificacaoDispensada(db.Model):
+    __tablename__ = "notificacoes_dispensadas"
+    __table_args__ = (
+        UniqueConstraint("user_id", "alerta_id", name="uq_notif_disp_user_alerta"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    alerta_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class PesoHistorico(db.Model):
+    __tablename__ = "peso_historico"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    animal_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("animais.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    peso: Mapped[str] = mapped_column(String(20), nullable=False)
+    registrado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "animalId": self.animal_id,
+            "peso": self.peso,
+            "registradoEm": self.registrado_em.isoformat() if self.registrado_em else "",
+        }
+
+
 class Animal(db.Model):
     __tablename__ = "animais"
 

@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useEffect } from "react";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
+import { ToastProvider } from "./contexts/ToastContext.jsx";
 import Login from "./pages/Login/Login";
 import EsqueciSenha from "./pages/EsqueciSenha/EsqueciSenha";
 import CadastroProdutor from "./pages/CadastroProdutor/CadastroProdutor";
@@ -40,6 +41,7 @@ export default function App() {
     return () => { mounted = false };
   }, []);
   return (
+    <ToastProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to={ROUTES.LOGIN} replace />} />
@@ -65,5 +67,6 @@ export default function App() {
         <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   );
 }

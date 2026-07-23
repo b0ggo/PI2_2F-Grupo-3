@@ -1,5 +1,6 @@
 import { RACAS } from '../data/racas'
 import { VACINAS } from '../data/vacinas'
+import { calcularIdadeMeses } from './ageUtils'
 
 export const FORM_ANIMAL_INICIAL = {
   tipo: 'bovino',
@@ -7,7 +8,6 @@ export const FORM_ANIMAL_INICIAL = {
   raca: '',
   outraRaca: '',
   produtividadeLeite: '',
-  idade: '',
   peso: '',
   sexo: '',
   dataNasc: '',
@@ -42,7 +42,6 @@ export function animalParaForm(animal) {
     raca,
     outraRaca,
     produtividadeLeite: animal.produtividadeLeite || '',
-    idade: animal.idade ?? '',
     peso: animal.peso ?? '',
     sexo: animal.sexo || '',
     dataNasc: animal.dataNasc || '',
@@ -64,11 +63,13 @@ export function formParaAnimal(form) {
       ? form.outraVacina.trim() || 'Outra'
       : form.vacina
 
+  const idadeCalculada = calcularIdadeMeses(form.dataNasc)
+
   const animal = {
     tipo: form.tipo,
     identificacao: form.identificacao.trim(),
     raca: racaFinal,
-    idade: form.idade || null,
+    idade: idadeCalculada != null ? String(idadeCalculada) : null,
     peso: form.peso || null,
     sexo: form.sexo || null,
     dataNasc: form.dataNasc || null,
@@ -77,7 +78,7 @@ export function formParaAnimal(form) {
     historico: form.historico.trim(),
   }
 
-  if (form.tipo === 'bovino' && form.produtividadeLeite.trim()) {
+  if (form.tipo === 'bovino' && form.sexo === 'femea' && form.produtividadeLeite.trim()) {
     animal.produtividadeLeite = form.produtividadeLeite.trim()
   } else {
     animal.produtividadeLeite = null

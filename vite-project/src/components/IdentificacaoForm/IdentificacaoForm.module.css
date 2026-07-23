@@ -86,3 +86,13 @@
   color: var(--color-danger-border);
   margin-top: 4px;
 }
+
+.idadeCalculada {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.idadeCalculada strong {
+  color: var(--color-primary, #16a34a);
+}

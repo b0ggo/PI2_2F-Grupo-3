@@ -1,5 +1,7 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PasswordInput from "../../components/PasswordInput/PasswordInput.jsx";
+import { useToast } from "../../contexts/ToastContext.jsx";
 import { ROUTES } from "../../constants/routes.js";
 import { registrar, fazerLogout } from "../../services/perfil.js";
 import {
@@ -28,7 +30,7 @@ function IconBack() {
 
 export default function CadastroEmpresa() {
   const navigate = useNavigate();
-  const timer = useRef(null);
+  const { showToast } = useToast();
   const [form, setForm] = useState({
     nome: "",
     tipo: TIPOS[0],
@@ -41,15 +43,8 @@ export default function CadastroEmpresa() {
     conf: "",
   });
   const [errors, setErrors] = useState({});
-  const [toast, setToast] = useState(null);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const show = (msg, err) => {
-    if (timer.current) window.clearTimeout(timer.current);
-    setToast({ msg, err });
-    timer.current = window.setTimeout(() => setToast(null), 2800);
-  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -99,7 +94,7 @@ export default function CadastroEmpresa() {
     e.preventDefault();
     
     if (!validateForm()) {
-      show("Por favor, corrija os erros no formulário", true);
+      showToast("Por favor, corrija os erros no formulário", "error");
       return;
     }
 
@@ -114,10 +109,10 @@ export default function CadastroEmpresa() {
         senha: form.senha,
       });
       await fazerLogout();
-      show("Cadastro da empresa realizado! Faça login para acessar sua conta.", false);
+      showToast("Cadastro realizado com sucesso!", "success");
       navigate(ROUTES.LOGIN);
     } catch (err) {
-      show(err.message || "Erro ao cadastrar.", true);
+      showToast(err.message || "Erro ao cadastrar.", "error");
     }
   };
 
@@ -245,14 +240,14 @@ export default function CadastroEmpresa() {
           <label htmlFor="senha">
             Senha <span className={styles.req}>*</span>
           </label>
-          <input
+          <PasswordInput
             id="senha"
-            type="password"
             className={`${styles.input} ${errors.senha ? styles.inputError : ""}`}
             placeholder="Mínimo 1 letra, 1 número e 1 caractere especial"
             value={form.senha}
             onChange={(e) => set("senha", e.target.value)}
             autoComplete="new-password"
+            invalid={Boolean(errors.senha)}
           />
           {errors.senha && <span className={styles.errorMsg}>{errors.senha}</span>}
         </div>
@@ -261,14 +256,14 @@ export default function CadastroEmpresa() {
           <label htmlFor="conf">
             Confirmar Senha <span className={styles.req}>*</span>
           </label>
-          <input
+          <PasswordInput
             id="conf"
-            type="password"
             className={`${styles.input} ${errors.conf ? styles.inputError : ""}`}
             placeholder="Digite a senha novamente"
             value={form.conf}
             onChange={(e) => set("conf", e.target.value)}
             autoComplete="new-password"
+            invalid={Boolean(errors.conf)}
           />
           {errors.conf && <span className={styles.errorMsg}>{errors.conf}</span>}
         </div>
@@ -282,10 +277,6 @@ export default function CadastroEmpresa() {
           </button>
         </div>
       </form>
-
-      {toast && (
-        <div className={`${styles.toast}${toast.err ? ` ${styles.toastError}` : ""}`}>{toast.msg}</div>
-      )}
     </div>
   );
 }

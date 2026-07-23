@@ -38,7 +38,7 @@ services:
   frontend:
     build:
       context: ./vite-project
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: agrogestor-frontend
     restart: unless-stopped
     ports:

@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import BottomNav from "../../components/BottomNav/BottomNav.jsx";
 import Header from "../../components/Header/Header.jsx";
+import { useToast } from "../../contexts/ToastContext.jsx";
 import { ROUTES } from "../../constants/routes.js";
-import { getAlertas } from "../../services/api.js";
+import { deleteAlerta, getAlertas } from "../../services/api.js";
 import "./Alertas.css";
 
 const STORAGE_KEY = "alertas-lidos";
@@ -30,11 +31,13 @@ function iconeAlerta(alerta) {
 
 export default function Alertas() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [aba, setAba] = useState("todas");
   const [alertas, setAlertas] = useState([]);
   const [lidos, setLidos] = useState(() => getLidos());
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const [excluindoId, setExcluindoId] = useState(null);
 
   const carregar = useCallback(() => {
     setCarregando(true);
@@ -84,6 +87,33 @@ export default function Alertas() {
       saveLidos(next);
       return next;
     });
+  }
+
+  async function handleExcluir(e, alerta) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const confirmado = window.confirm(
+      "Tem certeza que deseja excluir esta notificação?"
+    );
+    if (!confirmado) return;
+
+    setExcluindoId(alerta.id);
+    try {
+      await deleteAlerta(alerta.id);
+      setAlertas((prev) => prev.filter((a) => a.id !== alerta.id));
+      setLidos((prev) => {
+        const next = new Set(prev);
+        next.delete(String(alerta.id));
+        saveLidos(next);
+        return next;
+      });
+      showToast("Notificação excluída.", "success");
+    } catch (err) {
+      showToast(err.message || "Erro ao excluir notificação.", "error");
+    } finally {
+      setExcluindoId(null);
+    }
   }
 
   return (
@@ -163,32 +193,47 @@ export default function Alertas() {
           {!carregando &&
             !erro &&
             listaVisivel.map((alerta) => (
-              <Link
+              <div
                 key={alerta.id}
-                to={`/alertas/${alerta.id}`}
                 className={`alertas-item${alerta.lido ? " alertas-item--lido" : ""}`}
-                onClick={() => marcarComoLida(alerta.id)}
-                aria-label={`${alerta.titulo}. ${alerta.detalhe}${alerta.lido ? ". Lida" : ". Não lida"}`}
               >
-                <div className="alertas-icone" aria-hidden>
-                  {iconeAlerta(alerta)}
-                </div>
-
-                <div className="alertas-conteudo">
-                  <div className="alertas-linha-titulo">
-                    <h3>{alerta.titulo}</h3>
-                    {alerta.urgente && (
-                      <span className="alertas-urgente">Urgente</span>
-                    )}
+                <Link
+                  to={`/alertas/${alerta.id}`}
+                  className="alertas-item-link"
+                  onClick={() => marcarComoLida(alerta.id)}
+                  aria-label={`${alerta.titulo}. ${alerta.detalhe}${alerta.lido ? ". Lida" : ". Não lida"}`}
+                >
+                  <div className="alertas-icone" aria-hidden>
+                    {iconeAlerta(alerta)}
                   </div>
 
-                  <p>{alerta.detalhe}</p>
-                </div>
+                  <div className="alertas-conteudo">
+                    <div className="alertas-linha-titulo">
+                      <h3>{alerta.titulo}</h3>
+                      {alerta.urgente && (
+                        <span className="alertas-urgente">Urgente</span>
+                      )}
+                    </div>
 
-                {!alerta.lido && (
-                  <span className="alertas-ponto" aria-hidden title="Não lida" />
-                )}
-              </Link>
+                    <p>{alerta.detalhe}</p>
+                  </div>
+
+                  {!alerta.lido && (
+                    <span className="alertas-ponto" aria-hidden title="Não lida" />
+                  )}
+                </Link>
+
+                <button
+                  type="button"
+                  className="alertas-excluir"
+                  onClick={(e) => handleExcluir(e, alerta)}
+                  disabled={excluindoId === alerta.id}
+                  aria-label={`Excluir notificação: ${alerta.titulo}`}
+                  title="Excluir notificação"
+                >
+                  {excluindoId === alerta.id ? "…" : "🗑"}
+                </button>
+              </div>
             ))}
         </div>
       </div>
@@ -197,4 +242,3 @@ export default function Alertas() {
     </div>
   );
 }
-

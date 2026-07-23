@@ -3,10 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav.jsx'
+import PesoChart from '../../components/PesoChart/PesoChart.jsx'
 import AnimalTypeSelector from '../../components/AnimalTypeSelector/AnimalTypeSelector'
 import IdentificacaoForm from '../../components/IdentificacaoForm/IdentificacaoForm'
 import SaudeForm from '../../components/SaudeForm/SaudeForm'
 import Toast from '../../components/Toast/Toast'
+import { useToast } from '../../contexts/ToastContext.jsx'
 
 import { getAnimal, putAnimal } from '../../services/api'
 import { ROUTES } from '../../constants/routes.js'
@@ -21,6 +23,7 @@ import styles from '../CadastrarAnimal/CadastrarAnimal.module.css'
 export default function EditarAnimal() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const feedbackTimer = useRef(null)
 
   const [form, setForm] = useState(FORM_ANIMAL_INICIAL)
@@ -28,6 +31,7 @@ export default function EditarAnimal() {
   const [carregando, setCarregando] = useState(true)
   const [salvando, setSalvando] = useState(false)
   const [feedback, setFeedback] = useState({ visivel: false, mensagem: '', variante: 'success' })
+  const [chartRefresh, setChartRefresh] = useState(0)
 
   useEffect(() => {
     let ativo = true
@@ -88,10 +92,13 @@ export default function EditarAnimal() {
     setSalvando(true)
     try {
       await putAnimal(id, formParaAnimal(form))
+      setChartRefresh((k) => k + 1)
+      showToast('Alterações salvas.', 'success')
       navigate(ROUTES.CONSULTAR, { state: { atualizado: true, aba: 'animais' } })
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Erro ao salvar alterações.'
       exibirFeedback(msg, 'error')
+      showToast(msg, 'error')
     } finally {
       setSalvando(false)
     }
@@ -143,6 +150,12 @@ export default function EditarAnimal() {
               tipo={form.tipo}
               valores={form}
               onChange={handleChange}
+            />
+
+            <PesoChart
+              animalId={id}
+              pesoAtual={form.peso}
+              refreshKey={chartRefresh}
             />
 
             <div className={styles.footer}>
